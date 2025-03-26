@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PANIKPA{% endblock %}</title>
+    <link rel="stylesheet" href="//{{ static_domain }}/css/global.css">
+    <link rel="icon" href="//{{ static_domain }}/img/PANIKPA.ico" type="image/x-icon">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <header>
+        {% include 'partials/navbar.html.twig' %}
+    </header>
+
+    <main>
+        <div class="app">
+            <div class="container">
+                {% block breadcrumb %}{% endblock %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+
+    {% include 'partials/cookies.html.twig' %}
+    {% include 'partials/footer.html.twig' %}
+    
+    {% block javascripts %}
+        <script src="//{{ static_domain }}/js/cookies.js" defer></script>
+        <script src="//{{ static_domain }}/js/menu.js" defer></script>
+        <script src="//{{ static_domain }}/js/footer.js" defer></script>
+        <script src="//{{ static_domain }}/js/sidebar.js" defer></script>
+    {% endblock %}
+</body>
+</html>

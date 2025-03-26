@@ -1,0 +1,20 @@
+<nav class="navbar">
+    <div class="nav-left">
+        <img src="//{{ static_domain }}/img/PANIKPA.png" alt="Logo PANIKPA" class="logo">
+        <span class="site-name">PANIKPA</span>
+    </div>
+
+    <button class="menu-toggle" aria-label="Menu principal" aria-controls="primary-menu" aria-expanded="false">
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+    </button>
+
+    <div class="nav-right" id="primary-menu">
+        <span class="nav-links"><a href="/" class="{{ current_route == 'home' ? 'selected' : '' }}">Accueil</a></span>
+        <span class="nav-links"><a href="/entreprises" class="{{ current_route == 'entreprises' ? 'selected' : '' }}">Entreprises</a></span>
+        <span class="nav-links"><a href="/offres" class="{{ current_route == 'offres' ? 'selected' : '' }}">Offres</a></span>
+        <span class="nav-links"><a href="/stages" class="{{ current_route == 'stages' ? 'selected' : '' }}">Wishlist</a></span>
+        <span class="nav-links"><a href="/form" class="{{ current_route == 'form' ? 'selected' : '' }}">Postuler</a></span>
+    </div>
+</nav>

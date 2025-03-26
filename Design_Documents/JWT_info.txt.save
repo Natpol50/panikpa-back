@@ -1,0 +1,11 @@
+Nous pouvosn profiter du JWT pour mettre en cache quelques données.
+
+- ID/email
+- Nom/Prénom
+- Rôle
+
+- [TABLEAU] Tags
+- NB de candidatures actives et totales
+
+
+ça nous permettras d'éviter de refetch ces informations à chaque requête. Par contre, il nous faudrat refetch la photo de profil ?
