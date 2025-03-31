@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+require_once __DIR__ . '/RequestObject.php';
+
 /**
  * Router Class
  * 
@@ -9,24 +11,24 @@ namespace App\Core;
  */
 class Router
 {
-    /**
-     * @var array Array of registered/authorized routes
-     */
     private $routes = [];
-    
-    /**
-     * @var string The base path for the application
-     */
     private $basePath = '';
+    private $authMiddleware;
 
     /**
      * Constructor
      * 
      * @param string $basePath Base path for the application
+     * @param \AuthMiddleware|null $authMiddleware Authentication middleware instance
      */
-    public function __construct($basePath = '')
-    {
+    
+    public function __construct($basePath = '', $authMiddleware)
+    {   
+        if (!$authMiddleware) {
+            throw new \Exception('AuthMiddleware is required to initialise a new router.');
+        }
         $this->basePath = $basePath;
+        $this->authMiddleware = $authMiddleware;
     }
 
     /**
@@ -125,18 +127,33 @@ class Router
     /**
      * Dispatch the route to the controller and action
      * 
-     * @param string $url The route URL
-     * @param string $method The request method
-     * @return void
+     * @param string|null $url The route URL (null to use current URL)
+     * @param string|null $method The request method (null to use current method)
+     * @return mixed
      * @throws \Exception When route not found or controller/action not found
      */
-    public function dispatch($url, $method = 'GET')
+    public function dispatch($url = null, $method = null): mixed
     {
+        // Use current URL and method if not provided
+        $url = $url ?? $_SERVER['REQUEST_URI'];
+        $method = $method ?? $_SERVER['REQUEST_METHOD'];
+        
+        // Match route to get parameters        // Get RequestObject from AuthMiddleware
+        $requestObject = null;
+        
+        if ($this->authMiddleware !== null) {
+            // Call the Process method of AuthMiddleware to get a complete RequestObject
+            $requestObject = $this->authMiddleware->handle();
+        } else {
+            // Create a default RequestObject if no middleware is set
+            $requestObject = new RequestObject();
+        }
         $params = $this->match($url, $method);
         
         if ($params === false) {
             throw new \Exception("No route found for $url with method $method", 404);
         }
+        
         
         // Get controller class
         $controller = $params['controller'];
@@ -154,11 +171,7 @@ class Router
         if (!method_exists($controller, $action)) {
             throw new \Exception("Method $action not found in controller $controller", 500);
         }
-        
-        // Call controller action with any route parameters
-        unset($params['controller']);
-        unset($params['action']);
-        
-        return call_user_func_array([$controller, $action], $params);
+        // Call controller action with RequestObject as the first parameter
+        return call_user_func([$controller, $action], $requestObject);
     }
 }
