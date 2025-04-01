@@ -44,6 +44,7 @@
             $this->user_refresh_token = $data['user_refresh_token'] ?? null;
             $this->id_acctype = $data['id_acctype'] ?? null;
             $this->promotion_code = $data['promotion_code'] ?? [];
+            $this->user_stype = $data['userSType'] ?? null;
         }
 
         public function setUserID(int $user_id): null
