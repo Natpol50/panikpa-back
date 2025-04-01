@@ -38,6 +38,15 @@
     font-weight: bold;
 }
 
+.tag_optional {
+    background-color: var(--tag-background-secondary);
+    color: var(--textrealsecondary-color);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
 .tag_negative {
     background-color: var(--secondary-color);
     color: var(--secondary-text);

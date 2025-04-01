@@ -19,6 +19,7 @@ class RequestObject
     public ?int $userRole = null;
     public int $permissionInteger = 0;
     public ?string $profilePictureUrl = null;
+    public ?string $userSType = null;
     
     /**
      * Create a new RequestObject instance
@@ -33,6 +34,7 @@ class RequestObject
         $this->userRole = $params['userRole'] ?? null;
         $this->permissionInteger = $params['permissionInteger'] ?? 0;
         $this->profilePictureUrl = $params['profilePictureUrl'] ?? '/assets/img/default-avatar.png';
+        $this->userSType = $params['userSType'] ?? null;
     }
     
     /**

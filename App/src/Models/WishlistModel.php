@@ -39,7 +39,7 @@ class WishlistModel
      * @return array Wishlist offers
      * @throws ModelException If fetch fails
      */
-    public function getWishlistOffers(int $userId): array
+    public function getWishlistOffersFromUserId(int $userId): array
     {
         try {
             $query = "

@@ -86,9 +86,9 @@ $router->post('/login', ['controller' => 'AuthController', 'action' => 'login'])
 $router->get('/logout', ['controller' => 'AuthController', 'action' => 'logout']);
 
 // Enterprise routes
-$router->get('/enterprises', ['controller' => 'EnterpriseController', 'action' => 'index', 'auth' => true]);
-$router->get('/enterprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true]);
-$router->post('/enterprises', ['controller' => 'EnterpriseController', 'action' => 'store', 'auth' => true]);
+$router->get('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'index', 'auth' => true]);
+$router->get('/entreprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true]);
+$router->post('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'store', 'auth' => true]);
 
 // Offer routes
 $router->get('/offres', ['controller' => 'OfferController', 'action' => 'index']);
@@ -133,6 +133,8 @@ $router->get('/', ['controller' => 'HomeController', 'action' => 'index']);
 $router->get('/API/latestupdates', ['controller' => 'HomeController', 'action' => 'apiUpdates']);
 $router->get('/API/favoffers', ['controller' => 'HomeController', 'action' => 'apiFavoriteOffers']);
 
+
+$router->get('/favicon.ico', ['controller' => 'AssetController', 'action' => 'favicon']);
 
 // Dispatch the request
 try {

@@ -25,7 +25,7 @@ class EnterpriseController
         $database = new Database();
         
         // Initialize enterprise model
-        $this->enterpriseModel = new EnterpriseModel($database);
+        $this->enterpriseModel = new EnterpriseModel();
     }
     
     /**

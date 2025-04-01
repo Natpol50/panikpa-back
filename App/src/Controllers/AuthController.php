@@ -244,6 +244,7 @@ class AuthController extends BaseController
                 exit;
             }
             
+            // TODO : ALL USERS ROLEID
             // Determine role ID based on user type
             $roleId = 3; // Default to student (3)
             if ($userType === 'tuteur') {

@@ -2,7 +2,7 @@
     "role_permissions_1": {
         "value": {
             "id_acctype": 1,
-            "acctype_name": "Super Admin",
+            "acctype_name": "Admin",
             "perm_company_creation": 1,
             "perm_modify_comp_info": 1,
             "perm_grade_company": 1,
@@ -26,6 +26,6 @@
             "perm_modify_admin": 1,
             "perm_delete_admin": 1
         },
-        "expires_at": 1743530016
+        "expires_at": 1743542047
     }
 }

@@ -86,11 +86,11 @@ class EnterpriseModel
     /**
      * Get enterprise by ID
      * 
-     * @param int $enterpriseId ID of the enterprise
+     * @param string $enterpriseId ID of the enterprise
      * @return array|null Enterprise data or null if not found
      * @throws ModelException If retrieval fails
      */
-    public function getEnterpriseById(int $enterpriseId): ?array
+    public function getEnterpriseById(string $enterpriseId): ?array
     {
         try {
             $query = "SELECT * FROM Enterprise WHERE id_enterprise = :enterpriseId";

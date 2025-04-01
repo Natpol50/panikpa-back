@@ -101,6 +101,11 @@ class OfferModel {
                 ':id_enterprise'      => $data['id_enterprise'],
                 ':id_city'            => $data['id_city']
             ]);
+            
+        // Return the last inserted ID
+        $id_offer = $this->database->lastInsertId();
+        return $id_offer;
+        
         } catch (PDOException $e) {
             throw new ModelException("Unable to create the offer: " . $e->getMessage());
         }
@@ -186,6 +191,70 @@ class OfferModel {
             return $result ? $result['company_name'] : null;
         } catch (PDOException $e) {
             throw new ModelException("Unable to get the company name: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get favorite offers based on user role with associated tags
+     *
+     * @param int $userId Role ID of the user
+     * @return array List of favorite offers with tags
+     * @throws ModelException If fetching fails
+     */
+    public function getFavOffers(int $userId): array
+    {
+        try {
+            // Base query for fetching offers with related data
+            $query = "
+                SELECT
+                o.id_offer,
+                o.offer_title,
+                o.offer_remuneration,
+                o.offer_level,
+                o.offer_duration,
+                o.offer_start,
+                o.offer_type,
+                o.offer_publish_date,
+                o.id_enterprise,
+                o.id_city,
+                (CASE WHEN w.id_offer IS NOT NULL THEN TRUE ELSE FALSE END) as is_in_wishlist,
+                (CASE WHEN o.offer_level = 'Bac+3, Bac+5' THEN TRUE ELSE FALSE END) as is_star_candidate
+                FROM Offer o
+                LEFT JOIN Wishlist w ON o.id_offer = w.id_offer AND w.id_user = :userId1
+                JOIN User u ON u.id_user = :userId2
+                WHERE u.user_stype = o.offer_type
+            ";
+            $query .= " ORDER BY o.offer_publish_date DESC LIMIT 6";
+        
+            $stmt = $this->database->prepare($query);
+        
+            // Bind the userId parameter twice with different parameter names
+            $stmt->bindValue(':userId1', $userId, PDO::PARAM_STR);
+            $stmt->bindValue(':userId2', $userId, PDO::PARAM_STR);
+            $stmt->execute();
+        
+            $offers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            // Now fetch the tags for each offer
+            foreach ($offers as &$offer) {
+                $tagQuery = "
+                    SELECT t.id_tag, t.tag_name, ot.optional
+                    FROM Tag t
+                    JOIN Offer_tag ot ON t.id_tag = ot.id_tag
+                    WHERE ot.id_offer = :offerId
+                    ORDER BY t.tag_name
+                ";
+                
+                $tagStmt = $this->database->prepare($tagQuery);
+                $tagStmt->bindValue(':offerId', $offer['id_offer'], PDO::PARAM_INT);
+                $tagStmt->execute();
+                
+                $offer['tags'] = $tagStmt->fetchAll(PDO::FETCH_ASSOC);
+            }
+            
+            return $offers;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch favorite offers: " . $e->getMessage());
         }
     }
 }

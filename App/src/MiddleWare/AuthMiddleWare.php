@@ -81,7 +81,8 @@ class AuthMiddleware
                 'userFirstName' => 'Unknown',
                 'permissionInteger' => 0,
                 'userRole' => $userRole,
-                'profilePictureUrl' => '/assets/img/default-avatar.png'
+                'profilePictureUrl' => '/assets/img/default-avatar.png',
+                'userSType' => null,
             ];
         }
         
@@ -91,7 +92,8 @@ class AuthMiddleware
             'userFirstName' => $userData->userFirstName,
             'permissionInteger' => $permissionInt,
             'userRole' => $userRole,
-            'profilePictureUrl' => $userData->profilePictureUrl
+            'profilePictureUrl' => $userData->profilePictureUrl,
+            'userSType' => $userData->user_stype,
         ];
     }
     

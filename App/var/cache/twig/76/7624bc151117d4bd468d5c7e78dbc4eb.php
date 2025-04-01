@@ -41,7 +41,7 @@ class __TwigTemplate_dce4099a11e31d1d691d81ee22b9eb55 extends Template
         // line 1
         yield "<nav class=\"navbar\">
     <div class=\"nav-left\">
-        <img src=\"/assets/img/PANIKPA.png\" alt=\"Logo PANIKPA\" class=\"logo\">
+        <img src=\"/assets/img/PANIKPA.webp\" alt=\"Logo PANIKPA\" class=\"logo\">
         <span class=\"site-name\">PANIKPA</span>
     </div>
 

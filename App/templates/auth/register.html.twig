@@ -6,7 +6,7 @@
 <div class="container">
     <div class="auth-container">
     <div class="login-header">
-        <img src="/assets/img/PANIKPA.png" alt="Logo PANIKPA" class="logo">
+        <img src="/assets/img/PANIKPA.webp" alt="Logo PANIKPA" class="logo">
         <h1>Créer un compte</h1>
         <p>Pour créer votre compte, veuillez remplir les informations ci dessous.</p>
     </div>
@@ -58,6 +58,15 @@
                     </label>
                 </div>
             </div>
+
+            <div id="student-type-section" class="form-section" style="display: none;">
+                <label for="studentType">type de recherche :</label>
+                <select id="studentType" name="studentType">
+                    <option value="" disabled selected>Sélectionnez votre type de recherche</option>
+                    <option value="stage">Stage</option>
+                    <option value="alternance">Alternance</option>
+                </select>
+            </div>
             
             <div class="form-section">
                 <label for="phone">téléphone :</label>
@@ -84,4 +93,52 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userTypeRadios = document.querySelectorAll('input[name="userType"]');
+            const studentTypeSection = document.getElementById('student-type-section');
+            const studentTypeSelect = document.getElementById('studentType');
+
+            // Function to toggle student type section
+            function toggleStudentTypeSection() {
+                const isStudentSelected = document.querySelector('input[name="userType"][value="etudiant"]:checked');
+                
+                if (isStudentSelected) {
+                    studentTypeSection.style.display = 'block';
+                    studentTypeSelect.required = true;
+                } else {
+                    studentTypeSection.style.display = 'none';
+                    studentTypeSelect.required = false;
+                    studentTypeSelect.selectedIndex = 0; // Reset selection
+                }
+            }
+
+            // Add event listeners to all user type radio buttons
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleStudentTypeSection);
+            });
+
+            // Initial check on page load
+            toggleStudentTypeSection();
+
+            // Form validation
+            const registerForm = document.getElementById('register-form');
+            registerForm.addEventListener('submit', (e) => {
+                // Extra validation for student type
+                const isStudentSelected = document.querySelector('input[name="userType"][value="etudiant"]:checked');
+                const studentTypeSelected = studentTypeSelect.value;
+
+                if (isStudentSelected && !studentTypeSelected) {
+                    e.preventDefault();
+                    alert('Veuillez sélectionner votre type de recherche.');
+                    studentTypeSelect.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
 {% endblock %}
