@@ -67,13 +67,9 @@ set_exception_handler(function ($exception) {
 // Initialize the Config Manager
 $configManager = ConfigManager::getInstance();
 
-// Create a mock Database instance to fetch the real config
-$databaseConfig = $configManager->getConfigFor(new Database());
-$database = new Database($databaseConfig);
+// Create a TokenService instance to fetch the real config
+$tokenService = TokenService::getInstance();
 
-// Create a mock TokenService instance to fetch the real config
-$tokenServiceConfig = $configManager->getConfigFor(new TokenService());
-$tokenService = new TokenService($tokenServiceConfig);
 
 // Initialize the Cache Service
 $cacheService = new CacheService();

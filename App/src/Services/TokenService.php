@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Config\ConfigInterface;
+use App\Config\ConfigManager;
 use App\Models\UserModel;
 use App\Exceptions\AuthenticationException;
 use Firebase\JWT\JWT;
@@ -22,6 +23,7 @@ class TokenService
     private int $refreshThreshold;
     private int $refreshTokenLifetime;
     private UserModel $userModel;
+    private static ?TokenService $instance = null;
     
     /**
      * Initialize the TokenService with configuration
@@ -32,7 +34,14 @@ class TokenService
     {
         // If no config provided, this is likely just for type hinting
         if ($config === null) {
-            return;
+            try {
+                $configManager = ConfigManager::getInstance();
+                $config = $configManager->getConfigFor($this);
+            } catch (\Exception $e) {
+                // If we can't get a config, we'll initialize with null connection
+                // The connection will be established on first use if needed
+                return;
+            }
         }
         
         // Load JWT configuration
@@ -280,5 +289,15 @@ class TokenService
         }
         
         return false;
+    }
+
+    public static function getInstance(): TokenService
+    {
+        
+        if (self::$instance === null) {
+            $instance = self::$instance = new self();
+        }
+        
+        return $instance;
     }
 }

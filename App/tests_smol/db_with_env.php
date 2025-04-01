@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../src/Config/configManager.php';
-require_once __DIR__ . '/../src/Config/database.php';
+
+use App\Services\Database;
 
 try {
     echo "Connexion à la base de données...\n";

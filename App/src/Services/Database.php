@@ -4,6 +4,7 @@ namespace App\Services;
 
 use PDO;
 use PDOException;
+use App\Config\ConfigManager;
 use App\Config\ConfigInterface;
 use App\Exceptions\DatabaseException;
 
@@ -15,7 +16,8 @@ use App\Exceptions\DatabaseException;
  */
 class Database
 {
-    private PDO $connection;
+    private static ?Database $instance = null;
+    private ?PDO $connection = null;
     
     /**
      * Create a new database connection using configuration
@@ -24,11 +26,29 @@ class Database
      */
     public function __construct(?ConfigInterface $config = null)
     {
-        // If no config provided, this is likely just for type hinting
         if ($config === null) {
-            return;
+            // Try to get config from ConfigManager if no config provided
+            try {
+                $configManager = ConfigManager::getInstance();
+                $config = $configManager->getConfigFor($this);
+            } catch (\Exception $e) {
+                // If we can't get a config, we'll initialize with null connection
+                // The connection will be established on first use if needed
+                return;
+            }
         }
         
+        $this->initConnection($config);
+    }
+    
+    /**
+     * Initialize database connection
+     * 
+     * @param ConfigInterface $config Configuration with database credentials
+     * @throws DatabaseException If connection fails
+     */
+    private function initConnection(ConfigInterface $config): void
+    {
         $host = $config->get('DB_HOST');
         $port = $config->get('DB_PORT');
         $dbname = $config->get('DB_NAME');
@@ -51,12 +71,33 @@ class Database
     }
     
     /**
+     * Get the singleton instance of PDO connection
+     * 
+     * @param ConfigInterface|null $config Optional configuration
+     * @return PDO The singleton PDO connection instance
+     * @throws DatabaseException If connection fails
+     */
+    public static function getInstance(?ConfigInterface $config = null): PDO
+    {
+        if (self::$instance === null) {
+            self::$instance = new self($config);
+        }
+        
+        return self::$instance->getConnection();
+    }
+    
+    /**
      * Get the PDO connection instance
      * 
      * @return PDO The database connection
+     * @throws DatabaseException If no connection has been established
      */
     public function getConnection(): PDO
     {
+        if ($this->connection === null) {
+            throw new DatabaseException("No database connection has been established");
+        }
+        
         return $this->connection;
     }
     
@@ -71,11 +112,11 @@ class Database
     public function executeQuery(string $query, array $params = []): \PDOStatement
     {
         try {
-            $stmt = $this->connection->prepare($query);
+            $stmt = $this->getConnection()->prepare($query);
             $stmt->execute($params);
             return $stmt;
         } catch (PDOException $e) {
-            throw new DatabaseException("Query execution failed: " . $e->getMessage());
+            throw new DatabaseException("Query execution failed: " . $e->getMessage(), $query);
         }
     }
     
@@ -94,7 +135,7 @@ class Database
             $stmt = $this->executeQuery($query, $params);
             return $stmt->fetchAll($fetchMode);
         } catch (PDOException $e) {
-            throw new DatabaseException("Query execution failed: " . $e->getMessage());
+            throw new DatabaseException("Query execution failed: " . $e->getMessage(), $query);
         }
     }
     
@@ -113,7 +154,7 @@ class Database
             $stmt = $this->executeQuery($query, $params);
             return $stmt->fetch($fetchMode);
         } catch (PDOException $e) {
-            throw new DatabaseException("Query execution failed: " . $e->getMessage());
+            throw new DatabaseException("Query execution failed: " . $e->getMessage(), $query);
         }
     }
     
@@ -126,7 +167,7 @@ class Database
     public function beginTransaction(): bool
     {
         try {
-            return $this->connection->beginTransaction();
+            return $this->getConnection()->beginTransaction();
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to start transaction: " . $e->getMessage());
         }
@@ -141,7 +182,7 @@ class Database
     public function commit(): bool
     {
         try {
-            return $this->connection->commit();
+            return $this->getConnection()->commit();
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to commit transaction: " . $e->getMessage());
         }
@@ -156,7 +197,7 @@ class Database
     public function rollback(): bool
     {
         try {
-            return $this->connection->rollBack();
+            return $this->getConnection()->rollBack();
         } catch (PDOException $e) {
             throw new DatabaseException("Failed to rollback transaction: " . $e->getMessage());
         }
