@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offres - {{ parent() }}{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <nav class="breadcrumb">
+            <span><a href="/">Accueil</a></span>
+            <span>Offres</span>
+        </nav>
+
+        <section class="offres-choices">
+            <h1>Choisissez le type d'offre</h1>
+            <div class="choices-container">
+                <a href="/offres/stages" class="choice-card">
+                    <div class="choice-content">
+                        <h2>Stages</h2>
+                        <p>Recherchez des offres de stage adaptées à votre profil.</p>
+                    </div>
+                    <div class="choice-icon">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <path d="M12 2L2 7v10l10 5 10-5V7l-10-5zM12 4.47L19.53 8 12 11.53 4.47 8 12 4.47zM4 9.38v6.24l7 3.5v-6.24L4 9.38zM13 19.12l7-3.5V9.38l-7 3.5v6.24z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <a href="/offres/alternances" class="choice-card">
+                    <div class="choice-content">
+                        <h2>Alternance</h2>
+                        <p>Découvrez des opportunités en alternance pour allier études et travail.</p>
+                    </div>
+                    <div class="choice-icon">
+                        <svg viewBox="0 0 24 24" width="48" height="48">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z" fill="currentColor"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

@@ -34,7 +34,7 @@ class RequestObject
         $this->userRole = $params['userRole'] ?? null;
         $this->permissionInteger = $params['permissionInteger'] ?? 0;
         $this->profilePictureUrl = $params['profilePictureUrl'] ?? '/assets/img/default-avatar.png';
-        $this->userSType = $params['userSType'] ?? null;
+        $this->userSType = $params['userSearchType'] ?? null;
     }
     
     /**

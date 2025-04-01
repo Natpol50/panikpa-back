@@ -1,8 +1,11 @@
 <?php
+
+    use App\Services\Database;
+    
     class PromoModel{
         public $promotion_code;
         public $id_user;
-        private Database $database;
+        private PDO $database;
 
         public function __construct(){
             $this->database = Database::getInstance();

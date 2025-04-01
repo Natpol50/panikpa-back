@@ -48,22 +48,40 @@ class OfferModel {
         }
     }
 
-    // Retrieve all internship offers
-    public function getAllInternshipOffers() {
-        return $this->getOffersByType(0);
+    // Retrieve all internship offers with pagination
+    public function getAllInternshipOffers(int $page = 0 , int $itemsPerPage = 0) {
+        return $this->getOffersByType(0, $page, $itemsPerPage);
     }
 
-    // Retrieve all alternance offers
-    public function getAllAlternanceOffers() {
-        return $this->getOffersByType(1);
+    // Retrieve all alternance offers with pagination
+    public function getAllAlternanceOffers(int $page = 0 , int $itemsPerPage = 0) {
+        return $this->getOffersByType(1, $page, $itemsPerPage);
     }
 
-    private function getOffersByType(int $type) {
+    private function getOffersByType(int $type, int $page, int $itemsPerPage) {
         try {
-            $query = "SELECT * FROM Offer WHERE offer_type = :offer_type";
+            $offset = ($page - 1) * $itemsPerPage;
+
+            // Query to fetch the offers
+            $query = "SELECT * FROM Offer WHERE offer_type = :offer_type LIMIT :limit OFFSET :offset";
             $stmt = $this->database->prepare($query);
-            $stmt->execute([':offer_type' => $type]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->bindValue(':offer_type', $type, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $itemsPerPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $offers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Query to count the total number of rows
+            $countQuery = "SELECT COUNT(*) as total FROM Offer WHERE offer_type = :offer_type";
+            $countStmt = $this->database->prepare($countQuery);
+            $countStmt->bindValue(':offer_type', $type, PDO::PARAM_INT);
+            $countStmt->execute();
+            $totalRows = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+
+            return [
+                'offers' => $offers,
+                'totalRows' => $totalRows
+            ];
         } catch (PDOException $e) {
             throw new ModelException("Unable to retrieve offers: " . $e->getMessage());
         }

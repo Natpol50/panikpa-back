@@ -53,7 +53,6 @@ class WishlistModel
                     o.offer_type,
                     o.offer_publish_date,
                     o.offer_content_url,
-                    o.offer_applicant_nb,
                     o.id_enterprise,
                     o.id_city,
                     e.enterprise_name,

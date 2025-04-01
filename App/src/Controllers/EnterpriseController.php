@@ -15,6 +15,7 @@ use App\Exceptions\ValidationException;
 class EnterpriseController
 {
     private EnterpriseModel $enterpriseModel;
+    private PDO $database;
     
     /**
      * Create a new EnterpriseController instance

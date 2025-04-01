@@ -82,7 +82,7 @@ class AuthMiddleware
                 'permissionInteger' => 0,
                 'userRole' => $userRole,
                 'profilePictureUrl' => '/assets/img/default-avatar.png',
-                'userSType' => null,
+                'userSearchType' => null,
             ];
         }
         
@@ -93,7 +93,7 @@ class AuthMiddleware
             'permissionInteger' => $permissionInt,
             'userRole' => $userRole,
             'profilePictureUrl' => $userData->profilePictureUrl,
-            'userSType' => $userData->user_stype,
+            'userSearchType' => $userData->userSearchType,
         ];
     }
     

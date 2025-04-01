@@ -92,10 +92,15 @@ $router->post('/entreprises', ['controller' => 'EnterpriseController', 'action' 
 
 // Offer routes
 $router->get('/offres', ['controller' => 'OfferController', 'action' => 'index']);
-$router->get('/stages', ['controller' => 'OfferController', 'action' => 'stages']);
+$router->get('/offres/stages', ['controller' => 'OfferController', 'action' => 'stages']);
+$router->get('/offres/alternances', ['controller' => 'OfferController', 'action' => 'alternances']);
 $router->get('/offres/create', ['controller' => 'OfferController', 'action' => 'create', 'auth' => true]);
 $router->post('/offres', ['controller' => 'OfferController', 'action' => 'store', 'auth' => true]);
 $router->get('/offres/{id}', ['controller' => 'OfferController', 'action' => 'show']);
+$router->get('/API/GetOffers', ['controller' => 'OfferController', 'action' => 'apiGetOffers']);
+
+// Add this for wishlist toggle functionality
+$router->post('API/wishlist/toggle/{id}', ['controller' => 'WishlistController', 'action' => 'toggle', 'auth' => true]);
 
 // Application routes
 $router->get('/form', ['controller' => 'ApplicationController', 'action' => 'form']);

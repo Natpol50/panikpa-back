@@ -217,8 +217,8 @@ class UserModel
                 ':gender' => $userData['userGender'],
                 ':photoUrl' => $userData['userPhotoUrl'] ?? '/assets/img/default-avatar.png',
                 ':creationDate' => date('Y-m-d'),
-                ':acctype' => $userData['userRoleId']
-
+                ':acctype' => $userData['userRoleId'],
+                
             ]);
             
             // Get the inserted ID

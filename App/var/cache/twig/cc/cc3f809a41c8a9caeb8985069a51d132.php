@@ -84,7 +84,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
         // line 10
         yield "<div class=\"login-container\">
     <div class=\"login-header\">
-        <img src=\"/assets/img/PANIKPA.png\" alt=\"Logo PANIKPA\" class=\"logo\">
+        <img src=\"/assets/img/PANIKPA.webp\" alt=\"Logo PANIKPA\" class=\"logo\">
         <h1>Connexion</h1>
         <p>Veuillez vous connecter pour accéder à votre compte</p>
     </div>

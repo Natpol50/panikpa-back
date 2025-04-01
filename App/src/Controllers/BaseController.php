@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\RequestObject;
+use App\Exceptions\ControllerException;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 use Twig\Extension\DebugExtension;
@@ -37,48 +38,52 @@ abstract class BaseController
      */
     protected function render(string $view, array $data = []): string
     {
-        // Dynamically determine template directory 
-        // Uses App/templates as the base directory
-        $templateDir = dirname(__DIR__, 2) . '/templates';
-        
-        // Create Twig loader with template directory
-        $loader = new FilesystemLoader($templateDir);
-        
-        // Initialize Twig environment with configuration
-        $twig = new Environment($loader, [
-            // Cache directory for compiled templates
-            'cache' => dirname(__DIR__, 2) . '/var/cache/twig',
+        try{
+            // Dynamically determine template directory 
+            // Uses App/templates as the base directory
+            $templateDir = dirname(__DIR__, 2) . '/templates';
             
-            // Use debug mode from environment configuration
-            'debug' => $_ENV['APP_DEBUG'] ?? false,
+            // Create Twig loader with template directory
+            $loader = new FilesystemLoader($templateDir);
             
-            // Automatically reload templates when they change
-            'auto_reload' => true
-        ]);
-        
-        // Add global variables accessible in all templates
-        $twig->addGlobal('app_name', 'PANIKPA');
-        $twig->addGlobal('current_year', date('Y'));
-        
-        // Add static domain for asset loading
-        $twig->addGlobal('static_domain', $_ENV['STATIC_URL'] ?? 'localhost');
-        
-        // Add Twig debug extension in debug mode
-        if ($_ENV['APP_DEBUG'] ?? false) {
-            $twig->addExtension(new DebugExtension());
+            // Initialize Twig environment with configuration
+            $twig = new Environment($loader, [
+                // Cache directory for compiled templates
+                'cache' => dirname(__DIR__, 2) . '/var/cache/twig',
+                
+                // Use debug mode from environment configuration
+                'debug' => $_ENV['APP_DEBUG'] ?? false,
+                
+                // Automatically reload templates when they change
+                'auto_reload' => true
+            ]);
+            
+            // Add global variables accessible in all templates
+            $twig->addGlobal('app_name', 'PANIKPA');
+            $twig->addGlobal('current_year', date('Y'));
+            
+            // Add static domain for asset loading
+            $twig->addGlobal('static_domain', $_ENV['STATIC_URL'] ?? 'localhost');
+            
+            // Add Twig debug extension in debug mode
+            if ($_ENV['APP_DEBUG'] ?? false) {
+                $twig->addExtension(new DebugExtension());
+            }
+            
+            // Merge default data with request-specific data
+            $defaultData = [
+                'request' => new RequestObject(), // Default empty request object
+                'success' => [], // Default empty success messages
+                'error' => [],    // Default empty error messages
+                'current_path' => $_SERVER['REQUEST_URI'] ?? '/',
+            ];
+            $data = array_merge($defaultData, $data);
+            
+            // Render the template and return the result
+            return $twig->render($view . '.html.twig', $data);
+        } catch (\Exception $e) {
+            throw new ControllerException($e->getMessage(), $e->getCode(), $e);
         }
-        
-        // Merge default data with request-specific data
-        $defaultData = [
-            'request' => new RequestObject(), // Default empty request object
-            'success' => [], // Default empty success messages
-            'error' => [],    // Default empty error messages
-            'current_path' => $_SERVER['REQUEST_URI'] ?? '/',
-        ];
-        $data = array_merge($defaultData, $data);
-        
-        // Render the template and return the result
-        return $twig->render($view . '.html.twig', $data);
     }
     
     /**
