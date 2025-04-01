@@ -40,3 +40,6 @@
 127.0.0.1 - - [01/Apr/2025:09:43:40 +0200] "GET / HTTP/1.1" 500 1935 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
 127.0.0.1 - - [01/Apr/2025:09:43:40 +0200] "GET / HTTP/1.1" 500 1935 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
 127.0.0.1 - - [01/Apr/2025:09:43:41 +0200] "GET / HTTP/1.1" 500 1935 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
+127.0.0.1 - - [01/Apr/2025:09:56:34 +0200] "GET / HTTP/1.1" 500 1935 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
+127.0.0.1 - - [01/Apr/2025:10:02:11 +0200] "GET / HTTP/1.1" 500 1935 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
+127.0.0.1 - - [01/Apr/2025:10:02:12 +0200] "GET / HTTP/1.1" 500 1935 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:136.0) Gecko/20100101 Firefox/136.0"
