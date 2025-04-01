@@ -17,11 +17,7 @@
             <div class="container">
                 {% block breadcrumb %}{% endblock %}
                 
-                {# Include our new notification component #}
-                {% include 'partials/notifications.html.twig' with {
-                    'success': success|default([]),
-                    'error': error|default([])
-                } %}
+
                 
                 {% block content %}{% endblock %}
             </div>
@@ -30,7 +26,12 @@
     {% include 'partials/cookies.html.twig' %}
     {% include 'partials/footer.html.twig' %}
     
-
+    {# Include our new notification component #}
+        {% include 'partials/notifications.html.twig' with {
+            'success': success|default([]),
+            'error': error|default([])
+        } %}
+        
     <script src="/assets/js/notifications.js" defer></script>
     {% block javascripts %}
     

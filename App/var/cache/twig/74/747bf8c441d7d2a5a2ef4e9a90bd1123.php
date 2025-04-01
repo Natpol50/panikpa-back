@@ -75,35 +75,36 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
         yield from $this->unwrap()->yieldBlock('breadcrumb', $context, $blocks);
         // line 19
         yield "                
+
+                
                 ";
-        // line 21
-        yield "                ";
-        yield from $this->loadTemplate("partials/notifications.html.twig", "base.html.twig", 21)->unwrap()->yield(CoreExtension::merge($context, ["success" => ((        // line 22
-array_key_exists("success", $context)) ? (Twig\Extension\CoreExtension::default(($context["success"] ?? null), [])) : ([])), "error" => ((        // line 23
-array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($context["error"] ?? null), [])) : ([]))]));
-        // line 25
-        yield "                
-                ";
-        // line 26
+        // line 22
         yield from $this->unwrap()->yieldBlock('content', $context, $blocks);
-        // line 27
+        // line 23
         yield "            </div>
         </div>
     </main>
     ";
-        // line 30
-        yield from $this->loadTemplate("partials/cookies.html.twig", "base.html.twig", 30)->unwrap()->yield($context);
-        // line 31
+        // line 26
+        yield from $this->loadTemplate("partials/cookies.html.twig", "base.html.twig", 26)->unwrap()->yield($context);
+        // line 27
         yield "    ";
-        yield from $this->loadTemplate("partials/footer.html.twig", "base.html.twig", 31)->unwrap()->yield($context);
-        // line 32
+        yield from $this->loadTemplate("partials/footer.html.twig", "base.html.twig", 27)->unwrap()->yield($context);
+        // line 28
         yield "    
-
+    ";
+        // line 30
+        yield "        ";
+        yield from $this->loadTemplate("partials/notifications.html.twig", "base.html.twig", 30)->unwrap()->yield(CoreExtension::merge($context, ["success" => ((        // line 31
+array_key_exists("success", $context)) ? (Twig\Extension\CoreExtension::default(($context["success"] ?? null), [])) : ([])), "error" => ((        // line 32
+array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($context["error"] ?? null), [])) : ([]))]));
+        // line 34
+        yield "        
     <script src=\"/assets/js/notifications.js\" defer></script>
     ";
-        // line 35
+        // line 36
         yield from $this->unwrap()->yieldBlock('javascripts', $context, $blocks);
-        // line 38
+        // line 39
         yield "</body>
 </html>";
         yield from [];
@@ -140,7 +141,7 @@ array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($
         yield from [];
     }
 
-    // line 26
+    // line 22
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -150,14 +151,14 @@ array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($
         yield from [];
     }
 
-    // line 35
+    // line 36
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 36
+        // line 37
         yield "    
     ";
         yield from [];
@@ -184,7 +185,7 @@ array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($
      */
     public function getDebugInfo(): array
     {
-        return array (  161 => 36,  154 => 35,  144 => 26,  134 => 18,  124 => 9,  113 => 6,  107 => 38,  105 => 35,  100 => 32,  97 => 31,  95 => 30,  90 => 27,  88 => 26,  85 => 25,  83 => 23,  82 => 22,  80 => 21,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
+        return array (  162 => 37,  155 => 36,  145 => 22,  135 => 18,  125 => 9,  114 => 6,  108 => 39,  106 => 36,  102 => 34,  100 => 32,  99 => 31,  97 => 30,  94 => 28,  91 => 27,  89 => 26,  84 => 23,  82 => 22,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
     }
 
     public function getSourceContext(): Source

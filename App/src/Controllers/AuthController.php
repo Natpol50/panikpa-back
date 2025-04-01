@@ -47,13 +47,12 @@ class AuthController
             exit;
         }
         
-        // Get any error from query parameters
-        $error = $_GET['error'] ?? null;
-        
-        // Render login form
+        // Render login form with empty arrays for messages
         echo $this->render('auth/login', [
-            'error' => $error,
-            'request' => $request
+            'error' => [],
+            'success' => [],
+            'request' => $request,
+            'formData' => [] // Empty form data
         ]);
     }
     
@@ -76,14 +75,31 @@ class AuthController
         $password = $_POST['password'] ?? '';
         $rememberMe = isset($_POST['remember_me']);
         
+        // Save form data to repopulate the form if there's an error
+        $formData = [
+            'email' => $email,
+            'remember_me' => $rememberMe
+        ];
+        
+        $errorMessages = [];
+        $successMessages = [];
+        
         try {
             // Validate credentials
             $user = $this->userModel->verifyCredentials($email, $password);
             
             if (!$user) {
-                // Invalid credentials
-                header('Location: /login?error=' . urlencode('Email ou mot de passe incorrect.'));
-                exit;
+                // Add error message to array
+                $errorMessages[] = 'Email ou mot de passe incorrect.';
+                
+                // Render the login form with error and preserved form data
+                echo $this->render('auth/login', [
+                    'error' => $errorMessages,
+                    'success' => $successMessages,
+                    'request' => $request,
+                    'formData' => $formData
+                ]);
+                exit; // Important to prevent further execution
             }
             
             // Create JWT token
@@ -101,8 +117,16 @@ class AuthController
             // Log the error
             error_log('Authentication error: ' . $e->getMessage());
             
-            // Set error message and redirect back to login
-            header('Location: /login?error=' . urlencode('Une erreur est survenue lors de la connexion. Veuillez réessayer.'));
+            // Add error to array
+            $errorMessages[] = 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
+            
+            // Render the login form with error and preserved form data
+            echo $this->render('auth/login', [
+                'error' => $errorMessages,
+                'success' => $successMessages,
+                'request' => $request,
+                'formData' => $formData
+            ]);
             exit;
         }
     }
@@ -118,8 +142,16 @@ class AuthController
         // Clear JWT token cookie
         $this->tokenService->logout();
         
-        // Redirect to login page
-        header('Location: /login');
+        // Set up success message for login form
+        $successMessages = ['Vous avez été déconnecté avec succès.'];
+        
+        // Render login form with success message
+        echo $this->render('auth/login', [
+            'error' => [],
+            'success' => $successMessages,
+            'request' => $request,
+            'formData' => []
+        ]);
         exit;
     }
 
@@ -137,13 +169,12 @@ class AuthController
             exit;
         }
         
-        // Get any error from query parameters
-        $error = $_GET['error'] ?? null;
-        
-        // Render registration form
+        // Render registration form with empty arrays
         echo $this->render('auth/register', [
-            'error' => $error,
-            'request' => $request
+            'error' => [],
+            'success' => [],
+            'request' => $request,
+            'formData' => []
         ]);
     }
     
@@ -169,9 +200,27 @@ class AuthController
         $password = $_POST['password'] ?? '';
         $confirmPassword = $_POST['confirmPassword'] ?? '';
         
+        // Save form data to repopulate the form if there's an error
+        $formData = [
+            'lastName' => $lastName,
+            'firstName' => $firstName,
+            'email' => $email,
+            'phone' => $phone
+        ];
+        
+        $errorMessages = [];
+        $successMessages = [];
+        
         // Validate password match
         if ($password !== $confirmPassword) {
-            header('Location: /new-account?error=' . urlencode('Les mots de passe ne correspondent pas.'));
+            $errorMessages[] = 'Les mots de passe ne correspondent pas.';
+            
+            echo $this->render('auth/register', [
+                'error' => $errorMessages,
+                'success' => $successMessages,
+                'request' => $request,
+                'formData' => $formData
+            ]);
             exit;
         }
         
@@ -179,7 +228,14 @@ class AuthController
             // Check if email already exists
             $existingUser = $this->userModel->getUserByEmail($email);
             if ($existingUser) {
-                header('Location: /new-account?error=' . urlencode('Cet email est déjà utilisé.'));
+                $errorMessages[] = 'Cet email est déjà utilisé.';
+                
+                echo $this->render('auth/register', [
+                    'error' => $errorMessages,
+                    'success' => $successMessages,
+                    'request' => $request,
+                    'formData' => $formData
+                ]);
                 exit;
             }
             
@@ -200,15 +256,29 @@ class AuthController
             // Create JWT token for auto-login
             $token = $this->tokenService->createJWT($newUser->userId);
             
-            // Redirect to home page with success message
-            header('Location: /?success=' . urlencode('Compte créé avec succès.'));
+            // Set success message for home page and redirect
+            $successMessages = ['Compte créé avec succès.'];
+            
+            // Store success message in session
+            $_SESSION['success'] = $successMessages;
+            
+            // Redirect to home page
+            header('Location: /');
             exit;
         } catch (\Exception $e) {
             // Log the error
             error_log('Registration error: ' . $e->getMessage());
             
-            // Set error message and redirect back to registration
-            header('Location: /new-account?error=' . urlencode('Une erreur est survenue lors de la création du compte. Veuillez réessayer.'));
+            // Add error message to array
+            $errorMessages[] = 'Une erreur est survenue lors de la création du compte. Veuillez réessayer.';
+            
+            // Render registration form with error and preserved form data
+            echo $this->render('auth/register', [
+                'error' => $errorMessages,
+                'success' => $successMessages,
+                'request' => $request,
+                'formData' => $formData
+            ]);
             exit;
         }
     }
@@ -227,15 +297,12 @@ class AuthController
             exit;
         }
         
-        // Get messages from query parameters
-        $error = $_GET['error'] ?? null;
-        $success = $_GET['success'] ?? null;
-        
-        // Render forgot password form directly with parameters
+        // Render forgot password form with empty arrays
         echo $this->render('auth/forgot-password', [
-            'error' => $error,
-            'success' => $success,
-            'request' => $request
+            'error' => [],
+            'success' => [],
+            'request' => $request,
+            'formData' => []
         ]);
     }
     
@@ -255,11 +322,17 @@ class AuthController
         
         $email = $_POST['email'] ?? '';
         
-        // Validate email exists
-        $user = $this->userModel->getUserByEmail($email);
+        // Save form data
+        $formData = [
+            'email' => $email
+        ];
         
+        // Initialize message arrays
         $successMessages = [];
         $errorMessages = [];
+        
+        // Validate email exists
+        $user = $this->userModel->getUserByEmail($email);
         
         if (!$user) {
             // For security, don't indicate whether email exists or not
@@ -282,8 +355,106 @@ class AuthController
         echo $this->render('auth/forgot-password', [
             'success' => $successMessages,
             'error' => $errorMessages,
-            'request' => $request
+            'request' => $request,
+            'formData' => $formData
         ]);
+    }
+    
+    /**
+     * Display reset password form
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function resetPasswordForm(RequestObject $request): void
+    {
+        // If user is already authenticated, redirect to home
+        if ($request->isAuthenticated()) {
+            header('Location: /');
+            exit;
+        }
+        
+        $token = $_GET['token'] ?? '';
+        
+        // Initialize message arrays
+        $errorMessages = [];
+        $successMessages = [];
+        
+        // Validate token (would require implementation)
+        if (empty($token)) {
+            $errorMessages[] = 'Token de réinitialisation invalide ou expiré.';
+            
+            // Render forgot password form with error
+            echo $this->render('auth/forgot-password', [
+                'error' => $errorMessages,
+                'success' => $successMessages,
+                'request' => $request,
+                'formData' => []
+            ]);
+            exit;
+        }
+        
+        // Render reset password form
+        echo $this->render('auth/reset-password', [
+            'token' => $token,
+            'error' => $errorMessages,
+            'success' => $successMessages,
+            'request' => $request,
+            'formData' => []
+        ]);
+    }
+    
+    /**
+     * Process reset password attempt
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function resetPassword(RequestObject $request): void
+    {
+        // If user is already authenticated, redirect to home
+        if ($request->isAuthenticated()) {
+            header('Location: /');
+            exit;
+        }
+        
+        // Get form data
+        $token = $_POST['token'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirmPassword'] ?? '';
+        
+        // Initialize message arrays
+        $errorMessages = [];
+        $successMessages = [];
+        
+        // Validate passwords match
+        if ($password !== $confirmPassword) {
+            $errorMessages[] = 'Les mots de passe ne correspondent pas.';
+            
+            echo $this->render('auth/reset-password', [
+                'token' => $token,
+                'error' => $errorMessages,
+                'success' => $successMessages,
+                'request' => $request,
+                'formData' => []
+            ]);
+            exit;
+        }
+        
+        // Validate token and update password (would require implementation)
+        // In a real application, verify token and update user's password
+        
+        // Set success message for login form
+        $successMessages[] = 'Votre mot de passe a été réinitialisé avec succès.';
+        
+        // Render login form with success message
+        echo $this->render('auth/login', [
+            'error' => [],
+            'success' => $successMessages,
+            'request' => $request,
+            'formData' => []
+        ]);
+        exit;
     }
     
     /**

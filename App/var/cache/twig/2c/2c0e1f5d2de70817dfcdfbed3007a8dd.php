@@ -75,34 +75,6 @@ class __TwigTemplate_efa035219d3038404ef0737ec51d10ce extends Template
         <p>Entrez votre adresse email pour recevoir un lien de réinitialisation</p>
     </div>
 
-    ";
-        // line 13
-        if (($context["error"] ?? null)) {
-            // line 14
-            yield "    <div class=\"error-message\">
-        ";
-            // line 15
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["error"] ?? null), "html", null, true);
-            yield "
-    </div>
-    ";
-        }
-        // line 18
-        yield "
-    ";
-        // line 19
-        if (($context["success"] ?? null)) {
-            // line 20
-            yield "    <div class=\"success-message\">
-        ";
-            // line 21
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["success"] ?? null), "html", null, true);
-            yield "
-    </div>
-    ";
-        }
-        // line 24
-        yield "
     <form method=\"POST\" action=\"/forgot-password\" class=\"login-form\">
         <div class=\"form-group\">
             <label for=\"email\">Email</label>
@@ -141,7 +113,7 @@ class __TwigTemplate_efa035219d3038404ef0737ec51d10ce extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  105 => 24,  99 => 21,  96 => 20,  94 => 19,  91 => 18,  85 => 15,  82 => 14,  80 => 13,  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
+        return array (  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
