@@ -26,13 +26,21 @@
     {% include 'partials/cookies.html.twig' %}
     {% include 'partials/footer.html.twig' %}
     
+    <div class="notifications-container active-path-container">
+        <div class="notification active-path">
+            <div class="notification-content">Current Path: {{ current_path }}</div>
+        </div>
+    </div>
+
     {# Include our new notification component #}
         {% include 'partials/notifications.html.twig' with {
             'success': success|default([]),
-            'error': error|default([])
+            'error': error|default([]),
+            'path': current_path|default('')
         } %}
-        
+
     <script src="/assets/js/notifications.js" defer></script>
+    <script src="/assets/js/navbar.js" defer></script>
     {% block javascripts %}
     
     {% endblock %}

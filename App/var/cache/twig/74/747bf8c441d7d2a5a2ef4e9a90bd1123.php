@@ -92,19 +92,30 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
         yield from $this->loadTemplate("partials/footer.html.twig", "base.html.twig", 27)->unwrap()->yield($context);
         // line 28
         yield "    
-    ";
-        // line 30
-        yield "        ";
-        yield from $this->loadTemplate("partials/notifications.html.twig", "base.html.twig", 30)->unwrap()->yield(CoreExtension::merge($context, ["success" => ((        // line 31
-array_key_exists("success", $context)) ? (Twig\Extension\CoreExtension::default(($context["success"] ?? null), [])) : ([])), "error" => ((        // line 32
-array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($context["error"] ?? null), [])) : ([]))]));
-        // line 34
-        yield "        
-    <script src=\"/assets/js/notifications.js\" defer></script>
+    <div class=\"notifications-container active-path-container\">
+        <div class=\"notification active-path\">
+            <div class=\"notification-content\">Current Path: ";
+        // line 31
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["current_path"] ?? null), "html", null, true);
+        yield "</div>
+        </div>
+    </div>
+
     ";
         // line 36
+        yield "        ";
+        yield from $this->loadTemplate("partials/notifications.html.twig", "base.html.twig", 36)->unwrap()->yield(CoreExtension::merge($context, ["success" => ((        // line 37
+array_key_exists("success", $context)) ? (Twig\Extension\CoreExtension::default(($context["success"] ?? null), [])) : ([])), "error" => ((        // line 38
+array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($context["error"] ?? null), [])) : ([])), "path" => ((        // line 39
+array_key_exists("current_path", $context)) ? (Twig\Extension\CoreExtension::default(($context["current_path"] ?? null), "")) : (""))]));
+        // line 41
+        yield "
+    <script src=\"/assets/js/notifications.js\" defer></script>
+    <script src=\"/assets/js/navbar.js\" defer></script>
+    ";
+        // line 44
         yield from $this->unwrap()->yieldBlock('javascripts', $context, $blocks);
-        // line 39
+        // line 47
         yield "</body>
 </html>";
         yield from [];
@@ -151,14 +162,14 @@ array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($
         yield from [];
     }
 
-    // line 36
+    // line 44
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 37
+        // line 45
         yield "    
     ";
         yield from [];
@@ -185,7 +196,7 @@ array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($
      */
     public function getDebugInfo(): array
     {
-        return array (  162 => 37,  155 => 36,  145 => 22,  135 => 18,  125 => 9,  114 => 6,  108 => 39,  106 => 36,  102 => 34,  100 => 32,  99 => 31,  97 => 30,  94 => 28,  91 => 27,  89 => 26,  84 => 23,  82 => 22,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
+        return array (  173 => 45,  166 => 44,  156 => 22,  146 => 18,  136 => 9,  125 => 6,  119 => 47,  117 => 44,  112 => 41,  110 => 39,  109 => 38,  108 => 37,  106 => 36,  99 => 31,  94 => 28,  91 => 27,  89 => 26,  84 => 23,  82 => 22,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
     }
 
     public function getSourceContext(): Source

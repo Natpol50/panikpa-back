@@ -8,7 +8,7 @@
 
 */
 
-
+use App\Services\Database;
 
 class OfferModel {
     private PDO $database;

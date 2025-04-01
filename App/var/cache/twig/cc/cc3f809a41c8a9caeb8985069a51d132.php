@@ -89,24 +89,13 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
         <p>Veuillez vous connecter pour accéder à votre compte</p>
     </div>
 
-    ";
-        // line 17
-        if (($context["error"] ?? null)) {
-            // line 18
-            yield "    <div class=\"error-message\">
-        ";
-            // line 19
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["error"] ?? null), "html", null, true);
-            yield "
-    </div>
-    ";
-        }
-        // line 22
-        yield "
     <form method=\"POST\" action=\"/login\" class=\"login-form\">
         <div class=\"form-group\">
             <label for=\"email\">Email</label>
-            <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"VeryfunEmail@panikpa.com\" required autocomplete=\"email\">
+            <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"VeryfunEmail@panikpa.com\" value=\"";
+        // line 20
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", true, true, false, 20)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", false, false, false, 20), "")) : ("")), "html", null, true);
+        yield "\" required autocomplete=\"email\">
         </div>
 
         <div class=\"form-group\">
@@ -115,7 +104,12 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
         </div>
 
         <div class=\"remember-me\">
-            <input type=\"checkbox\" id=\"remember_me\" name=\"remember_me\">
+            <input type=\"checkbox\" id=\"remember_me\" name=\"remember_me\" ";
+        // line 29
+        if (((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remember_me", [], "any", true, true, false, 29)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remember_me", [], "any", false, false, false, 29), false)) : (false))) {
+            yield "checked";
+        }
+        yield ">
             <label for=\"remember_me\">Se souvenir de moi</label>
         </div>
 
@@ -152,7 +146,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  105 => 22,  99 => 19,  96 => 18,  94 => 17,  85 => 10,  78 => 9,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
+        return array (  109 => 29,  97 => 20,  85 => 10,  78 => 9,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
     }
 
     public function getSourceContext(): Source

@@ -1,0 +1,31 @@
+{
+    "role_permissions_1": {
+        "value": {
+            "id_acctype": 1,
+            "acctype_name": "Super Admin",
+            "perm_company_creation": 1,
+            "perm_modify_comp_info": 1,
+            "perm_grade_company": 1,
+            "perm_create_offer": 1,
+            "perm_modify_offer": 1,
+            "perm_delete_offer": 1,
+            "perm_delete_tutor": 1,
+            "perm_search_tutor": 1,
+            "perm_modify_tutor": 1,
+            "perm_search_student": 1,
+            "perm_create_student": 1,
+            "perm_modify_student": 1,
+            "perm_delete_student": 1,
+            "perm_consult_students_stats": 1,
+            "perm_consult_students_applications": 1,
+            "perm_wishlist": 1,
+            "perm_offer_apply": 1,
+            "perm_consult_offer_applications": 1,
+            "perm_reply_offer_applications": 1,
+            "perm_create_admin": 1,
+            "perm_modify_admin": 1,
+            "perm_delete_admin": 1
+        },
+        "expires_at": 1743526359
+    }
+}

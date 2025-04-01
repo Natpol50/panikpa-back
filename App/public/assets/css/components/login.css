@@ -298,6 +298,14 @@
     text-decoration: underline;
 }
 
+.form-hint {
+    font-size: 0.85rem;
+    font-style: italic;
+    text-align: center;
+    color: var(--real-grey);
+    margin-top: 0.5rem;
+}
+
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
     .auth-container {

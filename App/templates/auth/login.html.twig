@@ -14,16 +14,10 @@
         <p>Veuillez vous connecter pour accéder à votre compte</p>
     </div>
 
-    {% if error %}
-    <div class="error-message">
-        {{ error }}
-    </div>
-    {% endif %}
-
     <form method="POST" action="/login" class="login-form">
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="VeryfunEmail@panikpa.com" required autocomplete="email">
+            <input type="email" id="email" name="email" placeholder="VeryfunEmail@panikpa.com" value="{{ formData.email|default('') }}" required autocomplete="email">
         </div>
 
         <div class="form-group">
@@ -32,7 +26,7 @@
         </div>
 
         <div class="remember-me">
-            <input type="checkbox" id="remember_me" name="remember_me">
+            <input type="checkbox" id="remember_me" name="remember_me" {% if formData.remember_me|default(false) %}checked{% endif %}>
             <label for="remember_me">Se souvenir de moi</label>
         </div>
 

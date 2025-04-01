@@ -11,14 +11,14 @@
     </button>
 
     <div class="nav-right" id="primary-menu">
-        <span class="nav-links"><a href="/" {% if app.request.getPathInfo() == '/' %}class="selected"{% endif %}>Accueil</a></span>
-        <span class="nav-links"><a href="/entreprises" {% if app.request.getPathInfo() starts with '/entreprises' %}class="selected"{% endif %}>Entreprises</a></span>
-        <span class="nav-links"><a href="/offres" {% if app.request.getPathInfo() starts with '/offres' %}class="selected"{% endif %}>Offres</a></span>
+        <span class="nav-links" data-page="accueil"><a href="/" {% if current_path == '/' %}class="selected"{% endif %}>Accueil</a></span>
+        <span class="nav-links" data-page="entreprises"><a href="/entreprises" {% if current_path|slice(0, 12) == '/entreprises' %}class="selected"{% endif %}>Entreprises</a></span>
+        <span class="nav-links" data-page="offres"><a href="/offres" {% if current_path|slice(0, 7) == '/offres' %}class="selected"{% endif %}>Offres</a></span>
         {% if request.isAuthenticated() %}
-            <span class="nav-links"><a href="/wishlist" {% if app.request.getPathInfo() starts with '/wishlist' %}class="selected"{% endif %}>Wishlist</a></span>
-            <span class="nav-links"><a href="/interactions" {% if app.request.getPathInfo() starts with '/interactions' %}class="selected"{% endif %}>Candidatures</a></span>
+            <span class="nav-links" data-page="wishlist"><a href="/wishlist" {% if current_path|slice(0, 9) == '/wishlist' %}class="selected"{% endif %}>Wishlist</a></span>
+            <span class="nav-links" data-page="interactions"><a href="/interactions" {% if current_path|slice(0, 13) == '/interactions' %}class="selected"{% endif %}>Candidatures</a></span>
         {% else %}
-            <span class="nav-links"><a href="/login" {% if app.request.getPathInfo() starts with '/login' %}class="selected"{% endif %}>Connexion</a></span>
+            <span class="nav-links" data-page="connexion"><a href="/login" {% if current_path starts with '/login' or current_path starts with '/new-account' or current_path starts with '/forgot-password'%} class="selected"{% endif %}>Connexion</a></span>
         {% endif %}
     </div>
 </nav>

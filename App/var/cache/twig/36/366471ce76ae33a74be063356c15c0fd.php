@@ -55,7 +55,7 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
     public function block_title(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        yield "Créer un compte - ";
+        yield "Inscription - ";
         yield from $this->yieldParentBlock("title", $context, $blocks);
         yield from [];
     }
@@ -68,63 +68,132 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
     {
         $macros = $this->macros;
         // line 6
-        yield "<div class=\"login-container\">
+        yield "<div class=\"container\">
+    <div class=\"auth-container\">
     <div class=\"login-header\">
         <img src=\"/assets/img/PANIKPA.png\" alt=\"Logo PANIKPA\" class=\"logo\">
         <h1>Créer un compte</h1>
-        <p>Rejoignez notre plateforme pour accéder aux offres de stages</p>
+        <p>Pour créer votre compte, veuillez remplir les informations ci dessous.</p>
     </div>
 
-    ";
-        // line 13
-        if (($context["error"] ?? null)) {
-            // line 14
-            yield "    <div class=\"error-message\">
-        ";
-            // line 15
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["error"] ?? null), "html", null, true);
-            yield "
-    </div>
-    ";
+        <form id=\"register-form\" class=\"auth-form\" action=\"/new-account\" method=\"POST\">
+            <div class=\"form-row\">
+                <div class=\"form-section\">
+                    <label for=\"civilite\">civilité :</label>
+                    <select id=\"civilite\" name=\"civilite\" required>
+                        <option value=\"\" disabled ";
+        // line 19
+        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", true, true, false, 19)) {
+            yield "selected";
         }
-        // line 18
-        yield "
-    <form method=\"POST\" action=\"/new-account\" class=\"login-form\">
-        <div class=\"form-group\">
-            <label for=\"lastName\">Nom</label>
-            <input type=\"text\" id=\"lastName\" name=\"lastName\" required>
+        yield ">Madame/Monsieur</option>
+                        <option value=\"Madame\" ";
+        // line 20
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", true, true, false, 20) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", false, false, false, 20) == "Madame"))) {
+            yield "selected";
+        }
+        yield ">Madame</option>
+                        <option value=\"Monsieur\" ";
+        // line 21
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", true, true, false, 21) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", false, false, false, 21) == "Monsieur"))) {
+            yield "selected";
+        }
+        yield ">Monsieur</option>
+                        <option value=\"Autre\" ";
+        // line 22
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", true, true, false, 22) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "civilite", [], "any", false, false, false, 22) == "Autre"))) {
+            yield "selected";
+        }
+        yield ">Autre</option>
+                    </select>
+                </div>
+                
+                <div class=\"form-section\">
+                    <label for=\"email\">identifiant :</label>
+                    <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"exemple@exemple.com\" value=\"";
+        // line 28
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", true, true, false, 28)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", false, false, false, 28), "")) : ("")), "html", null, true);
+        yield "\" required>
+                </div>
+            </div>
+
+            <div class=\"form-row\">
+                <div class=\"form-section\">
+                    <label for=\"firstName\">prénom :</label>
+                    <input type=\"text\" id=\"firstName\" name=\"firstName\" placeholder=\"Votre prénom\" value=\"";
+        // line 35
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", true, true, false, 35)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", false, false, false, 35), "")) : ("")), "html", null, true);
+        yield "\" required>
+                </div>
+                
+                <div class=\"form-section\">
+                    <label for=\"lastName\">nom :</label>
+                    <input type=\"text\" id=\"lastName\" name=\"lastName\" placeholder=\"Votre nom\" value=\"";
+        // line 40
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", true, true, false, 40)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", false, false, false, 40), "")) : ("")), "html", null, true);
+        yield "\" required>
+                </div>
+            </div>
+
+            <div class=\"form-section user-type\">
+                <span class=\"form-label\">Vous êtes :</span>
+                <div class=\"radio-group\">
+                    <label class=\"radio-label\">
+                        <input type=\"radio\" name=\"userType\" value=\"etudiant\" ";
+        // line 48
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "userType", [], "any", true, true, false, 48) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "userType", [], "any", false, false, false, 48) == "etudiant"))) {
+            yield "checked";
+        }
+        yield ">
+                        <span>étudiant</span>
+                    </label>
+                    <label class=\"radio-label\">
+                        <input type=\"radio\" name=\"userType\" value=\"tuteur\" ";
+        // line 52
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "userType", [], "any", true, true, false, 52) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "userType", [], "any", false, false, false, 52) == "tuteur"))) {
+            yield "checked";
+        }
+        yield ">
+                        <span>tuteur</span>
+                    </label>
+                    <label class=\"radio-label\">
+                        <input type=\"radio\" name=\"userType\" value=\"basic\" ";
+        // line 56
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "userType", [], "any", true, true, false, 56) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "userType", [], "any", false, false, false, 56) == "basic"))) {
+            yield "checked";
+        }
+        yield ">
+                        <span>autre</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class=\"form-section\">
+                <label for=\"phone\">téléphone :</label>
+                <input type=\"tel\" id=\"phone\" name=\"phone\" placeholder=\"Votre numéro de téléphone\" value=\"";
+        // line 64
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", true, true, false, 64)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", false, false, false, 64), "")) : ("")), "html", null, true);
+        yield "\" required>
+            </div>
+
+            <div class=\"form-section\">
+                <label for=\"password\">mot de passe :</label>
+                <input type=\"password\" id=\"password\" name=\"password\" placeholder=\"Votre mot de passe...\" required minlength=\"8\">
+            </div>
+            
+            <div class=\"form-section\">
+                <label for=\"confirmPassword\">confirmer votre mot de passe :</label>
+                <input type=\"password\" id=\"confirmPassword\" name=\"confirmPassword\" placeholder=\"Votre mot de passe...\" required minlength=\"8\">
+            </div>
+
+            <div class=\"form-actions\">
+                <button type=\"submit\" class=\"btn-submit\">S'INSCRIRE</button>
+            </div>
+        </form>
+
+        <div class=\"login-footer\">
+            <p>Vous avez déjà un compte ? <a href=\"/login\">Vous connecter</a></p>
         </div>
-
-        <div class=\"form-group\">
-            <label for=\"firstName\">Prénom</label>
-            <input type=\"text\" id=\"firstName\" name=\"firstName\" required>
-        </div>
-
-        <div class=\"form-group\">
-            <label for=\"email\">Email</label>
-            <input type=\"email\" id=\"email\" name=\"email\" required>
-        </div>
-
-        <div class=\"form-group\">
-            <label for=\"phone\">Téléphone</label>
-            <input type=\"tel\" id=\"phone\" name=\"phone\" required>
-        </div>
-
-        <div class=\"form-group\">
-            <label for=\"password\">Mot de passe</label>
-            <input type=\"password\" id=\"password\" name=\"password\" required minlength=\"8\">
-        </div>
-
-        <div class=\"form-group\">
-            <label for=\"confirmPassword\">Confirmer le mot de passe</label>
-            <input type=\"password\" id=\"confirmPassword\" name=\"confirmPassword\" required minlength=\"8\">
-        </div>
-
-        <button type=\"submit\" class=\"login-btn\">Créer mon compte</button>
-    </form>
-
-    <div class=\"login-footer\">
-        <p>Vous avez déjà un compte ? <a href=\"/login\">Se connecter</a></p>
     </div>
 </div>
 ";
@@ -152,7 +221,7 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  91 => 18,  85 => 15,  82 => 14,  80 => 13,  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
+        return array (  175 => 64,  162 => 56,  153 => 52,  144 => 48,  133 => 40,  125 => 35,  115 => 28,  104 => 22,  98 => 21,  92 => 20,  86 => 19,  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source

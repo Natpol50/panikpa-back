@@ -31,11 +31,11 @@ class UserModel
     public function __construct(?Database $database = null)
     {
         if ($database) {
-            $this->database = $database->getConnection();
+            $this->database = $database->getInstance();
         } else {
             // This is a fallback, but dependency injection is preferred
             $dbInstance = new Database();
-            $this->database = $dbInstance->getConnection();
+            $this->database = $dbInstance->getInstance();
         }
     }
     
@@ -196,7 +196,7 @@ class UserModel
         try {
             $query = "
                 INSERT INTO User (
-                    user_password, user_name, user_fname, user_stype, 
+                    user_phash, user_name, user_fname, user_stype, 
                     user_email, user_phone, user_gender, user_photo_url,
                     user_creation_date, id_acctype
                 ) VALUES (
@@ -430,7 +430,7 @@ class UserModel
         
         // Map database fields to object properties
         $user->userId = (int)$data['id_user'];
-        $user->passwordHash = $data['user_password'];
+        $user->passwordHash = $data['user_phash'];
         $user->userName = $data['user_name'];
         $user->userFirstName = $data['user_fname'];
         $user->userSearchType = $data['user_stype'];
@@ -445,5 +445,81 @@ class UserModel
         $user->promotionCode = $data['promotionCode'] ?? [];
         
         return $user;
+    }
+
+    /**
+     * Link a user to an enterprise
+     *
+     * @param int $userId The ID of the user to link
+     * @param string $enterpriseId The ID of the enterprise to link to
+     * @return bool Returns true if link is successful
+     * @throws ModelException If the linking process fails
+     */
+    public function linkUserEnterprise(int $userId, string $enterpriseId): bool
+    {
+        try {
+            // Check if the Enterprise exists
+            $queryEnterprise = "SELECT id_enterprise FROM Enterprise WHERE id_enterprise = :id_enterprise";
+            $stmt = $this->database->prepare($queryEnterprise);
+            $stmt->execute([':id_enterprise' => $enterpriseId]);
+
+            if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+                return false; // Enterprise does not exist
+            }
+
+            $stmt->closeCursor();
+
+            // Check if the user is already linked to an enterprise
+            $queryCheck = "SELECT * FROM companyusers WHERE id_user = :id_user";
+            $stmt = $this->database->prepare($queryCheck);
+            $stmt->execute([':id_user' => $userId]);
+            $existingLink = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            // If there is already an entry, delete the previous one
+            if ($existingLink) {
+                $queryCleanup = 'DELETE FROM companyusers WHERE id_user = :id_user';
+                $stmt = $this->database->prepare($queryCleanup);
+                $stmt->execute([':id_user' => $userId]);
+                $stmt->closeCursor();
+            }
+
+            // The enterprise exists, proceed with linking
+            $query = "INSERT INTO companyusers (id_enterprise, id_user) VALUES (:id_enterprise, :id_user)";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+                ':id_enterprise' => $enterpriseId,
+                ':id_user' => $userId
+            ]);
+            
+            $stmt->closeCursor();
+
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to link the user to the enterprise: " . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Get enterprise ID for a user
+     *
+     * @param int $userId The ID of the user to get the enterprise for
+     * @return array Returns an array with the id of the enterprise or an empty array
+     * @throws ModelException If the fetching process fails
+     */
+    public function getEnterpriseIdByUser(int $userId): array
+    {
+        try {
+            $query = "SELECT id_enterprise FROM companyusers WHERE id_user = :id_user";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([':id_user' => $userId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+
+            return $result ?: []; // Return empty array if no result
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to fetch the id linked to the user: " . $e->getMessage());
+        }
     }
 }

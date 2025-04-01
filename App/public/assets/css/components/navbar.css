@@ -1,28 +1,33 @@
+/* 
+ * Navbar Styles
+ * Main navigation component for PANIKPA application
+ */
+
+/* Base navbar container */
 .navbar {
+    --nav-height: 85px;
+    --nav-padding: 20px;
+    --nav-animation-duration: 0.3s;
+
     display: flex;
     justify-content: space-between;
     align-items: center;
     background-color: var(--background-nav);
-    padding: 20px;
+    padding: var(--nav-padding);
     box-shadow: 0 2px 4px var(--shadow-color);
     z-index: 1000;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
+    height: var(--nav-height);
 }
 
+/* Left side of navbar (logo and site name) */
 .nav-left {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-
-.nav-right {
-    display: flex;
-    font-size: large;
-    gap: 30px;
-    margin-right: 1%;
 }
 
 .navbar .logo {
@@ -35,9 +40,24 @@
     font-weight: bold;
 }
 
+/* Right side of navbar (navigation links) */
+.nav-right {
+    display: flex;
+    font-size: large;
+    gap: 30px;
+    margin-right: 1%;
+}
+
+/* Link styling */
 .navbar a {
     color: var(--onyx);
     text-decoration: none;
+    transition: color var(--nav-animation-duration) ease-in-out;
+}
+
+.navbar .nav-links a:hover {
+    text-decoration: underline;
+    color: var(--primary-color);
 }
 
 .navbar .selected {
@@ -46,12 +66,7 @@
     font-weight: bold;
 }
 
-.navbar .nav-links a:hover {
-    text-decoration: underline;
-    color: var(--primary-color);
-    transition: color 0.2s ease-in-out;
-}
-
+/* Mobile menu toggle button (hidden by default) */
 .menu-toggle {
     display: none;
     padding: 0;
@@ -70,39 +85,44 @@
     height: 3px;
     background-color: var(--primary-color);
     margin: 6px 0;
-    transition: all 0.3s ease-in-out;
+    transition: all var(--nav-animation-duration) ease-in-out;
     border-radius: 2px;
 }
 
+/* Responsive adjustments - Mobile view */
 @media screen and (max-width: 768px) {
+    /* Show hamburger menu button */
     .menu-toggle {
         display: block;
         z-index: 1001;
     }
 
+    /* Move navigation offscreen by default */
     .nav-right {
         position: fixed;
-        top: 85px;
+        top: var(--nav-height);
         right: -100%;
         width: 80%;
-        z-index: 900;
         max-width: 300px;
-        height: calc(100vh - 73px);
+        height: calc(100vh - var(--nav-height));
         background-color: var(--background-nav);
         display: flex;
         flex-direction: column;
         text-align: right;
         gap: 1rem;
         padding: 2rem;
-        transition: all 0.3s ease-in-out;
+        transition: right var(--nav-animation-duration) ease-in-out;
         box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
         overflow-y: auto;
+        z-index: 999; /* Juste sous la navbar principale */
     }
 
+    /* Show navigation when active */
     .nav-right.active {
         right: -10px;
     }
 
+    /* Style for active hamburger menu (X shape) */
     .menu-toggle.active .menu-toggle__bar:first-child {
         transform: rotate(45deg) translate(6px, 6px);
     }
@@ -115,9 +135,9 @@
         opacity: 0;
     }
 
+    /* Style for mobile nav links */
     .nav-right .nav-links {
         padding: 0.5rem 0;
         border-bottom: 1px solid var(--real-grey);
-        
     }
 }

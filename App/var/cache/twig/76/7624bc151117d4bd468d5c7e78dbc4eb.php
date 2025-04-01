@@ -52,21 +52,21 @@ class __TwigTemplate_dce4099a11e31d1d691d81ee22b9eb55 extends Template
     </button>
 
     <div class=\"nav-right\" id=\"primary-menu\">
-        <span class=\"nav-links\"><a href=\"/\" ";
+        <span class=\"nav-links\" data-page=\"accueil\"><a href=\"/\" ";
         // line 14
-        if ((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 14), "getPathInfo", [], "method", false, false, false, 14) == "/")) {
+        if ((($context["current_path"] ?? null) == "/")) {
             yield "class=\"selected\"";
         }
         yield ">Accueil</a></span>
-        <span class=\"nav-links\"><a href=\"/entreprises\" ";
+        <span class=\"nav-links\" data-page=\"entreprises\"><a href=\"/entreprises\" ";
         // line 15
-        if ((is_string($_v0 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 15), "getPathInfo", [], "method", false, false, false, 15)) && is_string($_v1 = "/entreprises") && str_starts_with($_v0, $_v1))) {
+        if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 12) == "/entreprises")) {
             yield "class=\"selected\"";
         }
         yield ">Entreprises</a></span>
-        <span class=\"nav-links\"><a href=\"/offres\" ";
+        <span class=\"nav-links\" data-page=\"offres\"><a href=\"/offres\" ";
         // line 16
-        if ((is_string($_v2 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 16), "getPathInfo", [], "method", false, false, false, 16)) && is_string($_v3 = "/offres") && str_starts_with($_v2, $_v3))) {
+        if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 7) == "/offres")) {
             yield "class=\"selected\"";
         }
         yield ">Offres</a></span>
@@ -74,23 +74,23 @@ class __TwigTemplate_dce4099a11e31d1d691d81ee22b9eb55 extends Template
         // line 17
         if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "isAuthenticated", [], "method", false, false, false, 17)) {
             // line 18
-            yield "            <span class=\"nav-links\"><a href=\"/wishlist\" ";
-            if ((is_string($_v4 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 18), "getPathInfo", [], "method", false, false, false, 18)) && is_string($_v5 = "/wishlist") && str_starts_with($_v4, $_v5))) {
+            yield "            <span class=\"nav-links\" data-page=\"wishlist\"><a href=\"/wishlist\" ";
+            if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 9) == "/wishlist")) {
                 yield "class=\"selected\"";
             }
             yield ">Wishlist</a></span>
-            <span class=\"nav-links\"><a href=\"/interactions\" ";
+            <span class=\"nav-links\" data-page=\"interactions\"><a href=\"/interactions\" ";
             // line 19
-            if ((is_string($_v6 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 19), "getPathInfo", [], "method", false, false, false, 19)) && is_string($_v7 = "/interactions") && str_starts_with($_v6, $_v7))) {
+            if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 13) == "/interactions")) {
                 yield "class=\"selected\"";
             }
             yield ">Candidatures</a></span>
         ";
         } else {
             // line 21
-            yield "            <span class=\"nav-links\"><a href=\"/login\" ";
-            if ((is_string($_v8 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 21), "getPathInfo", [], "method", false, false, false, 21)) && is_string($_v9 = "/login") && str_starts_with($_v8, $_v9))) {
-                yield "class=\"selected\"";
+            yield "            <span class=\"nav-links\" data-page=\"connexion\"><a href=\"/login\" ";
+            if ((((is_string($_v0 = ($context["current_path"] ?? null)) && is_string($_v1 = "/login") && str_starts_with($_v0, $_v1)) || (is_string($_v2 = ($context["current_path"] ?? null)) && is_string($_v3 = "/new-account") && str_starts_with($_v2, $_v3))) || (is_string($_v4 = ($context["current_path"] ?? null)) && is_string($_v5 = "/forgot-password") && str_starts_with($_v4, $_v5)))) {
+                yield " class=\"selected\"";
             }
             yield ">Connexion</a></span>
         ";

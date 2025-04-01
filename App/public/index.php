@@ -122,11 +122,15 @@ $router->get('/new-account', ['controller' => 'AuthController', 'action' => 'reg
 $router->post('/new-account', ['controller' => 'AuthController', 'action' => 'register']);
 
 // Password reset routes
+$router->get('/examplenotification', ['controller' => 'ExampleController', 'action' => 'exampleMethod']);
+
 $router->get('/forgot-password', ['controller' => 'AuthController', 'action' => 'forgotPasswordForm']);
 $router->post('/forgot-password', ['controller' => 'AuthController', 'action' => 'forgotPassword']);
+$router->post('/verify-reset-code', ['controller' => 'AuthController', 'action' => 'verifyResetCode']);
 $router->get('/reset-password/{token}', ['controller' => 'AuthController', 'action' => 'resetPasswordForm']);
 $router->post('/reset-password', ['controller' => 'AuthController', 'action' => 'resetPassword']);
-$router->get('/examplenotification', ['controller' => 'ExampleController', 'action' => 'exampleMethod']);
+
+
 // Dispatch the request
 try {
     $router->dispatch();

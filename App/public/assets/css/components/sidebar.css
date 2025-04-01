@@ -1,4 +1,9 @@
-/* Variables for consistent theming */
+/* 
+ * Sidebar Styles
+ * User profile and navigation sidebar for PANIKPA application
+ */
+
+/* Core sidebar variables */
 :root {
     --sidebar-width: 300px;
     --sidebar-top: 80px;
@@ -11,7 +16,9 @@
     --transition-duration: 0.3s;
 }
 
-/* Sidebar Toggle Button */
+/* ==================== 
+   Sidebar Toggle Button 
+   ==================== */
 .toggle-sidebar {
     position: fixed;
     left: 0;
@@ -38,7 +45,9 @@
     transition: transform var(--transition-duration) ease;
 }
 
-/* Sidebar */
+/* ==================== 
+   Sidebar Container 
+   ==================== */
 .sidebar {
     position: fixed;
     left: 0;
@@ -59,20 +68,24 @@
     transform: translateX(-100%);
 }
 
+/* Adjust main content when sidebar is open */
 .sidebar-open {
     margin-left: var(--sidebar-width);
 }
 
 .app {
-    transition: var(--transition-duration) ease;
+    transition: margin-left var(--transition-duration) ease;
 }
 
-/* Profile Card */
+/* ==================== 
+   Profile Card Section 
+   ==================== */
 .profile-card {
     background-color: var(--background-nav);
     border-radius: 8px;
     padding: var(--sidebar-padding);
     box-shadow: 0 2px 4px var(--shadow-color);
+    margin-bottom: 2rem;
 }
 
 .profile-header {
@@ -97,7 +110,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-    margin-bottom: 2rem;
 }
 
 .stat-item {
@@ -116,7 +128,9 @@
     color: var(--real-grey);
 }
 
-/* Menu Sections */
+/* ==================== 
+   Menu Sections 
+   ==================== */
 .menu-section {
     margin: 2rem 0;
 }
@@ -141,7 +155,7 @@
     color: var(--onyx);
     text-decoration: none;
     border-radius: 6px;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
     gap: 0.75rem;
 }
 
@@ -159,7 +173,9 @@
     color: var(--primary-color);
 }
 
-/* Sidebar Footer */
+/* ==================== 
+   Sidebar Footer 
+   ==================== */
 .sidebar-footer {
     margin-top: auto;
     padding-top: var(--sidebar-padding);
@@ -185,7 +201,9 @@
     filter: brightness(0.95);
 }
 
-/* Sidebar Menu Scroll */
+/* ==================== 
+   Scrollbar Styling 
+   ==================== */
 .sidebar-menu {
     flex-grow: 1;
     overflow-y: auto;
@@ -210,7 +228,9 @@
     background: var(--primary-color);
 }
 
-/* Responsive Design */
+/* ==================== 
+   Responsive Design 
+   ==================== */
 @media screen and (max-width: 768px) {
     .sidebar {
         width: 100%;
