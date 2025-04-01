@@ -1,130 +1,153 @@
 <?php
 
-/*
+namespace App\Middleware;
 
-AuthMiddleWare class that uses TokenService and Cacheservice to : check the token, get the role linked to the token, uses CacheService to temporairly store the data so we can speed up the process
+use App\Services\TokenService;
+use App\Services\CacheService;
+use App\Models\UserModel;
+use App\Core\RequestObject;
+use App\Exceptions\AuthenticationException;
 
-*/
-
-
-
+/**
+ * AuthMiddleware - Authentication and authorization middleware
+ * 
+ * This middleware handles user authentication and authorization.
+ * It validates JWT tokens, retrieves user permissions, and builds
+ * the RequestObject for controllers.
+ */
 class AuthMiddleware
 {
-    private CacheService $cacheService;
     private TokenService $tokenService;
-
-    public function __construct()
+    private CacheService $cacheService;
+    private UserModel $userModel;
+    
+    /**
+     * Create a new AuthMiddleware instance
+     * 
+     * @param TokenService $tokenService Service for JWT token handling
+     * @param CacheService $cacheService Service for caching
+     */
+    public function __construct(TokenService $tokenService, CacheService $cacheService)
     {
-        $this->cacheService = new CacheService();
-        $this->tokenService = new TokenService();
+        $this->tokenService = $tokenService;
+        $this->cacheService = $cacheService;
+        $this->userModel = new UserModel();
     }
-
-    // The first function to be called, it'll see if the user is loged in (must be used before any handle permission, even if some checks are repeated)
-    public function userLogin(): bool{
-
-        if (!isset($_COOKIE[$this->tokenService->token_name])) {
-            return false; // Ask for a login since there is no cookie in the user's cache
+    
+    /**
+     * Check if user is logged in
+     * 
+     * @return bool True if user is logged in
+     */
+    public function isUserLoggedIn(): bool
+    {
+        $tokenName = $this->tokenService->getTokenName();
+        
+        if (!isset($_COOKIE[$tokenName])) {
+            return false;
         }
-
-        $token = $_COOKIE[$this->tokenService->token_name];
-
-        // Validate the JWT token
-        if (!$this->tokenService->validateAndRefreshToken($token)) {
-            return false; // Ask for a login
+        
+        $token = $_COOKIE[$tokenName];
+        
+        try {
+            return $this->tokenService->validateAndRefreshToken($token);
+        } catch (AuthenticationException $e) {
+            // Log the exception
+            error_log("Authentication failed: " . $e->getMessage());
+            return false;
         }
-
-        return true; // Succesfully loged in, no need to check again
-
     }
-
-    // Function to retrive the necessary elements to "feed" the request object
-    public function retriveUserInfo($userId, $userRole){
-
+    
+    /**
+     * Retrieve user information from token and permissions from cache
+     * 
+     * @param int $userId User ID
+     * @param int $userRole User role ID
+     * @return array User information with permissions
+     */
+    public function retrieveUserInfo(int $userId, int $userRole): array
+    {
+        // Get role permissions from cache
         $permissions = $this->cacheService->getRolePermission($userRole);
-
-        // Now time to get the integer that will represent the permitions of an user : using the binairy logic
-
-        $permission_int = 0;
-
-        $power = 0;
-
-        // Iterate over the permissions, skipping the first two attributes
-        foreach ($permissions as $index => $permission) {
-             // Skip the first two attributes
-                 if ($index < 2) {
-                   continue;
-                }
-
-         // Check if the permission is set (assuming 1 means permission is granted)
-          if ($permission == 1) {
-              $permission_int += pow(2, $power);
-           }
-
-         $power++;
-        }
-
-        // Create a temporary object to fetch name, firstname and surname
-        $userModel = new UserModel();
-
-        $userData = $userModel->getUserById($userId);
-
-        $name = $userData->user_name;
-
-        $firstname = $userData->user_fname;
-
-        $photo_url = $userData->user_photo_url;
-
-        $answer = [
-            "userId" => $userId,
-
-            "userName" => $name,
-
-            "userFirstName" => $firstname,
-
-            "permissionInteger" => $permission_int,
+        $permissionInt = $this->calculatePermissionInteger($permissions);
         
-            "userRole" => $userRole,
-
-            "profilePictureUrl" => $photo_url
-         ];
-
-         return $answer;
+        // Get additional user data
+        $userData = $this->userModel->getUserById($userId);
+        
+        if (!$userData) {
+            return [
+                'userId' => $userId,
+                'userName' => 'Unknown',
+                'userFirstName' => 'Unknown',
+                'permissionInteger' => 0,
+                'userRole' => $userRole,
+                'profilePictureUrl' => '/assets/img/default-avatar.png'
+            ];
+        }
+        
+        return [
+            'userId' => $userId,
+            'userName' => $userData->userName,
+            'userFirstName' => $userData->userFirstName,
+            'permissionInteger' => $permissionInt,
+            'userRole' => $userRole,
+            'profilePictureUrl' => $userData->profilePictureUrl
+        ];
     }
-
-    // Middleware function to check authentication and authorization
-    public function handle(): mixed
+    
+    /**
+     * Calculate permission integer from individual permissions
+     * 
+     * @param array $permissions Array of permission flags
+     * @return int Bit-encoded permission integer
+     */
+    private function calculatePermissionInteger(array $permissions): int
     {
-        // Check if the JWT token is present in the request
-        if (!isset($_COOKIE[$this->tokenService->token_name])) {
-            return null; // as a failsafe, since in a nanosecond the cookie seems to be gone, we're just saying he doesn't have any permission no matter which
-        }
-
-        $token = $_COOKIE[$this->tokenService->token_name];
-
-        // Validate the JWT token
-        if (!$this->tokenService->validateAndRefreshToken($token)) {
-            return null; // same thing
-        }
-
-        // Decode the token to get user details and know if a role x can access the request
-        $decodedToken = $this->tokenService->DecodeJWT($token);
-        $userId = $decodedToken->user_id;
-        $userRole = $decodedToken->acctype;
-
-
-        /* If all checks pass, the request is authorized and sent back to the routeur with an : "approuved by the back" and gives as said in the sequence diagram : 
+        $permissionInt = 0;
+        $power = 0;
         
-        - The Id of the user
-
-        - The list of permissions if needed (Authmodel is already checking them but i'll respect the diagram)
-
-        - The id of the account type (can get the name sure, but i think this is all you need, or just delete the acctype_name and make in short that the id becomes the name)
-
-        */
-
-        $answer = $this->retriveUserInfo($userId, $userRole);
-
+        // Skip first two attributes (id and name)
+        foreach (array_slice($permissions, 2) as $permission) {
+            if ($permission == 1) {
+                $permissionInt += 2 ** $power;
+            }
+            $power++;
+        }
         
-        return new \App\Core\RequestObject($answer);
+        return $permissionInt;
+    }
+    
+    /**
+     * Process the request through authentication
+     * 
+     * @return RequestObject|null The authenticated request object or null
+     */
+    public function handle(): ?RequestObject
+    {
+        $tokenName = $this->tokenService->getTokenName();
+        
+        if (!isset($_COOKIE[$tokenName])) {
+            return null;
+        }
+        
+        $token = $_COOKIE[$tokenName];
+        
+        try {
+            if (!$this->tokenService->validateAndRefreshToken($token)) {
+                return null;
+            }
+            
+            $decodedToken = $this->tokenService->decodeJWT($token);
+            $userId = $decodedToken->user_id;
+            $userRole = $decodedToken->acctype;
+            
+            $userInfo = $this->retrieveUserInfo($userId, $userRole);
+            
+            return new RequestObject($userInfo);
+        } catch (\Exception $e) {
+            // Log the exception
+            error_log("Authentication middleware error: " . $e->getMessage());
+            return null;
+        }
     }
 }

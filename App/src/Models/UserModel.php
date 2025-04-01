@@ -1,377 +1,384 @@
 <?php
 
+namespace App\Models;
 
-/////////////////////////////////////////////////////////
-//
-//      Pasta was here ...
-//
-/////////////////////////////////////////////////////////
-
+use App\Services\Database;
+use App\Exceptions\ModelException;
+use App\Exceptions\AuthenticationException;
+use PDO;
+use PDOException;
 
 /**
  * UserModel - User management in the database
  * 
- * This class handles the complete lifecycle of users (CRUD):
- * - User creation (createUser)
- * - Reading user information (getUserById, getAllUsers)
- * - Updating users (updateUser)
- * - Deleting users (deleteUser)
- * - Checking permissions (getUserPermission)
- * 
- * This class is a revision of the original class by our good friend TONIO.
- * 
- * This class uses the UserObject class to manipulate user data.
+ * This class handles the complete lifecycle of users (CRUD)
  */
-
-
-
-class UserModel{
-    private PDO $pdoInstance;      // Instance of the database class for database interactions, allows for singletons
-
-    private const REQUIRED_FIELDS = [                          // Required fields for creating a user
-        'user_name', 'user_fname', 'user_email', 'user_phash',
-        'user_gender', 'user_phone', 'id_acctype'
+class UserModel
+{
+    private PDO $database;
+    
+    // Required fields for creating a user
+    private const REQUIRED_FIELDS = [
+        'userName', 'userFirstName', 'userEmail', 'userPassword',
+        'userGender', 'userPhone', 'userRoleId'
     ];
-
-
-    public function __construct(){
-        $this->pdoInstance = Database::getInstance();              // Obtain the database instance for model interactions
-        require_once(__DIR__ . '/UserObject.php');              // Ensure UserObject is included
-        if (!class_exists('UserObject')) {
-            throw new Exception("UserObject class not found. Please check the file path.");
-        }
-    }   
-
-
+    
     /**
-     * Retrieves user information by their ID
+     * Create a new UserModel instance
      * 
-     * @param int $userId User's ID
-     * @return UserObject|null User object or null if not found
-     * @throws Exception In case of a database error
+     * @param Database|null $database Database service
      */
-    public function getUserById($user_id): bool|UserObject|null
+    public function __construct(?Database $database = null)
     {
-        try{
-        $query = "SELECT * FROM User WHERE id_user = :user_id";
-        $stmt = $this->pdoInstance->prepare($query);               // stmt means statement.
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);                  // Explicitly set fetch mode for clarity 
-        $stmt->execute([":user_id" => $user_id]);
-
-        $user = $stmt->fetchAll()[0] ?? null;
-        $stmt->closeCursor();
-
-        if (!$user) {
-            return null;                                        // if no user, returns null
+        if ($database) {
+            $this->database = $database->getConnection();
         } else {
-            $promocodes = $this->getUserPromocodes($user_id);           // Get the user's promo codes
-            $user['promocodes'] = $promocodes;                  // Add promo codes to the user data
-
-            return new UserObject($user);                       // Return a UserObject instance with the fetched data
-        }
-        }
-
-        catch(PDOException $e){
-            echo "[getUserByID] Could not get user with ID $user_id: " . $e->getMessage();
-            return false;
+            // This is a fallback, but dependency injection is preferred
+            $dbInstance = new Database();
+            $this->database = $dbInstance->getConnection();
         }
     }
-
-
-    /**
-     * Retrieves the tags of a user
-     * 
-     * @param int $userId User's ID
-     * @return array|null Array of promo codes empty if none found
-     * @throws Exception In case of a database error (+ empty array)
-     */
-    private function getUserTags(int $userId): array
-        {
-        try{
-           $query = "SELECT Tag.tag_name AS tag_name FROM User_tag JOIN Tag ON User_tag.id_tag = Tag.id_tag WHERE User_tag.id_user = :id_user";
-           $stmt = $this->pdoInstance->prepare($query);
-           $stmt->setFetchMode(PDO::FETCH_ASSOC); 
-           $stmt->execute([":id_user" => $userId]);
-           $result = $stmt->fetchAll()[0] ?? null;
-           $stmt->closeCursor();
-           return $result;
-            } catch (PDOException $e) {
-            // In case of an error, return an empty array instead of throwing an exception
-            return [];
-            }
-        }
     
-
-
     /**
-     * Retrieves the promo codes of a user
+     * Get user by ID
      * 
-     * @param int $userId User's ID
-     * @return array|null Array of promo codes empty if none found
-     * @throws Exception In case of a database error (+ empty array)
+     * @param int $userId User ID
+     * @return object|null User object or null if not found
+     * @throws ModelException If database error occurs
      */
-    private function getUserPromoCodes(int $userId): array
+    public function getUserById(int $userId): ?object
     {
         try {
-            $query = "SELECT promo_code FROM Promo WHERE id_user = :user_id";
-            $stmt = $this->pdoInstance->prepare($query);
-            $stmt->setFetchMode(PDO::FETCH_ASSOC); 
-            $stmt->execute([":user_id" => $userId]);
+            $query = "SELECT * FROM User WHERE id_user = :userId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
             
-            $result = $stmt->fetch();
-            $stmt->closeCursor();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            // If promo codes exist, fetch all and return them as an array
-            if ($result) {
-                $promoCodes = [];
-                do {
-                    if (!empty($result['promo_code'])) {
-                        $promoCodes[] = $result['promo_code'];
-                    }
-                } while ($result = $stmt->fetch());
-                return $promoCodes;
-            } else {
-                return [];
-            }            
+            if (!$user) {
+                return null;
+            }
+            
+            // Get user's promotion codes
+            $promoCodes = $this->getUserPromoCodes($userId);
+            $user['promotionCode'] = $promoCodes;
+            
+            // Convert to object
+            return $this->arrayToUserObject($user);
         } catch (PDOException $e) {
-            // In case of an error, return an empty array instead of throwing an exception
-            return [];
+            throw new ModelException("Failed to get user by ID: " . $e->getMessage());
         }
     }
-
+    
     /**
-     * Retrieves the permissions of a user
+     * Get user by email
      * 
-     * @param int $userId User's ID
-     * @return array|null User's permissions or null if not found
-     * @throws Exception In case of a database error
+     * @param string $email User's email
+     * @return object|null User object or null if not found
+     * @throws ModelException If database error occurs
      */
-    public function getUserPermission($user_id): array|null
+    public function getUserByEmail(string $email): ?object
     {
-        try{
-
-            $query = "
-            SELECT Acctype.*
-            FROM User JOIN Acctype ON User.id_acctype = Acctype.id_acctype
-            WHERE User.id_user = :user_id
-            ";
-
-            $stmt = $this->pdoInstance -> prepare($query);
-            $stmt->execute([":user_id"=> $user_id]);
-            $stmt->setFetchMode(PDO::FETCH_ASSOC);
-
-            $result = $stmt->fetchAll();
-            return $result ?: null;
+        try {
+            $query = "SELECT * FROM User WHERE user_email = :email";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
             
-        }catch(PDOException $e){
-            echo "[getUserPermission] Error: Unable to retrieve user permissions for user ID $user_id due to: " . $e->getMessage();
-            return null;
-        }
-
-    }
-
-
-    /**
-     * Retrieves all users from the database, usefule for statistics purposes in the future, but not right now. DO NOT USE IN PRODUCTION.
-     * @return mixed
-     * @throws Exception In case of a database error
-     */
-
-    public function getAllUsers(): mixed
-    {
-
-        try{
-        $query = "SELECT * FROM User";
-
-        $stmt = $this->pdoInstance->prepare($query);
-        $stmt->setFetchMode(PDO::FETCH_ASSOC);
-        $stmt->execute();
-
-        $result = $stmt->fetchAll();
-        $stmt->closeCursor();
-
-        return $result;
-        }catch(PDOException $e){
-            echo "[getAllUsers] Error: Unable to retrieve all users due to: " . $e->getMessage();
-            return false;
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$user) {
+                return null;
+            }
+            
+            // Get user's promotion codes
+            $promoCodes = $this->getUserPromoCodes($user['id_user']);
+            $user['promotionCode'] = $promoCodes;
+            
+            // Convert to object
+            return $this->arrayToUserObject($user);
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get user by email: " . $e->getMessage());
         }
     }
-
-
+    
     /**
-     * Creates a new user in the database
+     * Get all users with optional pagination
      * 
-     * @param UserObject $userObject User object to create
-     * @return UserObject Created user object with updated ID
-     * @throws Exception If the data is incomplete or in case of a database error
+     * @param int $limit Maximum number of users to return
+     * @param int $offset Starting position for pagination
+     * @return array Array of user objects
+     * @throws ModelException If database error occurs
      */
-    public function createUser(UserObject $userObject): UserObject
+    public function getAllUsers(int $limit = 0, int $offset = 0): array
     {
-        // Converting userObject to array, for easier validation
-        $data = $this->userObjectToArray($userObject);
+        try {
+            $query = "SELECT * FROM User";
+            
+            // Add pagination if limit is specified
+            if ($limit > 0) {
+                $query .= " LIMIT :limit OFFSET :offset";
+            }
+            
+            $stmt = $this->database->prepare($query);
+            
+            // Bind pagination parameters if needed
+            if ($limit > 0) {
+                $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+                $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            }
+            
+            $stmt->execute();
+            
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = [];
+            
+            foreach ($users as $user) {
+                // Get user's promotion codes
+                $promoCodes = $this->getUserPromoCodes($user['id_user']);
+                $user['promotionCode'] = $promoCodes;
+                
+                // Convert to object and add to result
+                $result[] = $this->arrayToUserObject($user);
+            }
+            
+            return $result;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get all users: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get user permissions based on role
+     * 
+     * @param int $userId User ID
+     * @return array|null User's permissions or null if not found
+     * @throws ModelException If database error occurs
+     */
+    public function getUserPermission(int $userId): ?array
+    {
+        try {
+            $query = "
+                SELECT Acctype.*
+                FROM User 
+                JOIN Acctype ON User.id_acctype = Acctype.id_acctype
+                WHERE User.id_user = :userId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $permissions = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $permissions ?: null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get user permissions: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Create a new user
+     * 
+     * @param array $userData User data
+     * @return object Created user object with updated ID
+     * @throws ModelException If creation fails or required fields are missing
+     */
+    public function createUser(array $userData): object
+    {
+        // Validate required fields
+        $this->validateRequiredFields($userData);
         
-        // Validating required Fields
-        $this->validateRequiredFields($data);
-        
-        // Set defautl values if not set
-        $data = $this->setDefaultValues(data: $data);
+        // Set default values
+        $userData = $this->setDefaultValues($userData);
         
         try {
             $query = "
                 INSERT INTO User (
-                    user_phash, user_name, user_fname, user_stype, 
+                    user_password, user_name, user_fname, user_stype, 
                     user_email, user_phone, user_gender, user_photo_url,
                     user_creation_date, id_acctype
-                )
-                VALUES (
-                    :phash, :name, :fname, :stype, :email, 
-                    :phone, :gender, :photo, :creation_date, :acctype
+                ) VALUES (
+                    :password, :name, :fname, :stype, :email, 
+                    :phone, :gender, :photoUrl, :creationDate, :acctype
                 )
             ";
             
-            $stmt = $this->pdoInstance->prepare($query);
+            $stmt = $this->database->prepare($query);
             
             $stmt->execute([
-                ":name" => $userObject->user_name,
-                ":fname" => $userObject->user_fname,
-                ":phash" => $userObject->user_phash,
-                ":stype" => $userObject->user_stype,
-                ":email" => $userObject->user_email,
-                ":phone" => $userObject->user_phone,
-                ":gender" => $userObject->user_gender,
-                ":creation_date" => date(format: 'Y-m-d', timestamp: time()),
-                ":acctype" => $userObject->id_acctype,
-                ":photo" => $userObject->user_photo_url,
+                ':password' => password_hash($userData['userPassword'], PASSWORD_DEFAULT),
+                ':name' => $userData['userName'],
+                ':fname' => $userData['userFirstName'],
+                ':stype' => $userData['userSearchType'] ?? 'none',
+                ':email' => $userData['userEmail'],
+                ':phone' => $userData['userPhone'],
+                ':gender' => $userData['userGender'],
+                ':photoUrl' => $userData['userPhotoUrl'] ?? '/assets/img/default-avatar.png',
+                ':creationDate' => date('Y-m-d'),
+                ':acctype' => $userData['userRoleId']
             ]);
             
-            // Get updated user ID
-            $userId = $this->pdoInstance->lastInsertId();
-            $userObject->id_user = $userId;
+            // Get the inserted ID
+            $userId = (int)$this->database->lastInsertId();
             
-            return $userObject;
+            // Get the newly created user
+            $newUser = $this->getUserById($userId);
+            
+            if (!$newUser) {
+                throw new ModelException("Failed to retrieve newly created user");
+            }
+            
+            return $newUser;
         } catch (PDOException $e) {
-            throw new Exception("Erreur lors de la création de l'utilisateur: " . $e->getMessage());
+            throw new ModelException("Failed to create user: " . $e->getMessage());
         }
     }
-
-
-
-
+    
     /**
-     * Updates user information
+     * Update an existing user
      * 
-     * @param UserObject $userObject User object to update
-     * @return UserObject Updated user object
-     * @throws Exception If the user does not exist or in case of a database error
+     * @param object $user User object to update
+     * @return object Updated user object
+     * @throws ModelException If update fails or user doesn't exist
      */
-    public function updateUser(UserObject $userObject): UserObject
+    public function updateUser(object $user): object
     {
-        if (!$userObject->id_user) {
-            throw new Exception(message: "Impossible to update user, no ID provided [updateUser]");
+        if (!isset($user->userId) || !$user->userId) {
+            throw new ModelException("User ID is required for update");
+        }
+        
+        // Verify user exists
+        $existingUser = $this->getUserById($user->userId);
+        
+        if (!$existingUser) {
+            throw new ModelException("User with ID {$user->userId} not found");
         }
         
         try {
-            // Vérifier si l'utilisateur existe
-            $existingUser = $this->getUserById($userObject->id_user);
-            
-            if (!$existingUser) {
-                throw new Exception(message: "user with ID {$userObject->id_user} doesn't exists");
-            }
-            
             $query = "
                 UPDATE User SET 
-                    user_phash = :phash,
                     user_name = :name,
                     user_fname = :fname,
                     user_stype = :stype,
                     user_email = :email,
                     user_phone = :phone,
                     user_gender = :gender,
-                    user_photo_url = :photo_url,
-                    user_creation_date = :creation_date,
+                    user_photo_url = :photoUrl,
                     id_acctype = :acctype,
-                    user_refresh_token_date = :refresh_token_date,
-                    user_refresh_token = :refresh_token,
+                    user_refresh_token = :refreshToken,
+                    user_refresh_token_date = :refreshTokenDate
+                WHERE id_user = :userId
             ";
-            $stmt = $this->pdoInstance->prepare($query);
+            
+            $stmt = $this->database->prepare($query);
             
             $stmt->execute([
-                ":user_id" => $userObject->id_user,
-                ":name" => $userObject->user_name,
-                ":fname" => $userObject->user_fname,
-                ":phash" => $userObject->user_phash,
-                ":stype" => $userObject->user_stype,
-                ":email" => $userObject->user_email,
-                ":phone" => $userObject->user_phone,
-                ":gender" => $userObject->user_gender,
-                ":creation_date" => $userObject->user_creation_date,
-                ":acctype" => $userObject->id_acctype,
-                ":refresh_token" => $userObject->user_refresh_token,
-                ":refresh_token_date" => $userObject->user_refresh_token_date,
-                ":photo_url" => $userObject->user_photo_url,
+                ':name' => $user->userName,
+                ':fname' => $user->userFirstName,
+                ':stype' => $user->userSearchType,
+                ':email' => $user->userEmail,
+                ':phone' => $user->userPhone,
+                ':gender' => $user->userGender,
+                ':photoUrl' => $user->profilePictureUrl,
+                ':acctype' => $user->userRole,
+                ':refreshToken' => $user->refreshToken,
+                ':refreshTokenDate' => $user->refreshTokenDate,
+                ':userId' => $user->userId
             ]);
             
-            return $userObject;
+            // Get updated user
+            return $this->getUserById($user->userId);
         } catch (PDOException $e) {
-            throw new Exception(message: "Error while updating user {$userObject->id_user}: " . $e->getMessage());
+            throw new ModelException("Failed to update user: " . $e->getMessage());
         }
     }
-
-
+    
     /**
-     * Deletes a user from the database
+     * Delete a user
      * 
-     * @param int $userId ID of the user to delete
-     * @return bool true if the deletion was successful
-     * @throws Exception In case of a database error
+     * @param int $userId User ID to delete
+     * @return bool True on success
+     * @throws ModelException If deletion fails
      */
     public function deleteUser(int $userId): bool
     {
         try {
-            $query = "DELETE FROM User WHERE id_user = :user_id";
-            $stmt = $this->pdoInstance->prepare($query);
-            $stmt->setFetchMode(PDO::FETCH_ASSOC);
-            $stmt->execute([":user_id" => $userId]);            
-            $stmt->closeCursor();
-
-            return true;
+            $query = "DELETE FROM User WHERE id_user = :userId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            // Check if a row was affected
+            return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
-            throw new Exception(message: "[deleteUser] Error while delete user $userId : " . $e->getMessage());
+            throw new ModelException("Failed to delete user: " . $e->getMessage());
         }
     }
-
-
-
+    
     /**
-     * Converts a UserObject into an associative array
+     * Verify user credentials
      * 
-     * @param UserObject $userObject Object to convert
-     * @return array Associative array of properties
+     * @param string $email User email
+     * @param string $password User password
+     * @return object|null User object if credentials are valid, null otherwise
+     * @throws AuthenticationException If authentication fails
      */
-    private function userObjectToArray(UserObject $userObject): array
+    public function verifyCredentials(string $email, string $password): ?object
     {
-        return [
-            'id_user' => $userObject->id_user,
-            'user_phash' => $userObject->user_phash,
-            'user_name' => $userObject->user_name,
-            'user_fname' => $userObject->user_fname,
-            'user_stype' => $userObject->user_stype,
-            'user_email' => $userObject->user_email,
-            'user_phone' => $userObject->user_phone,
-            'user_gender' => $userObject->user_gender,
-            'user_photo_url' => $userObject->user_photo_url,
-            'user_creation_date' => $userObject->user_creation_date,
-            'user_refresh_token_date' => $userObject->user_refresh_token_date,
-            'user_refresh_token' => $userObject->user_refresh_token,
-            'id_acctype' => $userObject->id_acctype
-        ];
+        try {
+            $user = $this->getUserByEmail($email);
+            
+            if (!$user) {
+                return null;
+            }
+            
+            // Verify password
+            if (password_verify($password, $user->passwordHash)) {
+                return $user;
+            }
+            
+            return null;
+        } catch (PDOException $e) {
+            throw new AuthenticationException("Authentication failed: " . $e->getMessage());
+        }
     }
-
+    
     /**
-     * Validates that all required fields are present and not empty
+     * Get user promo codes
      * 
-     * @param array $data Data to validate
-     * @throws Exception If any required fields are missing or empty
+     * @param int $userId User ID
+     * @return array Array of promo codes
+     */
+    private function getUserPromoCodes(int $userId): array
+    {
+        try {
+            $query = "SELECT promo_code FROM Promo WHERE id_user = :userId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $promoCodes = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                if (!empty($row['promo_code'])) {
+                    $promoCodes[] = $row['promo_code'];
+                }
+            }
+            
+            return $promoCodes;
+        } catch (PDOException $e) {
+            // Log the error but return empty array to avoid breaking the main function
+            error_log("Failed to get user promo codes: " . $e->getMessage());
+            return [];
+        }
+    }
+    
+    /**
+     * Validate required fields for user creation
+     * 
+     * @param array $data User data
+     * @throws ModelException If required fields are missing
      */
     private function validateRequiredFields(array $data): void
     {
@@ -384,33 +391,59 @@ class UserModel{
         }
         
         if (!empty($missingFields)) {
-            throw new Exception(
-                message: "User data missing [validateRequiredFields] : " . 
-                implode(separator: ", ", array: $missingFields)
+            throw new ModelException(
+                "Missing required user data fields: " . implode(", ", $missingFields)
             );
         }
     }
-
+    
     /**
-     * Sets default values for optional fields
+     * Set default values for optional fields
      * 
-     * @param array $data Initial data
+     * @param array $data User data
      * @return array Data with default values added if necessary
      */
     private function setDefaultValues(array $data): array
     {
-        global $static_url;
-        
-        // Photo de profil par défaut si non fournie
-        if (!isset($data["user_photo"]) || !$data["user_photo"]) {
-            $data["user_photo"] = $static_url . "/pp/default.webp";
+        // Default profile picture
+        if (!isset($data['userPhotoUrl']) || !$data['userPhotoUrl']) {
+            $data['userPhotoUrl'] = '/assets/img/default-avatar.png';
         }
         
-        // Type de recherche par défaut si non fourni
-        if (!isset($data["user_stype"]) || $data["user_stype"] === "") {
-            $data["user_stype"] = "none";
+        // Default search type
+        if (!isset($data['userSearchType']) || $data['userSearchType'] === '') {
+            $data['userSearchType'] = 'none';
         }
         
         return $data;
+    }
+    
+    /**
+     * Convert database array to user object
+     * 
+     * @param array $data User data from database
+     * @return object User object
+     */
+    private function arrayToUserObject(array $data): object
+    {
+        $user = new \stdClass();
+        
+        // Map database fields to object properties
+        $user->userId = (int)$data['id_user'];
+        $user->passwordHash = $data['user_password'];
+        $user->userName = $data['user_name'];
+        $user->userFirstName = $data['user_fname'];
+        $user->userSearchType = $data['user_stype'];
+        $user->userEmail = $data['user_email'];
+        $user->userPhone = $data['user_phone'];
+        $user->userGender = $data['user_gender'];
+        $user->profilePictureUrl = $data['user_photo_url'];
+        $user->creationDate = $data['user_creation_date'];
+        $user->refreshTokenDate = $data['user_refresh_token_date'] ?? null;
+        $user->refreshToken = $data['user_refresh_token'] ?? null;
+        $user->userRole = (int)$data['id_acctype'];
+        $user->promotionCode = $data['promotionCode'] ?? [];
+        
+        return $user;
     }
 }

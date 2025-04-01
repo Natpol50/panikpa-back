@@ -1,140 +1,219 @@
 <?php
+
+namespace App\Models;
+
+use App\Services\Database;
+use App\Exceptions\ModelException;
+use PDO;
+use PDOException;
+
 /**
- * WishlistModel : Gère les offres dans la liste de souhaits d'un utilisateur.
- *
- * Fonctionnalités :
- * - Récupérer toutes les offres d'une wishlist d'un utilisateur
- * - Ajouter une offre à la wishlist
- * - Supprimer une offre de la wishlist
+ * WishlistModel - Manage user wishlists
+ * 
+ * Handles operations for user wishlists (saved offers)
  */
-
-class WishlistModel {
+class WishlistModel
+{
     private PDO $database;
-
-    public function __construct() {
-        $this->database = Database::getInstance();
-    }
-
+    
     /**
-     * Récupère toutes les offres de la wishlist d'un utilisateur.
+     * Create a new WishlistModel instance
      * 
-     * @param int $userId
-     * @return array
+     * @param Database|null $database Database service
      */
-    public function getWishlistOffersFromUserId(int $userId): array {
-        try {
-            $query = "
-                SELECT
-                    Offer.id_offer AS id_offer,
-                    Offer.offer_title AS offer_title,
-                    Offer.offer_remuneration AS offer_remuneration,
-                    Offer.offer_level AS offer_level,
-                    Offer.offer_duration AS offer_duration,
-                    Offer.offer_start AS offer_start,
-                    Offer.offer_type AS offer_type,
-                    Offer.offer_publish_date AS offer_publish_date,
-                    Offer.offer_content_url AS offer_content_url,
-                    Offer.offer_applicant_nb AS offer_applicant_nb,
-                    Offer.id_enterprise AS id_enterprise,
-                    Offer.id_city AS id_city
-                FROM Wishlist
-                JOIN Offer ON Wishlist.id_offer = Offer.id_offer
-                WHERE Wishlist.id_user = :id_user
-            ";
-
-            $stmt = $this->database->prepare($query);
-            $stmt->execute([":id_user" => $userId]);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        } catch (PDOException $e) {
-            return [];
+    public function __construct(?Database $database = null)
+    {
+        if ($database) {
+            $this->database = $database->getConnection();
+        } else {
+            // This is a fallback, but dependency injection is preferred
+            $dbInstance = new Database();
+            $this->database = $dbInstance->getConnection();
         }
     }
-
+    
     /**
-     * Ajoute une offre à la wishlist d'un utilisateur.
+     * Get all offers in a user's wishlist
      * 
-     * @param int $userId
-     * @param int $offerId
-     * @throws Exception
+     * @param int $userId User ID
+     * @return array Wishlist offers
+     * @throws ModelException If fetch fails
      */
-    public function addOfferToWishlist(int $userId, int $offerId): void {
+    public function getWishlistOffers(int $userId): array
+    {
         try {
+            $query = "
+                SELECT 
+                    o.id_offer,
+                    o.offer_title,
+                    o.offer_remuneration,
+                    o.offer_level,
+                    o.offer_duration,
+                    o.offer_start,
+                    o.offer_type,
+                    o.offer_publish_date,
+                    o.offer_content_url,
+                    o.offer_applicant_nb,
+                    o.id_enterprise,
+                    o.id_city,
+                    e.enterprise_name,
+                    c.city_name,
+                    c.city_postal
+                FROM Wishlist w
+                JOIN Offer o ON w.id_offer = o.id_offer
+                JOIN Enterprise e ON o.id_enterprise = e.id_enterprise
+                JOIN City c ON o.id_city = c.id_city
+                WHERE w.id_user = :userId
+                ORDER BY o.offer_publish_date DESC
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get wishlist offers: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Add an offer to a user's wishlist
+     * 
+     * @param int $userId User ID
+     * @param int $offerId Offer ID
+     * @return bool Success status
+     * @throws ModelException If addition fails
+     */
+    public function addToWishlist(int $userId, int $offerId): bool
+    {
+        try {
+            // Check if already in wishlist
+            if ($this->isInWishlist($userId, $offerId)) {
+                return true; // Already in wishlist, consider it a success
+            }
+            
             $query = "
                 INSERT INTO Wishlist (id_user, id_offer)
-                VALUES (:id_user, :id_offer)
+                VALUES (:userId, :offerId)
             ";
-
+            
             $stmt = $this->database->prepare($query);
-            $stmt->execute([
-                ":id_user"  => $userId,
-                ":id_offer" => $offerId
-            ]);
-
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':offerId', $offerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
         } catch (PDOException $e) {
-            throw new Exception("Unable to add the offer to the wishlist: " . $e->getMessage());
+            throw new ModelException("Failed to add offer to wishlist: " . $e->getMessage());
         }
     }
-
+    
     /**
-     * Supprime une offre de la wishlist d'un utilisateur.
+     * Remove an offer from a user's wishlist
      * 
-     * @param int $userId
-     * @param int $offerId
-     * @throws Exception
+     * @param int $userId User ID
+     * @param int $offerId Offer ID
+     * @return bool Success status
+     * @throws ModelException If removal fails
      */
-    public function removeOfferFromWishlist(int $userId, int $offerId): void {
+    public function removeFromWishlist(int $userId, int $offerId): bool
+    {
         try {
             $query = "
                 DELETE FROM Wishlist
-                WHERE id_user = :id_user AND id_offer = :id_offer
+                WHERE id_user = :userId AND id_offer = :offerId
             ";
-
+            
             $stmt = $this->database->prepare($query);
-            $stmt->execute([
-                ":id_user"  => $userId,
-                ":id_offer" => $offerId
-            ]);
-
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':offerId', $offerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            // Check if a row was affected
+            return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
-            throw new Exception("Unable to delete the offer from your wishlist: " . $e->getMessage());
+            throw new ModelException("Failed to remove offer from wishlist: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Check if an offer is in a user's wishlist
+     * 
+     * @param int $userId User ID
+     * @param int $offerId Offer ID
+     * @return bool True if in wishlist
+     * @throws ModelException If check fails
+     */
+    public function isInWishlist(int $userId, int $offerId): bool
+    {
+        try {
+            $query = "
+                SELECT COUNT(*) as count
+                FROM Wishlist
+                WHERE id_user = :userId AND id_offer = :offerId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':offerId', $offerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result && $result['count'] > 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to check wishlist status: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get count of offers in wishlist
+     * 
+     * @param int $userId User ID
+     * @return int Number of offers in wishlist
+     * @throws ModelException If count fails
+     */
+    public function getWishlistCount(int $userId): int
+    {
+        try {
+            $query = "
+                SELECT COUNT(*) as count
+                FROM Wishlist
+                WHERE id_user = :userId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? (int)$result['count'] : 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to count wishlist items: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Clear a user's wishlist
+     * 
+     * @param int $userId User ID
+     * @return bool Success status
+     * @throws ModelException If clear fails
+     */
+    public function clearWishlist(int $userId): bool
+    {
+        try {
+            $query = "DELETE FROM Wishlist WHERE id_user = :userId";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to clear wishlist: " . $e->getMessage());
         }
     }
 }
-
-/*
-// Script de test de la classe
-
-require_once 'Database.php';
-
-
-try {
-    // Instanciation de la classe WishlistModel
-    $wishlistModel = new WishlistModel();
-
-    echo "==== TEST : Ajouter une offre à la wishlist ====\n";
-    $userId = 1; // Remplace avec un ID utilisateur existant
-    $offerId = 2; // Remplace avec un ID d'offre existant
-
-    $wishlistModel->addOfferToWishlist($userId, $offerId);
-    echo "✅ Offre ajoutée à la wishlist avec succès.\n";
-
-    echo "==== TEST : Récupérer la wishlist de l'utilisateur ====\n";
-    $wishlist = $wishlistModel->getWishlistOffersFromUserId($userId);
-    
-    if (!empty($wishlist)) {
-        echo "✅ Offres récupérées :\n";
-        print_r($wishlist);
-    } else {
-        echo "❌ Aucune offre trouvée dans la wishlist.\n";
-    }
-
-    echo "==== TEST : Supprimer une offre de la wishlist ====\n";
-    $wishlistModel->removeOfferFromWishlist($userId, $offerId);
-    echo "✅ Offre supprimée de la wishlist avec succès.\n";
-
-} catch (Exception $e) {
-    echo "❌ Erreur : " . $e->getMessage() . "\n";
-}
-    
-*/

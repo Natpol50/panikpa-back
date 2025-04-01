@@ -1,0 +1,29 @@
+/* variables */
+:root {
+    --primary-color: #5fb5a0;
+    --secondary-color: #ffa997;
+    --secondary-text: #943f30;
+    --tertiary-color: #dc3545;
+    --realsecondary-color: #80A5D2;
+    --onyx: #2c2b33;
+    --background-grey: #f7f9f8;
+    --real-grey: #999999;
+    --real-lgrey: #e2e2e200;
+    --background-nav: #ffffff;
+    --tag-background: #e8f4f0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --focus-shadow: rgba(95, 181, 160, 0.2);
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

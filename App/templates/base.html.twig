@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}PANIKPA{% endblock %}</title>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <link rel="icon" href="/assets/img/PANIKPA.ico" type="image/x-icon">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <header>
+        {% include 'partials/navbar.html.twig' %}
+    </header>
+
+    <main>
+        <div class="app">
+            <div class="container">
+                {% block breadcrumb %}{% endblock %}
+                
+                {% if app.session.flashBag.has('success') %}
+                    <div class="alert alert-success">
+                        {{ app.session.flashBag.get('success')[0] }}
+                    </div>
+                {% endif %}
+                
+                {% if app.session.flashBag.has('error') %}
+                    <div class="alert alert-error">
+                        {{ app.session.flashBag.get('error')[0] }}
+                    </div>
+                {% endif %}
+                
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+
+    {% include 'partials/cookies.html.twig' %}
+    {% include 'partials/footer.html.twig' %}
+    
+    {% block javascripts %}
+        <script src="/assets/js/cookies.js" defer></script>
+        <script src="/assets/js/menu.js" defer></script>
+        <script src="/assets/js/footer.js" defer></script>
+        <script src="/assets/js/sidebar.js" defer></script>
+    {% endblock %}
+</body>
+</html>

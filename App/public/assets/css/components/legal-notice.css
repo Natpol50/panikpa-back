@@ -1,0 +1,15 @@
+.legal-notice {
+    font-size: 14px;
+    color: var(--onyx);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.legal-notice a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.legal-notice a:hover {
+    text-decoration: underline;
+}

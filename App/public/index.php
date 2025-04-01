@@ -1,49 +1,130 @@
 <?php
 
-// Load Composer autoloader
+/**
+ * Application Entry Point
+ * 
+ * This file initializes the application, sets up dependencies,
+ * defines routes, and dispatches requests to controllers.
+ */
+
+// Require Composer autoloader
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// Load environment variables
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
-$dotenv->load();
+// Import core classes
+use App\Config\ConfigManager;
+use App\Services\Database;
+use App\Services\TokenService;
+use App\Services\CacheService;
+use App\Middleware\AuthMiddleware;
+use App\Core\Router;
+use App\Exceptions\ApplicationException;
+use App\Exceptions\NotFoundException;
 
-// Error handling for development
-if ($_ENV['APP_ENV'] === 'development') {
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
-}
+// Initialize error handling for production
+ini_set('display_errors', 0);
+error_reporting(E_ALL);
 
-// Initialize the router
-$router = new App\Core\Router();
+// Set up exception handler
+set_exception_handler(function ($exception) {
+    $statusCode = 500;
+    $isDebug = $_ENV['APP_DEBUG'] ?? false;
+    
+    // Log the exception
+    error_log($exception->getMessage() . "\n" . $exception->getTraceAsString());
+    
+    // Handle different exception types
+    if ($exception instanceof NotFoundException) {
+        $statusCode = 404;
+    } elseif ($exception instanceof \App\Exceptions\AuthenticationException) {
+        $statusCode = 401;
+    } elseif ($exception instanceof \App\Exceptions\AuthorizationException) {
+        $statusCode = 403;
+    }
+    
+    // Set HTTP status code
+    http_response_code($statusCode);
+    
+    // In development mode, show detailed error information
+    if ($isDebug) {
+        echo '<div style="padding: 20px; font-family: Arial, sans-serif;">';
+        echo '<h1>Error: ' . htmlspecialchars($exception->getMessage()) . '</h1>';
+        echo '<p>File: ' . htmlspecialchars($exception->getFile()) . ' (Line ' . $exception->getLine() . ')</p>';
+        echo '<h2>Stack Trace:</h2>';
+        echo '<pre>' . htmlspecialchars($exception->getTraceAsString()) . '</pre>';
+        echo '</div>';
+    } else {
+        // In production, show a generic error page
+        if ($statusCode === 404) {
+            require __DIR__ . '/404.html';
+        } else {
+            require __DIR__ . '/error.html';
+        }
+    }
+    
+    exit;
+});
 
-// Initialize Twig
-App\Core\View::init(__DIR__ . '/../src/Views', [
-    'cache' => $_ENV['APP_ENV'] === 'production' ? __DIR__ . '/../var/cache/twig' : false,
-    'debug' => $_ENV['APP_ENV'] === 'development',
-    'auto_reload' => $_ENV['APP_ENV'] === 'development',
-]);
+// Initialize the Config Manager
+$configManager = ConfigManager::getInstance();
+
+// Create a mock Database instance to fetch the real config
+$databaseConfig = $configManager->getConfigFor(new Database());
+$database = new Database($databaseConfig);
+
+// Create a mock TokenService instance to fetch the real config
+$tokenServiceConfig = $configManager->getConfigFor(new TokenService());
+$tokenService = new TokenService($tokenServiceConfig);
+
+// Initialize the Cache Service
+$cacheService = new CacheService();
+
+// Initialize the Auth Middleware
+$authMiddleware = new AuthMiddleware($tokenService, $cacheService);
+
+// Initialize the Router
+$router = new Router('', $authMiddleware);
 
 // Define routes
 $router->get('/', ['controller' => 'HomeController', 'action' => 'index']);
-$router->get('/offres', ['controller' => 'OffresController', 'action' => 'index']);
-$router->get('/offres.html', ['controller' => 'OffresController', 'action' => 'index']);
-$router->get('/stages', ['controller' => 'OffresController', 'action' => 'stages']);
-$router->get('/stages.html', ['controller' => 'OffresController', 'action' => 'stages']);
-$router->get('/form', ['controller' => 'FormController', 'action' => 'index']);
-$router->get('/form.html', ['controller' => 'FormController', 'action' => 'index']);
-$router->post('/submit_application.php', ['controller' => 'FormController', 'action' => 'submit']);
-$router->get('/CGU', ['controller' => 'CGUController', 'action' => 'index']);
-$router->get('/CGU.html', ['controller' => 'CGUController', 'action' => 'index']);
-$router->get('/RGPD', ['controller' => 'RGPDController', 'action' => 'index']);
-$router->get('/RGPD.html', ['controller' => 'RGPDController', 'action' => 'index']);
-$router->get('/get_offers.php', ['controller' => 'OffresController', 'action' => 'getOffers']);
+$router->get('/login', ['controller' => 'AuthController', 'action' => 'loginForm']);
+$router->post('/login', ['controller' => 'AuthController', 'action' => 'login']);
+$router->get('/logout', ['controller' => 'AuthController', 'action' => 'logout']);
 
+// Enterprise routes
+$router->get('/enterprises', ['controller' => 'EnterpriseController', 'action' => 'index', 'auth' => true]);
+$router->get('/enterprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true]);
+$router->post('/enterprises', ['controller' => 'EnterpriseController', 'action' => 'store', 'auth' => true]);
+
+// Offer routes
+$router->get('/offres', ['controller' => 'OfferController', 'action' => 'index']);
+$router->get('/stages', ['controller' => 'OfferController', 'action' => 'stages']);
+$router->get('/offres/create', ['controller' => 'OfferController', 'action' => 'create', 'auth' => true]);
+$router->post('/offres', ['controller' => 'OfferController', 'action' => 'store', 'auth' => true]);
+$router->get('/offres/{id}', ['controller' => 'OfferController', 'action' => 'show']);
+
+// Application routes
+$router->get('/form', ['controller' => 'ApplicationController', 'action' => 'form']);
+$router->post('/submit_application', ['controller' => 'ApplicationController', 'action' => 'submit']);
+
+// Wishlist routes
+$router->get('/wishlist', ['controller' => 'WishlistController', 'action' => 'index', 'auth' => true]);
+$router->post('/wishlist/add/{id}', ['controller' => 'WishlistController', 'action' => 'add', 'auth' => true]);
+$router->post('/wishlist/remove/{id}', ['controller' => 'WishlistController', 'action' => 'remove', 'auth' => true]);
+
+// User management routes
+$router->get('/users', ['controller' => 'UserController', 'action' => 'index', 'auth' => true]);
+$router->get('/users/create', ['controller' => 'UserController', 'action' => 'create', 'auth' => true]);
+$router->post('/users', ['controller' => 'UserController', 'action' => 'store', 'auth' => true]);
+$router->get('/users/{id}', ['controller' => 'UserController', 'action' => 'show', 'auth' => true]);
+// Legal pages
+$router->get('/CGU', ['controller' => 'LegalController', 'action' => 'cgu']);
+$router->get('/RGPD', ['controller' => 'LegalController', 'action' => 'rgpd']);
+
+
+// Dispatch the request
 try {
-    // Dispatch the route
-    $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+    $router->dispatch();
 } catch (Exception $e) {
-    // Handle 404 and other errors
-    http_response_code($e->getCode() ?: 500);
-    echo 'Error: ' . $e->getMessage();
+    // Exception handler will catch this
+    throw $e;
 }

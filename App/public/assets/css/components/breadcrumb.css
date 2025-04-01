@@ -1,0 +1,20 @@
+.breadcrumb {
+    margin: 10px 0 20px 10px;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.breadcrumb span:not(:last-child)::after {
+    content: ">";
+    margin: 0 10px;
+    color: var(--onyx);
+}
+
+.breadcrumb a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}

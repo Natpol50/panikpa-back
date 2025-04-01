@@ -1,80 +1,106 @@
 <?php
 
-require_once __DIR__ . '/../Config/tokenConfig.php';
-require_once __DIR__ .'/../Models/UserModel.php';
-require_once __DIR__ .'/../Config/configManager.php';
+namespace App\Services;
+
+use App\Config\ConfigInterface;
+use App\Models\UserModel;
+use App\Exceptions\AuthenticationException;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 /**
- * TokenService Class
+ * TokenService - JWT authentication token management
  * 
  * Manages JWT authentication tokens and refresh tokens for user sessions.
  * Handles creation, validation, and refreshing of tokens.
  */
-use \Firebase\JWT\JWT;
-use Firebase\JWT\Key;
-
-class TokenService extends TokenConfig
+class TokenService
 {
-    /** @var UserModel $userModel User model for database interactions */
+    private string $secretKey;
+    private string $tokenName;
+    private int $tokenLifetime;
+    private int $refreshThreshold;
+    private int $refreshTokenLifetime;
     private UserModel $userModel;
-
+    
     /**
-     * Initializes the TokenService with configuration settings
+     * Initialize the TokenService with configuration
+     * 
+     * @param ConfigInterface|null $config Configuration with JWT settings
      */
-    public function __construct()
+    public function __construct(?ConfigInterface $config = null)
     {
-        // Get configuration using reflection-based security
-        $configManager = \App\Config\ConfigManager::getInstance();
-        $config = $configManager->getConfigFor($this);
+        // If no config provided, this is likely just for type hinting
+        if ($config === null) {
+            return;
+        }
         
-        // Load JWT configuration from environment
+        // Load JWT configuration
         $this->secretKey = $config->get('JWT_SECRET');
-        $this->token_name = $config->get('JWT_NAME');
-        $this->life_expectancy = $this->day * 86400 + $this->hours * 3600 + $this->minutes * 60;
-        $this->time_limit_before_refresh = $this->token_expiration_closeness_day * 86400 + $this->token_expiration_closeness_hours * 3600 + $this->token_expiration_closeness_minutes * 60;
-        $this->time_limit_before_refresh_expires = $this->refresh_day * 86400;
+        $this->tokenName = $config->get('JWT_NAME');
+        
+        // Token expiration time (default: 4 hours)
+        $this->tokenLifetime = $config->get('JWT_EXPIRY', 14400); // 4 hours in seconds
+        
+        // When to refresh token (default: 30 minutes before expiry)
+        $this->refreshThreshold = $config->get('JWT_REFRESH_THRESHOLD', 1800); // 30 minutes in seconds
+        
+        // Refresh token expiration (default: 30 days)
+        $this->refreshTokenLifetime = $config->get('JWT_REFRESH_EXPIRY', 2592000); // 30 days in seconds
+        
+        // Initialize user model for token validation
         $this->userModel = new UserModel();
     }
-
+    
+    /**
+     * Get the token name used for cookies
+     * 
+     * @return string The token name
+     */
+    public function getTokenName(): string
+    {
+        return $this->tokenName;
+    }
+    
     /**
      * Creates and stores a JWT token as a secure cookie
      * 
-     * @param int $user_id The user ID to create a token for
+     * @param int $userId The user ID to create a token for
      * @return string The generated JWT token
-     * @throws Exception If token creation fails
+     * @throws AuthenticationException If token creation fails
      */
-    public function createJWT($user_id)
+    public function createJWT(int $userId): string
     {
         // Get user's IP address
         $ip = $_SERVER['REMOTE_ADDR'];
-
+        
         // Fetch user data for the payload
-        $userData = $this->userModel->getUserById($user_id);
+        $userData = $this->userModel->getUserById($userId);
         
         if (!$userData) {
-            throw new Exception('User not found');
+            throw new AuthenticationException('User not found');
         }
-
+        
         // Set token timing parameters
         $issuedAt = time();
-        $expirationTime = $issuedAt + $this->life_expectancy;
-
+        $expirationTime = $issuedAt + $this->tokenLifetime;
+        
         // Build JWT payload
         $payload = [
             'iat' => $issuedAt,          // Issued At timestamp
             'exp' => $expirationTime,    // Expiration timestamp
-            'user_id' => $user_id,       // User identifier
+            'user_id' => $userId,        // User identifier
             'ip' => $ip,                 // Client IP for verification
-            'photo_url' => $userData->user_photo_url,  // Profile photo URL
-            'acctype' => $userData->id_acctype,        // Account type/role
+            'photo_url' => $userData->profilePictureUrl,  // Profile photo URL
+            'acctype' => $userData->userRole,             // Account type/role
         ];
          
         try {
             // Generate the JWT token
             $jwt = JWT::encode($payload, $this->secretKey, 'HS256');
-
+            
             // Store as HTTP-only secure cookie
-            setcookie($this->token_name, $jwt, [
+            setcookie($this->tokenName, $jwt, [
                 "expires" => $expirationTime,  // Cookie expiration
                 "path" => "/",                 // Available site-wide
                 "secure" => true,              // HTTPS only
@@ -83,19 +109,19 @@ class TokenService extends TokenConfig
             ]);
             
             return $jwt;
-        } catch (Exception $e) {
-            throw new Exception('JWT creation failed: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new AuthenticationException('JWT creation failed: ' . $e->getMessage());
         }
     }
-
+    
     /**
      * Creates a refresh token and stores it in the user's database record
      * 
-     * @param int $user_id The user ID to create a refresh token for
+     * @param int $userId The user ID to create a refresh token for
      * @return string The generated refresh token
-     * @throws Exception If token storage fails
+     * @throws AuthenticationException If token creation/storage fails
      */
-    public function createRefreshToken($user_id)
+    public function createRefreshToken(int $userId): string
     {
         $ip = $_SERVER['REMOTE_ADDR'];
         
@@ -103,55 +129,55 @@ class TokenService extends TokenConfig
         $randomPart = bin2hex(random_bytes(32));
         
         // Append contextual information (IP and user ID)
-        $content = $ip . "," . $user_id;
+        $content = $ip . "," . $userId;
         $refreshToken = $randomPart . $content;
         
         // Set current date for token creation timestamp
         $refreshTokenDate = date("Y-m-d", time());
         
-        // Fetch and update user object
-        $currentUser = $this->userModel->getUserById($user_id);
+        // Fetch user object
+        $userData = $this->userModel->getUserById($userId);
         
-        if (!$currentUser) {
-            throw new Exception('User not found');
+        if (!$userData) {
+            throw new AuthenticationException('User not found');
         }
         
-        $currentUser->user_refresh_token = $refreshToken;
-        $currentUser->user_refresh_token_date = $refreshTokenDate;
-
+        // Update user's refresh token
+        $userData->refreshToken = $refreshToken;
+        $userData->refreshTokenDate = $refreshTokenDate;
+        
         try {
-            $this->userModel->updateUser($currentUser);
+            $this->userModel->updateUser($userData);
             return $refreshToken;
-        } catch (PDOException $e) {
-            throw new Exception("Failed to store refresh token: " . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new AuthenticationException("Failed to store refresh token: " . $e->getMessage());
         }
     }
-
+    
     /**
      * Decodes and validates a JWT token
      * 
      * @param string $token The JWT token to decode
      * @return object The decoded token payload
-     * @throws Exception If token is invalid
+     * @throws AuthenticationException If token is invalid
      */
-    public function decodeJWT($token)
+    public function decodeJWT(string $token): object
     {
         try {
             $decoded = JWT::decode($token, new Key($this->secretKey, 'HS256'));
             return $decoded;
-        } catch (Exception $e) {
-            throw new Exception('Invalid token: ' . $e->getMessage());
+        } catch (\Exception $e) {
+            throw new AuthenticationException('Invalid token: ' . $e->getMessage());
         }
     }
-
+    
     /**
      * Validates a JWT token and refreshes it if needed
      * 
      * @param string $token The JWT token to check
      * @return bool True if token is valid, false otherwise
-     * @throws Exception If token validation fails unexpectedly
      */
-    public function validateAndRefreshToken($token)
+    public function validateAndRefreshToken(string $token): bool
     {
         try {
             // Decode the JWT token
@@ -173,20 +199,24 @@ class TokenService extends TokenConfig
                 return false; // User not found
             }
             
-            // Extract refresh token and its creation date
-            $refreshToken = $userData->user_refresh_token;
-            $refreshTokenDate = $userData->user_refresh_token_date;
-            
-            // Verify IP in refresh token
-            $refreshTokenParts = $this->parseRefreshToken($refreshToken);
-            if (!$refreshTokenParts || $refreshTokenParts['ip'] !== $_SERVER['REMOTE_ADDR']) {
-                return false; // IP in refresh token doesn't match
-            }
-            
             // If JWT is near expiration, check if we can refresh it
-            if (($expireDate - $this->time_limit_before_refresh) <= time()) {
+            if (($expireDate - $this->refreshThreshold) <= time()) {
+                // Extract refresh token and its creation date
+                $refreshToken = $userData->refreshToken;
+                $refreshTokenDate = $userData->refreshTokenDate;
+                
+                if (!$refreshToken || !$refreshTokenDate) {
+                    return false; // No refresh token available
+                }
+                
+                // Verify IP in refresh token
+                $refreshTokenParts = $this->parseRefreshToken($refreshToken);
+                if (!$refreshTokenParts || $refreshTokenParts['ip'] !== $_SERVER['REMOTE_ADDR']) {
+                    return false; // IP in refresh token doesn't match
+                }
+                
                 // Check if refresh token has expired
-                if (strtotime($refreshTokenDate) + $this->time_limit_before_refresh_expires <= time()) {
+                if (strtotime($refreshTokenDate) + $this->refreshTokenLifetime <= time()) {
                     return false; // Refresh token expired, new login required
                 }
                 
@@ -195,8 +225,10 @@ class TokenService extends TokenConfig
             }
             
             return true;
-        } catch (Exception $e) {
-            throw new Exception("Token validation failed: " . $e->getMessage());
+        } catch (\Exception $e) {
+            // Log the exception but return false for security
+            error_log("Token validation failed: " . $e->getMessage());
+            return false;
         }
     }
     
@@ -206,7 +238,7 @@ class TokenService extends TokenConfig
      * @param string $refreshToken The refresh token to parse
      * @return array|false Array with token parts or false if invalid format
      */
-    private function parseRefreshToken($refreshToken)
+    private function parseRefreshToken(string $refreshToken)
     {
         if (strlen($refreshToken) <= 64) {
             return false; // Token too short to be valid
@@ -225,5 +257,28 @@ class TokenService extends TokenConfig
             'ip' => $contentParts[0],
             'userId' => $contentParts[1]
         ];
+    }
+    
+    /**
+     * Invalidate the current session by clearing cookies
+     * 
+     * @return bool True on success
+     */
+    public function logout(): bool
+    {
+        if (isset($_COOKIE[$this->tokenName])) {
+            // Clear the cookie by setting expiration in the past
+            setcookie($this->tokenName, '', [
+                'expires' => time() - 3600,
+                'path' => '/',
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+            
+            return true;
+        }
+        
+        return false;
     }
 }

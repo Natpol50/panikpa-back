@@ -1,0 +1,14 @@
+.contact-section,
+.offres-section {
+    background-color: var(--background-nav);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+}
+
+.updates-container,
+.offres-container {
+    display: grid;
+    gap: 1.5rem;
+}

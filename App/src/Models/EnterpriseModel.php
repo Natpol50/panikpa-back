@@ -1,235 +1,320 @@
 <?php
-/*
 
- Use Guide :
+namespace App\Models;
 
- Here is the Enterprise model class
+use App\Services\Database;
+use App\Exceptions\ModelException;
+use PDO;
+use PDOException;
 
- without an id, you can :
-
- - create an enterprise by giving an array : createEnteprise(data) /!\ You must include critical informations, more details on the function itself
- 
- - get all the datas of all the enterprises : getAllEnterprise
-
-
- With an id, you can :
-
- By giving and id of the enterprise :
- 
- - Return an array with all of it's data : getEnterpriseById(id)
-
- - Modify it's data, by also giving an array (please you must make sure your array fielnames are coherent with the BDD) : updateEnterprise(id,array)
-
- - Delete one Enterprise : deleteEnterprise(id)
-
- 
-
-
-
-*/
-class EnterpriseModel{
-    private Database $database;
-
-    public function __construct(){
-        $this->database = Database::getInstance(); // We get the instance of our database
-    } 
-
-    /* La fonction de création de l'entreprise, ne dois être utilisable que par un admin
-    //
-    // Structure du tableau d'entrée : (doit repecter les noms de la table de la BDD)
-    //
-    //
-    //  "enterprise_name"
-    //  "enterprise_phone"
-    //  "enterprise_description_url" // Optionnel pas de description par défaux
-    //  "enterprise_email"
-    //  "enterprise_photo_url" // Optionnel pas d'images par défaux
-    //  "enterprise_site"      // Optionnel pas de site par défaux
-    //
-    // 
-    // 
-    */
-    public function createEnterprise(array $data){
-
-        // Needed
-
-        if(empty($data["enterprise_name"]) || empty($data["enterprise_phone"]) || empty($data["enterprise_email"])){
-            throw new Exception("Le formulaire de création donné est incomplet");
-        }
-
-        else{
-
-        $name_to_register = $data["enterprise_name"];
-
-         $email_to_register = $data["enterprise_email"];
-
-         $phone_to_register = $data["enterprise_phone"];
-        }
-
-        // Optionnal
-
-        if(!empty($data["enterprise_description_url"])){
-            $description_url_to_register = $data["enterprise_description_url"];
-        }
-        else{
-            $description_url_to_register = "";
-        }
-
-        if(!empty($data["enterprise_photo_url"])){
-            $photo_url_to_register = $data["enterprise_photo_url"];
-        }
-        else{
-            $photo_url_to_register = "";
-        }
-
-        if(!empty($data["enterprise_site"])){
-            $site_to_register = $data["enterprise_site"];
-        }
-        else{
-            $site_to_register = "";
-        }
-
-        // The query
-
-        try{
-        $query = "
-        INSERT INTO Enterprise(enterprise_name,enterprise_phone,enterprise_description_url,enterprise_email,enterprise_photo_url,enterprise_site)
-        VALUES(:enterprise_name,:enterprise_phone,:enterprise_description_url,:enterprise_email,:enterprise_photo_url,:enterprise_site)
-        ";
-
-        $stmt = $this->database->prepare($query);
-
-        $stmt->execute([
-            ":enterprise_name"=> $name_to_register,
-            ":enterprise_phone"=> $phone_to_register,
-            ":enterprise_description_url"=> $description_url_to_register,
-            ":enterprise_email"=> $email_to_register,
-            ":enterprise_photo_url"=> $photo_url_to_register,
-            ":enterprise_site"=> $site_to_register
-        ]);
-
-        }catch(PDOException $e){
-            throw new Exception("Fatal error when creating the enterprise :".$e->getMessage());
-        }
-
-
-        }
-
-
-    public function getEnterpriseById($enterprise_id){
-        try{
-            $query = "SELECT * FROM Enterprise WHERE id_enterprise = :enterprise_id";
-
-            $stmt = $this->database->prepare($query);
-
-            $stmt->execute([":enterprise_id"=> $enterprise_id]);
-
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            $stmt->closeCursor();
-
-            return $result;
-
-        }catch(PDOException $e){
-            throw new Exception("error, the enterprise couldn't be fetched".$e->getMessage());
-        }
-    }
-
-    public function getAllEnterprise(){
-        try{
-            $query = "SELECT * FROM Enterprise";
-
-            $stmt = $this->database->prepare($query);
-
-            $stmt->execute([]);
-
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            $stmt->closeCursor(); // Closes the connection and free it for another request
-
-            return $result;
-
-        }catch(PDOException $e){
-            throw new Exception("error, the enterprises couldn't be fetched ".$e->getMessage());
-        }
-    }
-
-    // The array in parameter must respect the database fields
+/**
+ * EnterpriseModel - Enterprise data management
+ * 
+ * This model handles CRUD operations for enterprise entities.
+ */
+class EnterpriseModel
+{
+    private PDO $database;
     
-    public function updateEnterprise(int $enterprise_id, array $data_to_modify){
-
-        $previous_data = $this->getEnterpriseById($enterprise_id);  
-
-         // merging the arrays to update
-
-         // The base
-            $updated_data = $previous_data;
-
-        // If the value isn't null in a said field, it replaces it
-        foreach ($data_to_modify as $key => $value) {
-               if ($value !== null) {
-                      $updated_data[$key] = $value;
-                    }
-           }
-         
-
-         try{
-
-         $query = "
-         UPDATE Enterprise SET
-         enterprise_name = :enterprise_name,
-         enterprise_phone = :enterprise_phone,
-         enterprise_description_url = :enterprise_description_url,
-         enterprise_site = :enterprise_site,
-         enterprise_email = :enterprise_email,
-         enterprise_photo_url = :enterprise_photo_url
-         WHERE id_enterprise = :enterprise_id";
-
-         $stmt = $this->database->prepare($query);
-
-         $stmt->execute(
-            [
-              ":enterprise_name"=>            $updated_data["enterprise_name"],
-              ":enterprise_phone"=>           $updated_data["enterprise_phone"],
-              ":enterprise_description_url"=> $updated_data["enterprise_description_url"],
-              ":enterprise_site"=>            $updated_data["enterprise_site"],
-              ":enterprise_email"=>           $updated_data["enterprise_email"],
-              ":enterprise_photo_url"=>       $updated_data["enterprise_photo_url"],
-              ":enterprise_id"=>              $updated_data["id_enterprise"]
+    /**
+     * Create a new EnterpriseModel instance
+     * 
+     * @param Database $database Database service
+     */
+    public function __construct(Database $database)
+    {
+        $this->database = $database->getConnection();
+    }
+    
+    /**
+     * Create a new enterprise
+     * 
+     * @param array $data Enterprise data
+     * @return int ID of the created enterprise
+     * @throws ModelException If creation fails or required fields are missing
+     */
+    public function createEnterprise(array $data): int
+    {
+        // Validate required fields
+        if (empty($data["enterpriseName"]) || 
+            empty($data["enterprisePhone"]) || 
+            empty($data["enterpriseEmail"])) {
+            throw new ModelException("Missing required fields for enterprise creation");
+        }
+        
+        // Set default values for optional fields
+        $descriptionUrl = $data["enterpriseDescriptionUrl"] ?? "";
+        $photoUrl = $data["enterprisePhotoUrl"] ?? "";
+        $site = $data["enterpriseSite"] ?? "";
+        
+        try {
+            $query = "
+                INSERT INTO Enterprise(
+                    enterprise_name, 
+                    enterprise_phone, 
+                    enterprise_description_url, 
+                    enterprise_email, 
+                    enterprise_photo_url, 
+                    enterprise_site
+                ) VALUES (
+                    :enterpriseName, 
+                    :enterprisePhone, 
+                    :enterpriseDescriptionUrl, 
+                    :enterpriseEmail, 
+                    :enterprisePhotoUrl, 
+                    :enterpriseSite
+                )
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            
+            $stmt->execute([
+                ":enterpriseName" => $data["enterpriseName"],
+                ":enterprisePhone" => $data["enterprisePhone"],
+                ":enterpriseDescriptionUrl" => $descriptionUrl,
+                ":enterpriseEmail" => $data["enterpriseEmail"],
+                ":enterprisePhotoUrl" => $photoUrl,
+                ":enterpriseSite" => $site
             ]);
-
+            
+            return (int)$this->database->lastInsertId();
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to create enterprise: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get enterprise by ID
+     * 
+     * @param int $enterpriseId ID of the enterprise
+     * @return array|null Enterprise data or null if not found
+     * @throws ModelException If retrieval fails
+     */
+    public function getEnterpriseById(int $enterpriseId): ?array
+    {
+        try {
+            $query = "SELECT * FROM Enterprise WHERE id_enterprise = :enterpriseId";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ?: null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch enterprise: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get all enterprises
+     * 
+     * @param int $limit Maximum number of enterprises to return (0 for all)
+     * @param int $offset Starting position for pagination
+     * @return array All enterprises
+     * @throws ModelException If retrieval fails
+     */
+    public function getAllEnterprises(int $limit = 0, int $offset = 0): array
+    {
+        try {
+            $query = "SELECT * FROM Enterprise";
+            
+            // Add pagination if limit is specified
+            if ($limit > 0) {
+                $query .= " LIMIT :limit OFFSET :offset";
+            }
+            
+            $stmt = $this->database->prepare($query);
+            
+            // Bind pagination parameters if needed
+            if ($limit > 0) {
+                $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+                $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            }
+            
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch enterprises: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Search enterprises by criteria
+     * 
+     * @param array $criteria Search criteria
+     * @param int $limit Maximum number of results
+     * @param int $offset Starting position for pagination
+     * @return array Matching enterprises
+     * @throws ModelException If search fails
+     */
+    public function searchEnterprises(array $criteria, int $limit = 10, int $offset = 0): array
+    {
+        try {
+            $query = "SELECT * FROM Enterprise WHERE 1=1";
+            $params = [];
+            
+            // Add search criteria
+            if (!empty($criteria['name'])) {
+                $query .= " AND enterprise_name LIKE :name";
+                $params[':name'] = '%' . $criteria['name'] . '%';
+            }
+            
+            if (!empty($criteria['email'])) {
+                $query .= " AND enterprise_email LIKE :email";
+                $params[':email'] = '%' . $criteria['email'] . '%';
+            }
+            
+            // Add pagination
+            $query .= " LIMIT :limit OFFSET :offset";
+            $params[':limit'] = $limit;
+            $params[':offset'] = $offset;
+            
+            $stmt = $this->database->prepare($query);
+            
+            // Bind all parameters
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+            
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to search enterprises: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Update an enterprise
+     * 
+     * @param int $enterpriseId ID of the enterprise
+     * @param array $data New enterprise data
+     * @return bool Success status
+     * @throws ModelException If update fails
+     */
+    public function updateEnterprise(int $enterpriseId, array $data): bool
+    {
+        try {
+            $currentData = $this->getEnterpriseById($enterpriseId);
+            
+            if (!$currentData) {
+                throw new ModelException("Enterprise not found");
+            }
+            
+            // Merge the arrays to update, keeping only non-null values
+            $updatedData = array_merge(
+                $currentData, 
+                array_filter($data, fn($value) => $value !== null)
+            );
+            
+            $query = "
+                UPDATE Enterprise SET
+                    enterprise_name = :enterpriseName,
+                    enterprise_phone = :enterprisePhone,
+                    enterprise_description_url = :enterpriseDescriptionUrl,
+                    enterprise_site = :enterpriseSite,
+                    enterprise_email = :enterpriseEmail,
+                    enterprise_photo_url = :enterprisePhotoUrl
+                WHERE id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            
+            $stmt->execute([
+                ":enterpriseName" => $updatedData["enterprise_name"],
+                ":enterprisePhone" => $updatedData["enterprise_phone"],
+                ":enterpriseDescriptionUrl" => $updatedData["enterprise_description_url"],
+                ":enterpriseSite" => $updatedData["enterprise_site"],
+                ":enterpriseEmail" => $updatedData["enterprise_email"],
+                ":enterprisePhotoUrl" => $updatedData["enterprise_photo_url"],
+                ":enterpriseId" => $enterpriseId
+            ]);
+            
             return true;
-        }catch(PDOException $e){
-            throw new Exception("error in updating the enterprise :". $e->getMessage());
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to update enterprise: " . $e->getMessage());
         }
     }
-
-    public function deleteEnterprise(int $enterprise_id){
-       
-        // If the enterprise isn't within our database
-        if(!$this->getEnterpriseById($enterprise_id)){
-            throw new Exception("The enterprise doesn't exist, dumping the request");
+    
+    /**
+     * Delete an enterprise
+     * 
+     * @param int $enterpriseId ID of the enterprise
+     * @return bool Success status
+     * @throws ModelException If deletion fails
+     */
+    public function deleteEnterprise(int $enterpriseId): bool
+    {
+        try {
+            if (!$this->getEnterpriseById($enterpriseId)) {
+                throw new ModelException("Enterprise does not exist");
+            }
+            
+            $query = "DELETE FROM Enterprise WHERE id_enterprise = :enterpriseId";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to delete enterprise: " . $e->getMessage());
         }
-
-
-        try{
-        $query = "
-        DELETE FROM Enterprise
-        WHERE id_enterprise = :enterprise_id";
-
-        $stmt = $this->database->prepare($query);
-
-
-        $stmt->execute([":enterprise_id"=> $enterprise_id]);
-
-        return true;
-        }catch(PDOException $e){
-            throw new Exception("Unable to delete the enterprise". $e->getMessage());
-        }
-
-
     }
-
-
-
+    
+    /**
+     * Get average rating for an enterprise
+     * 
+     * @param int $enterpriseId ID of the enterprise
+     * @return float|null Average rating or null if no ratings
+     * @throws ModelException If rating retrieval fails
+     */
+    public function getAverageRating(int $enterpriseId): ?float
+    {
+        try {
+            $query = "
+                SELECT AVG(grade_UE) as average_rating
+                FROM Comment
+                WHERE id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result && $result['average_rating'] ? (float)$result['average_rating'] : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get enterprise rating: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Count applications to enterprise offers
+     * 
+     * @param int $enterpriseId ID of the enterprise
+     * @return int Number of applications
+     * @throws ModelException If count fails
+     */
+    public function countApplications(int $enterpriseId): int
+    {
+        try {
+            $query = "
+                SELECT COUNT(*) as application_count
+                FROM Interaction i
+                JOIN Offer o ON i.id_offer = o.id_offer
+                WHERE o.id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? (int)$result['application_count'] : 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to count enterprise applications: " . $e->getMessage());
+        }
+    }
 }

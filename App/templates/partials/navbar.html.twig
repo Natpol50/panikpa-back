@@ -1,0 +1,24 @@
+<nav class="navbar">
+    <div class="nav-left">
+        <img src="/assets/img/PANIKPA.png" alt="Logo PANIKPA" class="logo">
+        <span class="site-name">PANIKPA</span>
+    </div>
+
+    <button class="menu-toggle" aria-label="Menu principal" aria-controls="primary-menu" aria-expanded="false">
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+        <span class="menu-toggle__bar"></span>
+    </button>
+
+    <div class="nav-right" id="primary-menu">
+        <span class="nav-links"><a href="/" {% if app.request.getPathInfo() == '/' %}class="selected"{% endif %}>Accueil</a></span>
+        <span class="nav-links"><a href="/entreprises" {% if app.request.getPathInfo() starts with '/entreprises' %}class="selected"{% endif %}>Entreprises</a></span>
+        <span class="nav-links"><a href="/offres" {% if app.request.getPathInfo() starts with '/offres' %}class="selected"{% endif %}>Offres</a></span>
+        {% if request.isAuthenticated() %}
+            <span class="nav-links"><a href="/wishlist" {% if app.request.getPathInfo() starts with '/wishlist' %}class="selected"{% endif %}>Wishlist</a></span>
+            <span class="nav-links"><a href="/interactions" {% if app.request.getPathInfo() starts with '/interactions' %}class="selected"{% endif %}>Candidatures</a></span>
+        {% else %}
+            <span class="nav-links"><a href="/login" {% if app.request.getPathInfo() starts with '/login' %}class="selected"{% endif %}>Connexion</a></span>
+        {% endif %}
+    </div>
+</nav>

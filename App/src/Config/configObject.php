@@ -1,27 +1,25 @@
 <?php
 
-
 namespace App\Config;
 
 /**
- * ConfigObject - Provides access to configuration variables
+ * ConfigObject - Implementation of ConfigInterface
  * 
- * This class is used to provide access to the configuration variables
+ * This class provides access to configuration variables
  * It should only be instantiated by the ConfigManager class
  */
-
-class ConfigObject
+class ConfigObject implements ConfigInterface
 {
-    private $accessibleVariables;
+    private array $variables;
     
     /**
      * Constructor
      * 
-     * @param array $accessibleVariables Variables this instance can access
+     * @param array $variables Variables this instance can access
      */
-    public function __construct(array $accessibleVariables)
+    public function __construct(array $variables)
     {
-        $this->accessibleVariables = $accessibleVariables;
+        $this->variables = $variables;
     }
     
     /**
@@ -33,7 +31,7 @@ class ConfigObject
      */
     public function get(string $key, $default = null)
     {
-        return $this->accessibleVariables[$key] ?? $default;
+        return $this->variables[$key] ?? $default;
     }
     
     /**
@@ -44,7 +42,7 @@ class ConfigObject
      */
     public function has(string $key): bool
     {
-        return isset($this->accessibleVariables[$key]);
+        return isset($this->variables[$key]);
     }
     
     /**
@@ -54,6 +52,6 @@ class ConfigObject
      */
     public function all(): array
     {
-        return $this->accessibleVariables;
+        return $this->variables;
     }
 }

@@ -1,0 +1,22 @@
+[Tue Apr 01 00:27:11.135643 2025] [php:notice] [pid 17352:tid 1980] [client 127.0.0.1:57416] Class "App\\Core\\Router" not found\n#0 {main}
+[Tue Apr 01 00:27:11.190611 2025] [php:notice] [pid 17352:tid 1980] [client 127.0.0.1:57417] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 00:27:15.385227 2025] [php:notice] [pid 17352:tid 1972] [client 127.0.0.1:57418] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 00:27:16.102307 2025] [php:notice] [pid 17352:tid 1964] [client 127.0.0.1:57419] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 00:27:16.559802 2025] [php:notice] [pid 17352:tid 1980] [client 127.0.0.1:57435] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 00:27:16.946929 2025] [php:notice] [pid 17352:tid 1940] [client 127.0.0.1:57436] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 00:27:50.347627 2025] [php:notice] [pid 1560:tid 1984] [client 127.0.0.1:57509] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 09:15:05.630884 2025] [php:notice] [pid 14720:tid 1980] [client 127.0.0.1:51953] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 09:15:06.338342 2025] [php:notice] [pid 14720:tid 1980] [client 127.0.0.1:51958] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 09:15:06.818377 2025] [php:notice] [pid 14720:tid 1980] [client 127.0.0.1:51961] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 09:15:06.992001 2025] [php:notice] [pid 14720:tid 1980] [client 127.0.0.1:51963] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/
+[Tue Apr 01 09:15:11.322246 2025] [php:notice] [pid 14720:tid 1980] [client 127.0.0.1:51972] Class "App\\Core\\Router" not found\n#0 {main}
+[Tue Apr 01 09:26:31.652262 2025] [php:notice] [pid 35424:tid 1980] [client 127.0.0.1:53531] Class "App\\Core\\Router" not found\n#0 {main}
+[Tue Apr 01 09:26:32.774680 2025] [php:notice] [pid 35424:tid 1980] [client 127.0.0.1:53535] Class "App\\Core\\Router" not found\n#0 {main}
+[Tue Apr 01 09:27:36.433505 2025] [php:notice] [pid 16732:tid 1980] [client 127.0.0.1:53666] Class "App\\Core\\Router" not found\n#0 {main}, referer: http://127.0.0.1:50/assets/css/global.css
+[Tue Apr 01 09:42:16.885123 2025] [php:notice] [pid 16732:tid 1980] [client 127.0.0.1:55585] Class "App\\Config\\ConfigManager" not found\n#0 {main}
+[Tue Apr 01 09:42:26.439223 2025] [php:notice] [pid 34936:tid 1984] [client 127.0.0.1:55610] Class "App\\Config\\ConfigManager" not found\n#0 {main}
+[Tue Apr 01 09:42:27.480318 2025] [php:notice] [pid 34936:tid 1984] [client 127.0.0.1:55612] Class "App\\Config\\ConfigManager" not found\n#0 {main}
+[Tue Apr 01 09:43:39.889423 2025] [php:notice] [pid 34936:tid 1984] [client 127.0.0.1:55764] Class "App\\Config\\ConfigManager" not found\n#0 {main}
+[Tue Apr 01 09:43:40.597129 2025] [php:notice] [pid 34936:tid 1984] [client 127.0.0.1:55766] Class "App\\Config\\ConfigManager" not found\n#0 {main}
+[Tue Apr 01 09:43:40.966205 2025] [php:notice] [pid 34936:tid 1984] [client 127.0.0.1:55768] Class "App\\Config\\ConfigManager" not found\n#0 {main}
+[Tue Apr 01 09:43:41.144898 2025] [php:notice] [pid 34936:tid 1984] [client 127.0.0.1:55769] Class "App\\Config\\ConfigManager" not found\n#0 {main}

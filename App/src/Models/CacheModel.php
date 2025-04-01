@@ -1,125 +1,169 @@
 <?php
-/*
 
-        The Class to get information usefull for the Cache from the database (list of permissions per role)
+namespace App\Models;
 
+use App\Services\Database;
+use App\Exceptions\ModelException;
+use PDO;
+use PDOException;
 
-*/
-
-class CacheModel{
+/**
+ * CacheModel - Database operations for cache-related data
+ * 
+ * Handles database operations for role permissions and other cacheable data
+ */
+class CacheModel
+{
     private PDO $database;
-
-    public function __construct(){
-        $this->database = Database::getInstance();
-    }
-
-    // Returns an array looking like this : [user,pilote,enterprise,...] to list the diffrent roles
-
-    public function fetchRoles(){
-
-        //Will store the roles
-        $return_array = [];
-        $query = "
-        SELECT acctype_name 
-        FROM Acctype";
-
-        $stmt = $this->database->prepare($query);
-
-        $stmt->execute();
-
-        $list = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        $stmt->closeCursor();
-
-        foreach ($list as $role) {
-            $return_array[] = $role["acctype_name"];
-        }
     
-        return $return_array;
-    }
-
-    //   Used to get the permissions of a said role
-
-    public function getRolePermission($role_id){
-
-      try{
-        $query = "
-        SELECT * 
-        FROM Acctype
-        WHERE id_acctype = :id_acctype";
-
-        $stmt = $this->database->prepare($query);
-
-        $stmt->execute([
-            ":acctype_name"=> $role_id
-        ]);
-
-        $role_list = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $stmt->closeCursor();
-
-        if($role_list){
-            //Returns the list of permissions fetched 
-            return $role_list;
-        }
-
-        else {
-            throw new Exception("The role doesn't seems to exist");
-        }
-      }catch(PDOException $e){
-         throw new Exception("Error while fetching the permission for the role number  ". $role_id ." : ". $e->getMessage());
-    }
-    }
-
-    // Now fetchs the information that will be calculated for the cache, such as the number of comments, their rating, the number of people that have applied for an offer
-
-    public function getNumberOfApplicant($offer_id){
-
-        try{
-        $query = "
-        SELECT COUNT(*) as interaction_count
-        FROM Interaction
-        WHERE id_offer = :id_offer";
-
-        $stmt = $this->database->prepare($query);
-
-
-        $stmt->execute([':id_offer' => $offer_id]);
-        $number_of_applicant = $stmt->fetchColumn(); // Récupère directement la valeur du C
-
-        return $number_of_applicant;
-        }catch(PDOException $e){
-            throw new Exception("Unable to fetch the number of applicants :" . $e->getMessage());
+    /**
+     * Create a new CacheModel instance
+     * 
+     * @param Database|null $database Database service
+     */
+    public function __construct(?Database $database = null)
+    {
+        if ($database) {
+            $this->database = $database->getConnection();
+        } else {
+            // This is a fallback, but dependency injection is preferred
+            $dbInstance = new Database();
+            $this->database = $dbInstance->getConnection();
         }
     }
-
-    // For the average grade of an enterprise
-    public function getEnterpriseReview($Enterprise_id){
-
-        $query = "
-        SELECT grade_UE
-        FROM Comment
-        WHERE id_enterprise = :id_enterprise";
-
-        $stmt = $this->database->prepare($query);
-
-        $stmt->execute(
-            [
-                ":id_enterprise" => $Enterprise_id
-        ]);
-
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        if($result){
-            return $result;
-        }
-        else{
-            return false; // Pas encore de commentaires
-        }
-    }
-
-
     
-
-
+    /**
+     * Fetch all role names
+     * 
+     * @return array List of role names
+     * @throws ModelException If fetch fails
+     */
+    public function fetchRoles(): array
+    {
+        try {
+            $query = "SELECT acctype_name FROM Acctype";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute();
+            
+            $roles = [];
+            while ($role = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $roles[] = $role['acctype_name'];
+            }
+            
+            return $roles;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch roles: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get permissions for a specific role
+     * 
+     * @param int $roleId Role ID
+     * @return array Role permissions
+     * @throws ModelException If role not found or fetch fails
+     */
+    public function getRolePermission(int $roleId): array
+    {
+        try {
+            $query = "SELECT * FROM Acctype WHERE id_acctype = :roleId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':roleId', $roleId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $roleData = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$roleData) {
+                throw new ModelException("Role with ID $roleId not found");
+            }
+            
+            return $roleData;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch role permissions: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get number of applicants for an offer
+     * 
+     * @param int $offerId Offer ID
+     * @return int Number of applicants
+     * @throws ModelException If count fails
+     */
+    public function getNumberOfApplicants(int $offerId): int
+    {
+        try {
+            $query = "
+                SELECT COUNT(*) as applicant_count
+                FROM Interaction
+                WHERE id_offer = :offerId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':offerId', $offerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? (int)$result['applicant_count'] : 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to count applicants: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get enterprise review ratings
+     * 
+     * @param int $enterpriseId Enterprise ID
+     * @return array|null Array of ratings or null if none found
+     * @throws ModelException If fetch fails
+     */
+    public function getEnterpriseReviews(int $enterpriseId): ?array
+    {
+        try {
+            $query = "
+                SELECT grade_UE
+                FROM Comment
+                WHERE id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $grades = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            return !empty($grades) ? $grades : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch enterprise reviews: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Get average enterprise rating
+     * 
+     * @param int $enterpriseId Enterprise ID
+     * @return float|null Average rating or null if no ratings
+     * @throws ModelException If calculation fails
+     */
+    public function getAverageEnterpriseRating(int $enterpriseId): ?float
+    {
+        try {
+            $query = "
+                SELECT AVG(grade_UE) as average_rating
+                FROM Comment
+                WHERE id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result && $result['average_rating'] ? (float)$result['average_rating'] : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to calculate average rating: " . $e->getMessage());
+        }
+    }
 }

@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Connexion - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-header">
+        <img src="/assets/img/PANIKPA.png" alt="Logo PANIKPA" class="logo">
+        <h1>Connexion</h1>
+        <p>Veuillez vous connecter pour accéder à votre compte</p>
+    </div>
+
+    {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/login" class="login-form">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password">
+        </div>
+
+        <div class="remember-me">
+            <input type="checkbox" id="remember_me" name="remember_me">
+            <label for="remember_me">Se souvenir de moi</label>
+        </div>
+
+        <button type="submit" class="login-btn">Se connecter</button>
+    </form>
+
+    <div class="login-footer">
+        <p>Vous n'avez pas de compte ? <a href="/new-account">Créer un compte</a></p>
+        <p><a href="/forgot-password">Mot de passe oublié ?</a></p>
+    </div>
+</div>
+{% endblock %}

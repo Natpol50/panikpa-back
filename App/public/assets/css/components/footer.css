@@ -1,0 +1,117 @@
+:root {
+    --footer-max-width: 1200px;
+    --footer-padding: 2rem;
+    --footer-gap: 2rem;
+    --footer-section-gap: 1rem;
+    --footer-bottom-margin: 2rem;
+    --footer-bottom-padding: 1rem;
+    --footer-font-size: 0.9rem;
+    --footer-border-color: var(--real-grey);
+}
+
+/* Ensure the body and html take up the full height of the viewport */
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main content area should grow to fill available space */
+main {
+    flex: 1; /* This makes the main content grow to fill the remaining space */
+}
+
+/* Footer container */
+.site-footer {
+    background-color: var(--background-nav);
+    padding: var(--footer-padding) 0;
+    border-top: 1px solid var(--footer-border-color);
+    margin-bottom: 0; /* Push footer to the bottom */
+    transition: 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content horizontally */
+}
+
+/* Footer content wrapper */
+.footer-content {
+    width: 100%;
+    max-width: var(--footer-max-width);
+    padding: 0 var(--footer-padding);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--footer-gap);
+}
+
+/* Footer sections */
+.footer-section h3 {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    margin-bottom: var(--footer-section-gap);
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-section ul li a {
+    color: var(--onyx);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-section ul li a:hover {
+    color: var(--primary-color);
+}
+
+/* Social links */
+.social-links {
+    display: flex;
+    gap: var(--footer-section-gap);
+}
+
+.social-links a {
+    color: var(--onyx);
+    transition: color 0.2s ease;
+}
+
+.social-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Footer bottom section */
+.footer-bottom {
+    text-align: center;
+    margin-top: var(--footer-bottom-margin);
+    padding-top: var(--footer-bottom-padding);
+    border-top: 1px solid var(--footer-border-color);
+    font-size: var(--footer-font-size);
+    color: var(--footer-border-color);
+    width: 100%; /* Ensure it spans the full width */
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjust grid for smaller screens */
+        gap: 1.5rem;
+    }
+
+    .footer-section h3 {
+        font-size: 1rem; /* Smaller font size for smaller screens */
+    }
+
+    .footer-section ul li a {
+        font-size: 0.9rem; /* Smaller font size for links */
+    }
+
+    .footer-bottom {
+        font-size: 0.8rem; /* Smaller font size for footer bottom text */
+    }
+}

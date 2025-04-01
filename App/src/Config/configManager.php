@@ -2,9 +2,6 @@
 
 namespace App\Config;
 
-require_once __DIR__ . '/configObject.php';
-require_once __DIR__ . '/../../vendor/autoload.php';
-
 /**
  * ConfigManager - Secure configuration management using Reflection API
  * 
@@ -13,22 +10,22 @@ require_once __DIR__ . '/../../vendor/autoload.php';
  */
 class ConfigManager
 {
-    private static $instance = null;
-    private $allVariables = [];
-    private $accessMap = [];
+    private static ?ConfigManager $instance = null;
+    private array $variables = [];
+    private array $accessMap = [];
     
-    // private $accessLog = [];
-    
-              
-    private function __construct() //Private constructor to prevent direct instantiation
+    /**
+     * Private constructor to prevent direct instantiation
+     */
+    private function __construct()
     {
         // Load environment variables using PHP dotenv
-        $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . '/../../');
+        $dotenv = \Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
         $dotenv->load();
         
         // Store all variables in our private array
         foreach ($_ENV as $key => $value) {
-            $this->allVariables[$key] = $value;
+            $this->variables[$key] = $value;
         }
         
         $this->initializeAccessMap();
@@ -37,24 +34,33 @@ class ConfigManager
     /**
      * Define which classes can access which variables
      */
-    private function initializeAccessMap()
+    private function initializeAccessMap(): void
     {
         // Define access permissions - which classes can access which env variables
         $this->accessMap = [
-            'Database' => ['DB_HOST', 'DB_USER', 'DB_PASSWD', 'DB_NAME','DB_PORT'],  // Only useful one for now, others are not used and examples.
-            'Tokenconfig' => ['JWT_SECRET', 'JWT_NAME']
+            'App\\Services\\Database' => [
+                'DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME', 'DB_PORT'
+            ],
+            'App\\Services\\TokenService' => [
+                'JWT_SECRET', 'JWT_NAME', 'JWT_EXPIRY', 'JWT_REFRESH_EXPIRY'
+            ],
+            'App\\Core\\Application' => [
+                'APP_ENV', 'APP_DEBUG', 'APP_URL', 'STATIC_URL'
+            ]
         ];
     }
     
-
+    /**
+     * Prevent cloning of the singleton instance
+     */
+    private function __clone(): void {}
     
-
-    private function __clone(): void {} // Prevent cloning of the instance by making it private
-    
-
-    public function __wakeup(): never // Prevent unserializing of the instance (recreating it from serialized data, AKA string)
+    /**
+     * Prevent unserializing of the singleton instance
+     */
+    public function __wakeup(): void
     {
-        throw new \Exception(message: "Cannot unserialize a singleton");
+        throw new \Exception("Cannot unserialize singleton");
     }
     
     /**
@@ -62,7 +68,7 @@ class ConfigManager
      * 
      * @return ConfigManager The singleton instance
      */
-    public static function getInstance(): mixed
+    public static function getInstance(): self
     {
         if (self::$instance === null) {
             self::$instance = new self();
@@ -73,19 +79,27 @@ class ConfigManager
     /**
      * Get configuration access for a specific object using Reflection
      * 
-     * @param object $callingObject The object requesting configuration
-     * @return ConfigObject A restricted configuration access object
+     * @param object $service The object requesting configuration
+     * @return ConfigInterface A restricted configuration access object
      * @throws \Exception If the calling class is not authorized
      */
-    public function getConfigFor(object $callingObject): Configobject
+    public function getConfigFor(object $service): ConfigInterface
     {
         // Use Reflection to get the actual class of the calling object
-        $reflection = new \ReflectionObject($callingObject);
+        $reflection = new \ReflectionObject($service);
         $className = $reflection->getName();
+        
+        // Get parent class if exists - this helps with inheritance
+        if (!isset($this->accessMap[$className])) {
+            $parentClass = $reflection->getParentClass();
+            if ($parentClass) {
+                $className = $parentClass->getName();
+            }
+        }
         
         // Check if this class is allowed in the access map
         if (!isset($this->accessMap[$className])) {
-            throw new \Exception("Class '{$className}' is not authorized to access configuration");
+            throw new \Exception("Class '$className' is not authorized to access configuration");
         }
         
         // Get the allowed keys for this class
@@ -94,50 +108,12 @@ class ConfigManager
         
         // Filter the variables based on allowed keys
         foreach ($allowedKeys as $key) {
-            if (isset($this->allVariables[$key])) {
-                $accessibleVariables[$key] = $this->allVariables[$key];
+            if (isset($this->variables[$key])) {
+                $accessibleVariables[$key] = $this->variables[$key];
             }
         }
         
-        // Log this access attempt (optional, for auditing) [DISABLED FOR NOW]
-        // $this->logAccess(className: $className, keys: $allowedKeys);
-        
-        // Return a ConfigAccess object with only the allowed variables
-        return new ConfigObject(accessibleVariables: $accessibleVariables);
+        // Return a ConfigObject with only the allowed variables
+        return new ConfigObject($accessibleVariables);
     }
-
-    /**
-     * Remove a class from the access map, could be useful as a security measure, could also maybe create a new bug
-     * 
-     * @param string $className The class name to remove
-     * @return bool True if removal was successful
-     */
-    public function revokeClassAccess(string $className): bool
-    {
-        if (isset($this->accessMap[$className])) {
-            unset($this->accessMap[$className]);
-            return true;
-        }
-        return false;
-    }
-    
-    /*
-    Log access attempts for auditing purposes [DISABLED FOR NOW]
-    
-    @param string $className Class that attempted access
-    @param array $keys Keys that were accessed
-
-
-    private function logAccess(string $className, array $keys): void
-    {
-        $this->accessLog[] = [
-            'timestamp' => date('Y-m-d H:i:s'),
-            'class' => $className,
-            'keys' => $keys,
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
-        ];
-        
-    }
-    */
 }
-

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur - PANIKPA</title>
+    <link rel="stylesheet" href="/assets/css/global.css">
+    <link rel="icon" href="/assets/img/PANIKPA.ico" type="image/x-icon">
+    <style>
+        .error-container {
+            max-width: 800px;
+            margin: 4rem auto;
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+        
+        .error-code {
+            font-size: 6rem;
+            font-weight: bold;
+            color: var(--tertiary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .error-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--onyx);
+        }
+        
+        .error-message {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: var(--real-grey);
+        }
+        
+        .home-button {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: filter 0.3s ease;
+        }
+        
+        .home-button:hover {
+            filter: brightness(0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-code">Erreur</div>
+        <h1 class="error-title">Une erreur est survenue</h1>
+        <p class="error-message">Nous sommes désolés, une erreur est survenue lors du traitement de votre demande.</p>
+        <a href="/" class="home-button">Retour à l'accueil</a>
+    </div>
+</body>
+</html>
