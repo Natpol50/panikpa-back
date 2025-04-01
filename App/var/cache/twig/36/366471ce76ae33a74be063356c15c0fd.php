@@ -14,8 +14,8 @@ use Twig\Source;
 use Twig\Template;
 use Twig\TemplateWrapper;
 
-/* auth/login.html.twig */
-class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
+/* auth/register.html.twig */
+class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
 {
     private Source $source;
     /**
@@ -31,7 +31,6 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
 
         $this->blocks = [
             'title' => [$this, 'block_title'],
-            'stylesheets' => [$this, 'block_stylesheets'],
             'content' => [$this, 'block_content'],
         ];
     }
@@ -45,7 +44,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
     protected function doDisplay(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        $this->parent = $this->loadTemplate("base.html.twig", "auth/login.html.twig", 1);
+        $this->parent = $this->loadTemplate("base.html.twig", "auth/register.html.twig", 1);
         yield from $this->parent->unwrap()->yield($context, array_merge($this->blocks, $blocks));
     }
 
@@ -56,7 +55,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
     public function block_title(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        yield "Connexion - ";
+        yield "Créer un compte - ";
         yield from $this->yieldParentBlock("title", $context, $blocks);
         yield from [];
     }
@@ -65,66 +64,67 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
     /**
      * @return iterable<null|scalar|\Stringable>
      */
-    public function block_stylesheets(array $context, array $blocks = []): iterable
-    {
-        $macros = $this->macros;
-        // line 6
-        yield "
-";
-        yield from [];
-    }
-
-    // line 9
-    /**
-     * @return iterable<null|scalar|\Stringable>
-     */
     public function block_content(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 10
+        // line 6
         yield "<div class=\"login-container\">
     <div class=\"login-header\">
         <img src=\"/assets/img/PANIKPA.png\" alt=\"Logo PANIKPA\" class=\"logo\">
-        <h1>Connexion</h1>
-        <p>Veuillez vous connecter pour accéder à votre compte</p>
+        <h1>Créer un compte</h1>
+        <p>Rejoignez notre plateforme pour accéder aux offres de stages</p>
     </div>
 
     ";
-        // line 17
+        // line 13
         if (($context["error"] ?? null)) {
-            // line 18
+            // line 14
             yield "    <div class=\"error-message\">
         ";
-            // line 19
+            // line 15
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["error"] ?? null), "html", null, true);
             yield "
     </div>
     ";
         }
-        // line 22
+        // line 18
         yield "
-    <form method=\"POST\" action=\"/login\" class=\"login-form\">
+    <form method=\"POST\" action=\"/new-account\" class=\"login-form\">
+        <div class=\"form-group\">
+            <label for=\"lastName\">Nom</label>
+            <input type=\"text\" id=\"lastName\" name=\"lastName\" required>
+        </div>
+
+        <div class=\"form-group\">
+            <label for=\"firstName\">Prénom</label>
+            <input type=\"text\" id=\"firstName\" name=\"firstName\" required>
+        </div>
+
         <div class=\"form-group\">
             <label for=\"email\">Email</label>
-            <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"VeryfunEmail@panikpa.com\" required autocomplete=\"email\">
+            <input type=\"email\" id=\"email\" name=\"email\" required>
+        </div>
+
+        <div class=\"form-group\">
+            <label for=\"phone\">Téléphone</label>
+            <input type=\"tel\" id=\"phone\" name=\"phone\" required>
         </div>
 
         <div class=\"form-group\">
             <label for=\"password\">Mot de passe</label>
-            <input type=\"password\" id=\"password\" name=\"password\" placeholder=\"V3rySecur3Pa\$\$word\" required autocomplete=\"current-password\">
+            <input type=\"password\" id=\"password\" name=\"password\" required minlength=\"8\">
         </div>
 
-        <div class=\"remember-me\">
-            <input type=\"checkbox\" id=\"remember_me\" name=\"remember_me\">
-            <label for=\"remember_me\">Se souvenir de moi</label>
+        <div class=\"form-group\">
+            <label for=\"confirmPassword\">Confirmer le mot de passe</label>
+            <input type=\"password\" id=\"confirmPassword\" name=\"confirmPassword\" required minlength=\"8\">
         </div>
 
-        <button type=\"submit\" class=\"login-btn\">Se connecter</button>
+        <button type=\"submit\" class=\"login-btn\">Créer mon compte</button>
     </form>
 
     <div class=\"login-footer\">
-        <p>Vous n'avez pas de compte ? <a href=\"/new-account\">Créer un compte</a></p>
-        <p><a href=\"/forgot-password\">Mot de passe oublié ?</a></p>
+        <p>Vous avez déjà un compte ? <a href=\"/login\">Se connecter</a></p>
     </div>
 </div>
 ";
@@ -136,7 +136,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
      */
     public function getTemplateName(): string
     {
-        return "auth/login.html.twig";
+        return "auth/register.html.twig";
     }
 
     /**
@@ -152,11 +152,11 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  105 => 22,  99 => 19,  96 => 18,  94 => 17,  85 => 10,  78 => 9,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
+        return array (  91 => 18,  85 => 15,  82 => 14,  80 => 13,  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
     {
-        return new Source("", "auth/login.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\auth\\login.html.twig");
+        return new Source("", "auth/register.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\auth\\register.html.twig");
     }
 }

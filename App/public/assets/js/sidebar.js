@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch and insert the sidebar HTML
-    fetch('/component/sidebar.html')
+    fetch('/Component/sidebar.html')
         .then(response => response.text())
         .then(data => {
             const mainElement = document.querySelector('main');
@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
             logoutButton.addEventListener('click', (e) => {
                 e.preventDefault();
                 console.log('Déconnexion...');
+                window.location.href = '/connexion.html';
             });
         }
 
@@ -89,5 +90,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.stopPropagation();
             });
         });
-    }
+    }    
 });

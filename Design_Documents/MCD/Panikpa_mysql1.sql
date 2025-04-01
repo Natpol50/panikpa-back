@@ -1,4 +1,5 @@
 -- Creating and using the database
+DROP DATABASE IF EXISTS PANIKPA;
 CREATE DATABASE IF NOT EXISTS PANIKPA;
 USE PANIKPA;
 
@@ -165,6 +166,17 @@ CREATE TABLE Wishlist(
     CONSTRAINT Wishlist_User_FK FOREIGN KEY (id_user) REFERENCES User(id_user)
 )ENGINE=InnoDB;
 
-CREATE USER 'server'@'%' identified by 'panikpa';
-GRANT ALL PRIVILEGES ON panikpa.* TO 'server'@'%' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
+-- Table: CompanyUsers
+CREATE TABLE CompanyUsers (
+	id_user         Varchar(255) NOT NULL,
+    id_enterprise   Varchar(3) NOT NULL,
+    CONSTRAINT Companyusers_PK PRIMARY KEY (id_enterprise,id_user),
+    CONSTRAINT CompanyUsers_enterprise_FK FOREIGN KEY (id_enterprise) REFERENCES Offer(id_enterprise),
+    CONSTRAINT CompanyUsers_user_FK FOREIGN KEY (id_user) REFERENCES User(id_user)
+)ENGINE=INNODB;
+
+DROP USER IF EXISTS 'server'@'%';
+CREATE USER 'server'@'%' IDENTIFIED BY 'panikpa';
+GRANT ALL PRIVILEGES ON PANIKPA.* TO 'server'@'%' WITH GRANT OPTION;
+SELECT user, host FROM mysql.user WHERE user = 'server';
+SHOW GRANTS FOR 'server'@'%';

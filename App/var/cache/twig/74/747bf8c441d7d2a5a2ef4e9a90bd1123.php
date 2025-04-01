@@ -36,6 +36,7 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
             'stylesheets' => [$this, 'block_stylesheets'],
             'breadcrumb' => [$this, 'block_breadcrumb'],
             'content' => [$this, 'block_content'],
+            'javascripts' => [$this, 'block_javascripts'],
         ];
     }
 
@@ -66,61 +67,44 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
         yield from $this->loadTemplate("partials/navbar.html.twig", "base.html.twig", 13)->unwrap()->yield($context);
         // line 14
         yield "    </header>
-
     <main>
         <div class=\"app\">
             <div class=\"container\">
                 ";
-        // line 19
+        // line 18
         yield from $this->unwrap()->yieldBlock('breadcrumb', $context, $blocks);
-        // line 20
+        // line 19
         yield "                
                 ";
         // line 21
-        if (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "session", [], "any", false, false, false, 21), "flashBag", [], "any", false, false, false, 21), "has", ["success"], "method", false, false, false, 21)) {
-            // line 22
-            yield "                    <div class=\"alert alert-success\">
-                        ";
-            // line 23
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((($_v0 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "session", [], "any", false, false, false, 23), "flashBag", [], "any", false, false, false, 23), "get", ["success"], "method", false, false, false, 23)) && is_array($_v0) || $_v0 instanceof ArrayAccess ? ($_v0[0] ?? null) : null), "html", null, true);
-            yield "
-                    </div>
+        yield "                ";
+        yield from $this->loadTemplate("partials/notifications.html.twig", "base.html.twig", 21)->unwrap()->yield(CoreExtension::merge($context, ["success" => ((        // line 22
+array_key_exists("success", $context)) ? (Twig\Extension\CoreExtension::default(($context["success"] ?? null), [])) : ([])), "error" => ((        // line 23
+array_key_exists("error", $context)) ? (Twig\Extension\CoreExtension::default(($context["error"] ?? null), [])) : ([]))]));
+        // line 25
+        yield "                
                 ";
-        }
         // line 26
-        yield "                
-                ";
-        // line 27
-        if (CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "session", [], "any", false, false, false, 27), "flashBag", [], "any", false, false, false, 27), "has", ["error"], "method", false, false, false, 27)) {
-            // line 28
-            yield "                    <div class=\"alert alert-error\">
-                        ";
-            // line 29
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape((($_v1 = CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "session", [], "any", false, false, false, 29), "flashBag", [], "any", false, false, false, 29), "get", ["error"], "method", false, false, false, 29)) && is_array($_v1) || $_v1 instanceof ArrayAccess ? ($_v1[0] ?? null) : null), "html", null, true);
-            yield "
-                    </div>
-                ";
-        }
-        // line 32
-        yield "                
-                ";
-        // line 33
         yield from $this->unwrap()->yieldBlock('content', $context, $blocks);
-        // line 34
+        // line 27
         yield "            </div>
         </div>
     </main>
-
     ";
-        // line 38
-        yield from $this->loadTemplate("partials/cookies.html.twig", "base.html.twig", 38)->unwrap()->yield($context);
-        // line 39
+        // line 30
+        yield from $this->loadTemplate("partials/cookies.html.twig", "base.html.twig", 30)->unwrap()->yield($context);
+        // line 31
         yield "    ";
-        yield from $this->loadTemplate("partials/footer.html.twig", "base.html.twig", 39)->unwrap()->yield($context);
-        // line 40
+        yield from $this->loadTemplate("partials/footer.html.twig", "base.html.twig", 31)->unwrap()->yield($context);
+        // line 32
         yield "    
 
-</body>
+    <script src=\"/assets/js/notifications.js\" defer></script>
+    ";
+        // line 35
+        yield from $this->unwrap()->yieldBlock('javascripts', $context, $blocks);
+        // line 38
+        yield "</body>
 </html>";
         yield from [];
     }
@@ -146,7 +130,7 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
         yield from [];
     }
 
-    // line 19
+    // line 18
     /**
      * @return iterable<null|scalar|\Stringable>
      */
@@ -156,13 +140,26 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
         yield from [];
     }
 
-    // line 33
+    // line 26
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_content(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
+        yield from [];
+    }
+
+    // line 35
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_javascripts(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 36
+        yield "    
+    ";
         yield from [];
     }
 
@@ -187,7 +184,7 @@ class __TwigTemplate_fb2eb8a6d86df3c54799104e717d45a8 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  160 => 33,  150 => 19,  140 => 9,  129 => 6,  121 => 40,  118 => 39,  116 => 38,  110 => 34,  108 => 33,  105 => 32,  99 => 29,  96 => 28,  94 => 27,  91 => 26,  85 => 23,  82 => 22,  80 => 21,  77 => 20,  75 => 19,  68 => 14,  66 => 13,  61 => 10,  59 => 9,  53 => 6,  46 => 1,);
+        return array (  161 => 36,  154 => 35,  144 => 26,  134 => 18,  124 => 9,  113 => 6,  107 => 38,  105 => 35,  100 => 32,  97 => 31,  95 => 30,  90 => 27,  88 => 26,  85 => 25,  83 => 23,  82 => 22,  80 => 21,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
     }
 
     public function getSourceContext(): Source

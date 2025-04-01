@@ -47,11 +47,8 @@ class AuthController
             exit;
         }
         
-        // Get any error messages from session
-        $error = $_SESSION['login_error'] ?? null;
-        
-        // Clear error message from session
-        unset($_SESSION['login_error']);
+        // Get any error from query parameters
+        $error = $_GET['error'] ?? null;
         
         // Render login form
         echo $this->render('auth/login', [
@@ -85,8 +82,7 @@ class AuthController
             
             if (!$user) {
                 // Invalid credentials
-                $_SESSION['login_error'] = 'Email ou mot de passe incorrect.';
-                header('Location: /login');
+                header('Location: /login?error=' . urlencode('Email ou mot de passe incorrect.'));
                 exit;
             }
             
@@ -106,8 +102,7 @@ class AuthController
             error_log('Authentication error: ' . $e->getMessage());
             
             // Set error message and redirect back to login
-            $_SESSION['login_error'] = 'Une erreur est survenue lors de la connexion. Veuillez réessayer.';
-            header('Location: /login');
+            header('Location: /login?error=' . urlencode('Une erreur est survenue lors de la connexion. Veuillez réessayer.'));
             exit;
         }
     }
@@ -123,13 +118,172 @@ class AuthController
         // Clear JWT token cookie
         $this->tokenService->logout();
         
-        // Clear session data
-        session_unset();
-        session_destroy();
-        
         // Redirect to login page
         header('Location: /login');
         exit;
+    }
+
+    /**
+     * Display registration form
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function registerForm(RequestObject $request): void
+    {
+        // If user is already authenticated, redirect to home
+        if ($request->isAuthenticated()) {
+            header('Location: /');
+            exit;
+        }
+        
+        // Get any error from query parameters
+        $error = $_GET['error'] ?? null;
+        
+        // Render registration form
+        echo $this->render('auth/register', [
+            'error' => $error,
+            'request' => $request
+        ]);
+    }
+    
+    /**
+     * Process registration attempt
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function register(RequestObject $request): void
+    {
+        // If user is already authenticated, redirect to home
+        if ($request->isAuthenticated()) {
+            header('Location: /');
+            exit;
+        }
+        
+        // Get registration data
+        $lastName = $_POST['lastName'] ?? '';
+        $firstName = $_POST['firstName'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirmPassword'] ?? '';
+        
+        // Validate password match
+        if ($password !== $confirmPassword) {
+            header('Location: /new-account?error=' . urlencode('Les mots de passe ne correspondent pas.'));
+            exit;
+        }
+        
+        try {
+            // Check if email already exists
+            $existingUser = $this->userModel->getUserByEmail($email);
+            if ($existingUser) {
+                header('Location: /new-account?error=' . urlencode('Cet email est déjà utilisé.'));
+                exit;
+            }
+            
+            // Create user data array
+            $userData = [
+                'userName' => $lastName,
+                'userFirstName' => $firstName,
+                'userEmail' => $email,
+                'userPassword' => $password,
+                'userPhone' => $phone,
+                'userGender' => 'N', // Default value
+                'userRoleId' => 3,   // Student role ID
+            ];
+            
+            // Create user
+            $newUser = $this->userModel->createUser($userData);
+            
+            // Create JWT token for auto-login
+            $token = $this->tokenService->createJWT($newUser->userId);
+            
+            // Redirect to home page with success message
+            header('Location: /?success=' . urlencode('Compte créé avec succès.'));
+            exit;
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Registration error: ' . $e->getMessage());
+            
+            // Set error message and redirect back to registration
+            header('Location: /new-account?error=' . urlencode('Une erreur est survenue lors de la création du compte. Veuillez réessayer.'));
+            exit;
+        }
+    }
+    
+    /**
+     * Display forgot password form
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function forgotPasswordForm(RequestObject $request): void
+    {
+        // If user is already authenticated, redirect to home
+        if ($request->isAuthenticated()) {
+            header('Location: /');
+            exit;
+        }
+        
+        // Get messages from query parameters
+        $error = $_GET['error'] ?? null;
+        $success = $_GET['success'] ?? null;
+        
+        // Render forgot password form directly with parameters
+        echo $this->render('auth/forgot-password', [
+            'error' => $error,
+            'success' => $success,
+            'request' => $request
+        ]);
+    }
+    
+    /**
+     * Process forgot password attempt
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function forgotPassword(RequestObject $request): void
+    {
+        // If user is already authenticated, redirect to home
+        if ($request->isAuthenticated()) {
+            header('Location: /');
+            exit;
+        }
+        
+        $email = $_POST['email'] ?? '';
+        
+        // Validate email exists
+        $user = $this->userModel->getUserByEmail($email);
+        
+        $successMessages = [];
+        $errorMessages = [];
+        
+        if (!$user) {
+            // For security, don't indicate whether email exists or not
+            $successMessages[] = 'Si un compte existe avec cet email, un lien de réinitialisation sera envoyé.';
+        } else {
+            try {
+                // Generate a unique token for password reset
+                // In a real implementation, this would send an email with a reset link
+                $successMessages[] = 'Un email de réinitialisation de mot de passe a été envoyé à votre adresse.';
+            } catch (\Exception $e) {
+                // Log the error
+                error_log('Forgot password error: ' . $e->getMessage());
+                
+                // Add error message
+                $errorMessages[] = 'Une erreur est survenue. Veuillez réessayer.';
+            }
+        }
+        
+        // Render forgot password form with success and error messages
+        echo $this->render('auth/forgot-password', [
+            'success' => $successMessages,
+            'error' => $errorMessages,
+            'request' => $request
+        ]);
     }
     
     /**

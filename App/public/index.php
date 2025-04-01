@@ -117,6 +117,16 @@ $router->get('/CGU', ['controller' => 'LegalController', 'action' => 'cgu']);
 $router->get('/RGPD', ['controller' => 'LegalController', 'action' => 'rgpd']);
 
 
+// Account creation routes
+$router->get('/new-account', ['controller' => 'AuthController', 'action' => 'registerForm']);
+$router->post('/new-account', ['controller' => 'AuthController', 'action' => 'register']);
+
+// Password reset routes
+$router->get('/forgot-password', ['controller' => 'AuthController', 'action' => 'forgotPasswordForm']);
+$router->post('/forgot-password', ['controller' => 'AuthController', 'action' => 'forgotPassword']);
+$router->get('/reset-password/{token}', ['controller' => 'AuthController', 'action' => 'resetPasswordForm']);
+$router->post('/reset-password', ['controller' => 'AuthController', 'action' => 'resetPassword']);
+$router->get('/examplenotification', ['controller' => 'ExampleController', 'action' => 'exampleMethod']);
 // Dispatch the request
 try {
     $router->dispatch();

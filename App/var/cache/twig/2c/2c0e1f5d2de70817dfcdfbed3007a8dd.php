@@ -14,8 +14,8 @@ use Twig\Source;
 use Twig\Template;
 use Twig\TemplateWrapper;
 
-/* auth/login.html.twig */
-class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
+/* auth/forgot-password.html.twig */
+class __TwigTemplate_efa035219d3038404ef0737ec51d10ce extends Template
 {
     private Source $source;
     /**
@@ -31,7 +31,6 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
 
         $this->blocks = [
             'title' => [$this, 'block_title'],
-            'stylesheets' => [$this, 'block_stylesheets'],
             'content' => [$this, 'block_content'],
         ];
     }
@@ -45,7 +44,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
     protected function doDisplay(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        $this->parent = $this->loadTemplate("base.html.twig", "auth/login.html.twig", 1);
+        $this->parent = $this->loadTemplate("base.html.twig", "auth/forgot-password.html.twig", 1);
         yield from $this->parent->unwrap()->yield($context, array_merge($this->blocks, $blocks));
     }
 
@@ -56,7 +55,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
     public function block_title(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        yield "Connexion - ";
+        yield "Mot de passe oublié - ";
         yield from $this->yieldParentBlock("title", $context, $blocks);
         yield from [];
     }
@@ -65,66 +64,56 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
     /**
      * @return iterable<null|scalar|\Stringable>
      */
-    public function block_stylesheets(array $context, array $blocks = []): iterable
-    {
-        $macros = $this->macros;
-        // line 6
-        yield "
-";
-        yield from [];
-    }
-
-    // line 9
-    /**
-     * @return iterable<null|scalar|\Stringable>
-     */
     public function block_content(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 10
+        // line 6
         yield "<div class=\"login-container\">
     <div class=\"login-header\">
         <img src=\"/assets/img/PANIKPA.png\" alt=\"Logo PANIKPA\" class=\"logo\">
-        <h1>Connexion</h1>
-        <p>Veuillez vous connecter pour accéder à votre compte</p>
+        <h1>Mot de passe oublié</h1>
+        <p>Entrez votre adresse email pour recevoir un lien de réinitialisation</p>
     </div>
 
     ";
-        // line 17
+        // line 13
         if (($context["error"] ?? null)) {
-            // line 18
+            // line 14
             yield "    <div class=\"error-message\">
         ";
-            // line 19
+            // line 15
             yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["error"] ?? null), "html", null, true);
             yield "
     </div>
     ";
         }
-        // line 22
+        // line 18
         yield "
-    <form method=\"POST\" action=\"/login\" class=\"login-form\">
+    ";
+        // line 19
+        if (($context["success"] ?? null)) {
+            // line 20
+            yield "    <div class=\"success-message\">
+        ";
+            // line 21
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["success"] ?? null), "html", null, true);
+            yield "
+    </div>
+    ";
+        }
+        // line 24
+        yield "
+    <form method=\"POST\" action=\"/forgot-password\" class=\"login-form\">
         <div class=\"form-group\">
             <label for=\"email\">Email</label>
-            <input type=\"email\" id=\"email\" name=\"email\" placeholder=\"VeryfunEmail@panikpa.com\" required autocomplete=\"email\">
+            <input type=\"email\" id=\"email\" name=\"email\" required autocomplete=\"email\">
         </div>
 
-        <div class=\"form-group\">
-            <label for=\"password\">Mot de passe</label>
-            <input type=\"password\" id=\"password\" name=\"password\" placeholder=\"V3rySecur3Pa\$\$word\" required autocomplete=\"current-password\">
-        </div>
-
-        <div class=\"remember-me\">
-            <input type=\"checkbox\" id=\"remember_me\" name=\"remember_me\">
-            <label for=\"remember_me\">Se souvenir de moi</label>
-        </div>
-
-        <button type=\"submit\" class=\"login-btn\">Se connecter</button>
+        <button type=\"submit\" class=\"login-btn\">Envoyer le lien</button>
     </form>
 
     <div class=\"login-footer\">
-        <p>Vous n'avez pas de compte ? <a href=\"/new-account\">Créer un compte</a></p>
-        <p><a href=\"/forgot-password\">Mot de passe oublié ?</a></p>
+        <p><a href=\"/login\">Retour à la connexion</a></p>
     </div>
 </div>
 ";
@@ -136,7 +125,7 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
      */
     public function getTemplateName(): string
     {
-        return "auth/login.html.twig";
+        return "auth/forgot-password.html.twig";
     }
 
     /**
@@ -152,11 +141,11 @@ class __TwigTemplate_ef78549401e3105796564b9ab29a5108 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  105 => 22,  99 => 19,  96 => 18,  94 => 17,  85 => 10,  78 => 9,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
+        return array (  105 => 24,  99 => 21,  96 => 20,  94 => 19,  91 => 18,  85 => 15,  82 => 14,  80 => 13,  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
     }
 
     public function getSourceContext(): Source
     {
-        return new Source("", "auth/login.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\auth\\login.html.twig");
+        return new Source("", "auth/forgot-password.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\auth\\forgot-password.html.twig");
     }
 }

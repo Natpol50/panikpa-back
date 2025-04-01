@@ -12,32 +12,28 @@
     <header>
         {% include 'partials/navbar.html.twig' %}
     </header>
-
     <main>
         <div class="app">
             <div class="container">
                 {% block breadcrumb %}{% endblock %}
                 
-                {% if app.session.flashBag.has('success') %}
-                    <div class="alert alert-success">
-                        {{ app.session.flashBag.get('success')[0] }}
-                    </div>
-                {% endif %}
-                
-                {% if app.session.flashBag.has('error') %}
-                    <div class="alert alert-error">
-                        {{ app.session.flashBag.get('error')[0] }}
-                    </div>
-                {% endif %}
+                {# Include our new notification component #}
+                {% include 'partials/notifications.html.twig' with {
+                    'success': success|default([]),
+                    'error': error|default([])
+                } %}
                 
                 {% block content %}{% endblock %}
             </div>
         </div>
     </main>
-
     {% include 'partials/cookies.html.twig' %}
     {% include 'partials/footer.html.twig' %}
     
 
+    <script src="/assets/js/notifications.js" defer></script>
+    {% block javascripts %}
+    
+    {% endblock %}
 </body>
 </html>

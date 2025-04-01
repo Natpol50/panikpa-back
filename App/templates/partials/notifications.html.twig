@@ -1,0 +1,23 @@
+{% if success is defined and success|length > 0 %}
+    <div class="notifications-container success-container">
+        {% for message in success %}
+            <div class="notification success" data-notification-id="{{ loop.index }}">
+                <div class="notification-content">{{ message }}</div>
+                <button class="notification-close" aria-label="Close notification" 
+                        onclick="closeNotification(this.parentElement)">×</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% if error is defined and error|length > 0 %}
+    <div class="notifications-container error-container">
+        {% for message in error %}
+            <div class="notification error" data-notification-id="{{ loop.index }}">
+                <div class="notification-content">{{ message }}</div>
+                <button class="notification-close" aria-label="Close notification"
+                        onclick="closeNotification(this.parentElement)">×</button>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}

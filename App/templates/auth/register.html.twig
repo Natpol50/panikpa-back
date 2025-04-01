@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un compte - {{ parent() }}{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-header">
+        <img src="/assets/img/PANIKPA.png" alt="Logo PANIKPA" class="logo">
+        <h1>Créer un compte</h1>
+        <p>Rejoignez notre plateforme pour accéder aux offres de stages</p>
+    </div>
+
+    {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="POST" action="/new-account" class="login-form">
+        <div class="form-group">
+            <label for="lastName">Nom</label>
+            <input type="text" id="lastName" name="lastName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="firstName">Prénom</label>
+            <input type="text" id="firstName" name="firstName" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Téléphone</label>
+            <input type="tel" id="phone" name="phone" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" required minlength="8">
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Confirmer le mot de passe</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required minlength="8">
+        </div>
+
+        <button type="submit" class="login-btn">Créer mon compte</button>
+    </form>
+
+    <div class="login-footer">
+        <p>Vous avez déjà un compte ? <a href="/login">Se connecter</a></p>
+    </div>
+</div>
+{% endblock %}
