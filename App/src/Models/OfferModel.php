@@ -8,7 +8,14 @@
 
 */
 
+namespace App\Models;
+
 use App\Services\Database;
+use App\Exceptions\ModelException;
+use App\Exceptions\AuthenticationException;
+use PDO;
+use PDOException;
+
 
 class OfferModel {
     private PDO $database;
@@ -25,7 +32,7 @@ class OfferModel {
             $stmt->execute([':id_enterprise' => $enterpriseId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new Exception("Unable to get the offers from an enterprise: " . $e->getMessage());
+            throw new ModelException("Unable to get the offers from an enterprise: " . $e->getMessage());
         }
     }
 
@@ -37,7 +44,7 @@ class OfferModel {
             $stmt->execute([':id_offer' => $offerId]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new Exception("Unable to get the specified offer: " . $e->getMessage());
+            throw new ModelException("Unable to get the specified offer: " . $e->getMessage());
         }
     }
 
@@ -58,7 +65,7 @@ class OfferModel {
             $stmt->execute([':offer_type' => $type]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new Exception("Unable to retrieve offers: " . $e->getMessage());
+            throw new ModelException("Unable to retrieve offers: " . $e->getMessage());
         }
     }
 
@@ -69,7 +76,7 @@ class OfferModel {
 
         foreach ($requiredFields as $field) {
             if (empty($data[$field])) {
-                throw new Exception("Missing required field: $field");
+                throw new ModelException("Missing required field: $field");
             }
         }
 
@@ -95,7 +102,7 @@ class OfferModel {
                 ':id_city'            => $data['id_city']
             ]);
         } catch (PDOException $e) {
-            throw new Exception("Unable to create the offer: " . $e->getMessage());
+            throw new ModelException("Unable to create the offer: " . $e->getMessage());
         }
     }
 
@@ -103,7 +110,7 @@ class OfferModel {
     public function updateOffer(array $data, $offerId) {
         $existingData = $this->getOfferByOfferId($offerId);
         if (!$existingData) {
-            throw new Exception("Offer not found.");
+            throw new ModelException("Offer not found.");
         }
 
         $updatedData = array_merge($existingData, $data);
@@ -126,7 +133,7 @@ class OfferModel {
                 ':id_offer'           => $offerId
             ]);
         } catch (PDOException $e) {
-            throw new Exception("Unable to update the offer: " . $e->getMessage());
+            throw new ModelException("Unable to update the offer: " . $e->getMessage());
         }
     }
 
@@ -137,7 +144,7 @@ class OfferModel {
             $stmt = $this->database->prepare($query);
             $stmt->execute([':id_offer' => $offerId]);
         } catch (PDOException $e) {
-            throw new Exception("Unable to delete the offer: " . $e->getMessage());
+            throw new ModelException("Unable to delete the offer: " . $e->getMessage());
         }
     }
 
@@ -150,7 +157,35 @@ class OfferModel {
             $stmt->execute([':id_offer' => $offerId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            throw new Exception("Unable to get the tags of the offer: " . $e->getMessage());
+            throw new ModelException("Unable to get the tags of the offer: " . $e->getMessage());
+        }
+    }
+
+    // Retrieve the title of an offer by its ID
+    public function getOfferTitle($offerId) {
+        try {
+            $query = "SELECT offer_title FROM Offer WHERE id_offer = :id_offer";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([':id_offer' => $offerId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result['offer_title'] : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to get the offer title: " . $e->getMessage());
+        }
+    }
+
+    // Retrieve the company name associated with an offer by its ID
+    public function getCompanyName($offerId) {
+        try {
+            $query = "SELECT e.company_name FROM Enterprise e
+                      JOIN Offer o ON e.id_enterprise = o.id_enterprise
+                      WHERE o.id_offer = :id_offer";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([':id_offer' => $offerId]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result ? $result['company_name'] : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to get the company name: " . $e->getMessage());
         }
     }
 }

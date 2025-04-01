@@ -21,9 +21,9 @@ class EnterpriseModel
      * 
      * @param Database $database Database service
      */
-    public function __construct(Database $database)
+    public function __construct()
     {
-        $this->database = $database->getConnection();
+        $this->database = Database::getInstance();
     }
     
     /**

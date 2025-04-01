@@ -6,6 +6,14 @@ The class that will take out the data from the Interaction Joint Table
 
 */
 
+namespace App\Models;
+
+use App\Services\Database;
+use App\Exceptions\ModelException;
+use App\Exceptions\AuthenticationException;
+use PDO;
+use PDOException;
+
 
 class InteractionModel{
 
@@ -37,7 +45,37 @@ class InteractionModel{
 
         return $result;
         }catch(PDOException $e){
-            throw new Exception("Unable to get the interaction(s) from the user, ". $e->getMessage());
+            throw new ModelException("Unable to get the interaction(s) from the user, ". $e->getMessage());
+        }
+    }
+
+    public function getLatestInteractionsByUserId($userId) {
+        try {
+            $query = "
+                SELECT 
+                    id_offer,
+                    interaction_first_date,
+                    interaction_followup_date,
+                    interaction_followup_interview_date,
+                    interaction_followup_reply_type
+                FROM Interaction
+                WHERE id_user = :id_user
+                ORDER BY 
+                    COALESCE(interaction_followup_date, interaction_first_date) DESC
+                LIMIT 6
+            ";
+
+            $stmt = $this->database->prepare($query);
+
+            $stmt->execute([":id_user" => $userId]);
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $stmt->closeCursor();
+
+            return $result;
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to get the latest interactions for the user, " . $e->getMessage());
         }
     }
 
@@ -61,7 +99,7 @@ class InteractionModel{
     
             return $result;
             }catch(PDOException $e){
-                throw new Exception("Unable to get the interaction(s) from the offer, ". $e->getMessage());
+                throw new ModelException("Unable to get the interaction(s) from the offer, ". $e->getMessage());
             }
 
 
@@ -87,7 +125,7 @@ class InteractionModel{
     
             return $result;
             }catch(PDOException $e){
-                throw new Exception("Unable to get the interaction(s) from the offer, ". $e->getMessage());
+                throw new ModelException("Unable to get the interaction(s) from the offer, ". $e->getMessage());
             }
 
     }
@@ -98,7 +136,7 @@ class InteractionModel{
         // Required
 
         if(empty($data["id_offer"]) || empty($data["id_user"]) || empty($data["interaction_cv_url"] || empty($data["interaction_cover_letter_url"]))){
-        throw new Exception("error, there isn't the requiried fields to creat an interaction");
+        throw new ModelException("error, there isn't the requiried fields to creat an interaction");
         }
         
         $id_offer_to_register = $data["id_offer"];
@@ -161,7 +199,7 @@ class InteractionModel{
 
         ]);
     }catch(PDOException $e){
-        throw new Exception("unable to start the interaction, internal error".$e->getMessage());
+        throw new ModelException("unable to start the interaction, internal error".$e->getMessage());
     }
 
 
@@ -212,7 +250,7 @@ class InteractionModel{
         ]);
 
     }catch(PDOException $e){
-        throw new Exception("Unable to modify the interaction, internal error ".$e->getMessage());
+        throw new ModelException("Unable to modify the interaction, internal error ".$e->getMessage());
     }
 
 
@@ -232,7 +270,7 @@ class InteractionModel{
             ":id_interaction"=> $id_interaction
         ]);
     }catch(PDOException $e){
-        throw new Exception("Unable to delete the interaction ".$e->getMessage());
+        throw new ModelException("Unable to delete the interaction ".$e->getMessage());
     }
 
     }

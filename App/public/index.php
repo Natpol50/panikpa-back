@@ -81,7 +81,6 @@ $authMiddleware = new AuthMiddleware($tokenService, $cacheService);
 $router = new Router('', $authMiddleware);
 
 // Define routes
-$router->get('/', ['controller' => 'HomeController', 'action' => 'index']);
 $router->get('/login', ['controller' => 'AuthController', 'action' => 'loginForm']);
 $router->post('/login', ['controller' => 'AuthController', 'action' => 'login']);
 $router->get('/logout', ['controller' => 'AuthController', 'action' => 'logout']);
@@ -129,6 +128,10 @@ $router->post('/forgot-password', ['controller' => 'AuthController', 'action' =>
 $router->post('/verify-reset-code', ['controller' => 'AuthController', 'action' => 'verifyResetCode']);
 $router->get('/reset-password/{token}', ['controller' => 'AuthController', 'action' => 'resetPasswordForm']);
 $router->post('/reset-password', ['controller' => 'AuthController', 'action' => 'resetPassword']);
+
+$router->get('/', ['controller' => 'HomeController', 'action' => 'index']);
+$router->get('/API/latestupdates', ['controller' => 'HomeController', 'action' => 'apiUpdates']);
+$router->get('/API/favoffers', ['controller' => 'HomeController', 'action' => 'apiFavoriteOffers']);
 
 
 // Dispatch the request

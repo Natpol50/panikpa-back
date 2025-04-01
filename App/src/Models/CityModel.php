@@ -7,6 +7,15 @@
  * - Modify a city (useful if the name changes or if an earthquake moves it)
  */
 
+
+namespace App\Models;
+
+use App\Services\Database;
+use App\Exceptions\ModelException;
+use App\Exceptions\AuthenticationException;
+use PDO;
+use PDOException;
+
 class CityModel {
     private PDO $database;
 
@@ -27,7 +36,7 @@ class CityModel {
             $stmt->closeCursor();
             return $result;
         } catch (PDOException $e) {
-            throw new Exception("Unable to fetch cities: " . $e->getMessage());
+            throw new ModelException("Unable to fetch cities: " . $e->getMessage());
         }
     }
 
@@ -43,7 +52,7 @@ class CityModel {
             $stmt->closeCursor();
             return $result;
         } catch (PDOException $e) {
-            throw new Exception("Unable to get the city: " . $e->getMessage());
+            throw new ModelException("Unable to get the city: " . $e->getMessage());
         }
     }
 
@@ -54,7 +63,7 @@ class CityModel {
         try {
             // Required fields
             if (empty($data["city_name"]) || empty($data["city_postal"])) {
-                throw new Exception("Not enough data to add the city.");
+                throw new ModelException("Not enough data to add the city.");
             }
 
             // Assign values (default values for optional fields)
@@ -84,7 +93,7 @@ class CityModel {
             return $id_city;
 
         } catch (PDOException $e) {
-            throw new Exception("Unable to add the city: " . $e->getMessage());
+            throw new ModelException("Unable to add the city: " . $e->getMessage());
         }
     }
 
@@ -95,7 +104,7 @@ class CityModel {
         try {
             $previous_data = $this->getCityById($cityId);
             if (!$previous_data) {
-                throw new Exception("City not found.");
+                throw new ModelException("City not found.");
             }
 
             // Merge new data with existing data
@@ -120,7 +129,7 @@ class CityModel {
                 ":id_city"     => $cityId
             ]);
         } catch (PDOException $e) {
-            throw new Exception("Unable to modify the city: " . $e->getMessage());
+            throw new ModelException("Unable to modify the city: " . $e->getMessage());
         }
     }
 
@@ -134,10 +143,10 @@ class CityModel {
             $stmt->execute([":id_city" => $cityId]);
 
             if ($stmt->rowCount() === 0) {
-                throw new Exception("No city found with ID: " . $cityId);
+                throw new ModelException("No city found with ID: " . $cityId);
             }
         } catch (PDOException $e) {
-            throw new Exception("Unable to delete the city: " . $e->getMessage());
+            throw new ModelException("Unable to delete the city: " . $e->getMessage());
         }
     }
 }
