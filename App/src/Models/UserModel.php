@@ -470,31 +470,12 @@ class UserModel
 
             $stmt->closeCursor();
 
-            // Check if the user is already linked to an enterprise
-            $queryCheck = "SELECT * FROM companyusers WHERE id_user = :id_user";
-            $stmt = $this->database->prepare($queryCheck);
-            $stmt->execute([':id_user' => $userId]);
-            $existingLink = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // The Enterprise exists, we link the user to the enterprise
+            $queryLink = 'UPDATE User SET id_enterprise = :id_enterprise WHERE id_user = :id_user';
+            $stmt = $this->database->prepare($queryLink);
+            $stmt->execute([':id_user' => $userId , ':id_enterprise' => $enterpriseId]);
             $stmt->closeCursor();
-
-            // If there is already an entry, delete the previous one
-            if ($existingLink) {
-                $queryCleanup = 'DELETE FROM companyusers WHERE id_user = :id_user';
-                $stmt = $this->database->prepare($queryCleanup);
-                $stmt->execute([':id_user' => $userId]);
-                $stmt->closeCursor();
-            }
-
-            // The enterprise exists, proceed with linking
-            $query = "INSERT INTO companyusers (id_enterprise, id_user) VALUES (:id_enterprise, :id_user)";
-            $stmt = $this->database->prepare($query);
-            $stmt->execute([
-                ':id_enterprise' => $enterpriseId,
-                ':id_user' => $userId
-            ]);
-            
-            $stmt->closeCursor();
-
             return true;
         } catch (PDOException $e) {
             throw new ModelException("Unable to link the user to the enterprise: " . $e->getMessage());

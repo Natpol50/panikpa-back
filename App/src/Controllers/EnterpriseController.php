@@ -12,7 +12,7 @@ use App\Exceptions\ValidationException;
 /**
  * EnterpriseController - Handles enterprise-related actions
  */
-class EnterpriseController
+class EnterpriseController extends BaseController
 {
     private EnterpriseModel $enterpriseModel;
     
@@ -326,34 +326,64 @@ class EnterpriseController
                 htmlspecialchars($input['enterpriseSite']) : ''
         ];
     }
-    
+
     /**
-     * Render a view with data
-     * 
-     * @param string $view View name
-     * @param array $data Data to pass to the view
-     * @return string Rendered view
-     */
-    private function render(string $view, array $data = []): string
-    {
-        // Initialize Twig environment
-        $loader = new \Twig\Loader\FilesystemLoader(dirname(__DIR__, 2) . '/templates');
-        $twig = new \Twig\Environment($loader, [
-            'cache' => dirname(__DIR__, 2) . '/var/cache/twig',
-            'debug' => $_ENV['APP_DEBUG'] ?? false,
-            'auto_reload' => true
+ * API endpoint to retrieve enterprises with filtering and pagination
+ * 
+ * @param RequestObject $request Current request information
+ * @return void Outputs JSON response
+ */
+public function apiList(RequestObject $request): void
+{
+    // Set headers for JSON response
+    header('Content-Type: application/json');
+    
+    // Validate and sanitize input parameters
+    $query = trim($_GET['query'] ?? '');
+    $pageSize = isset($_GET['pageSize']) ? max(1, min(100, (int)$_GET['pageSize'])) : 10;
+    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+    
+    // Calculate offset
+    $offset = ($page - 1) * $pageSize;
+    
+    try {
+        // Retrieve filtered and paginated enterprises
+        $results = $this->enterpriseModel->searchEnterprises(
+            $query, 
+            $pageSize, 
+            $offset
+        );
+
+        $enterprises = array_map(function ($enterprise) {
+            if (empty($enterprise['enterprise_photo_url'])) {
+            $enterprise['enterprise_photo_url'] = '/assets/pp/defaultenterprise.png';
+            }
+            return $enterprise;
+        }, $results['results'] ?? []);
+        $count = $results['total_count'] ??0;
+        
+        // Prepare response
+        $response = [
+            'success' => true,
+            'data' => $enterprises,
+            'pagination' => [
+                'currentPage' => $page,
+                'pageSize' => $pageSize,
+                'totalEnterprises' => $count,
+                'totalPages' => ceil($count / $pageSize)
+            ]
+        ];
+        
+        // Output JSON response
+        echo json_encode($response, JSON_PRETTY_PRINT);
+    } catch (\Exception $e) {
+        // Handle any errors
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'error' => 'Internal Server Error',
+            'message' => $e->getMessage()
         ]);
-        
-        // Add global variables
-        $twig->addGlobal('app_name', 'PANIKPA');
-        $twig->addGlobal('current_year', date('Y'));
-        
-        // Add debug extension if in debug mode
-        if ($_ENV['APP_DEBUG'] ?? false) {
-            $twig->addExtension(new \Twig\Extension\DebugExtension());
-        }
-        
-        // Render the view
-        return $twig->render($view . '.html.twig', $data);
     }
+}
 }

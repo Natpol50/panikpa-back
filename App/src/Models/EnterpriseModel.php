@@ -141,46 +141,55 @@ class EnterpriseModel
     }
     
     /**
-     * Search enterprises by criteria
+     * Search enterprises by a single query
      * 
-     * @param array $criteria Search criteria
+     * @param string $searchQuery Search query to match against multiple columns
      * @param int $limit Maximum number of results
      * @param int $offset Starting position for pagination
      * @return array Matching enterprises
      * @throws ModelException If search fails
      */
-    public function searchEnterprises(array $criteria, int $limit = 10, int $offset = 0): array
+    public function searchEnterprises(string $searchQuery, int $limit = 10, int $offset = 0): array
     {
         try {
-            $query = "SELECT * FROM Enterprise WHERE 1=1";
-            $params = [];
-            
-            // Add search criteria
-            if (!empty($criteria['name'])) {
-                $query .= " AND enterprise_name LIKE :name";
-                $params[':name'] = '%' . $criteria['name'] . '%';
-            }
-            
-            if (!empty($criteria['email'])) {
-                $query .= " AND enterprise_email LIKE :email";
-                $params[':email'] = '%' . $criteria['email'] . '%';
-            }
-            
-            // Add pagination
-            $query .= " LIMIT :limit OFFSET :offset";
-            $params[':limit'] = $limit;
-            $params[':offset'] = $offset;
+            $query = "
+                SELECT 
+                    SQL_CALC_FOUND_ROWS
+                    id_enterprise, 
+                    enterprise_name, 
+                    enterprise_email, 
+                    enterprise_phone, 
+                    enterprise_photo_url, 
+                    enterprise_site
+                FROM Enterprise 
+                WHERE 
+                    enterprise_name LIKE :searchQueryName OR
+                    enterprise_email LIKE :searchQueryEmail OR
+                    enterprise_phone LIKE :searchQueryPhone OR
+                    enterprise_site LIKE :searchQuerySite
+                LIMIT :limit OFFSET :offset
+            ";
             
             $stmt = $this->database->prepare($query);
-            
-            // Bind all parameters
-            foreach ($params as $key => $value) {
-                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
-            }
+            $stmt->bindValue(':searchQueryName', '%' . $searchQuery . '%', PDO::PARAM_STR);
+            $stmt->bindValue(':searchQueryEmail', '%' . $searchQuery . '%', PDO::PARAM_STR);
+            $stmt->bindValue(':searchQueryPhone', '%' . $searchQuery . '%', PDO::PARAM_STR);
+            $stmt->bindValue(':searchQuerySite', '%' . $searchQuery . '%', PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
             
             $stmt->execute();
-            
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Get the total number of matching rows
+            $countQuery = "SELECT FOUND_ROWS() as total_count";
+            $countStmt = $this->database->query($countQuery);
+            $totalCount = $countStmt->fetch(PDO::FETCH_ASSOC)['total_count'];
+
+            return [
+                'total_count' => (int)$totalCount,
+                'results' => $results
+            ];
         } catch (PDOException $e) {
             throw new ModelException("Failed to search enterprises: " . $e->getMessage());
         }
