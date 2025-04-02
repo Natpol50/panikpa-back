@@ -84,9 +84,7 @@ class __TwigTemplate_67b647af52baaacb611fc2d3eeb9dbde extends Template
                         <p>Recherchez des offres de stage adaptées à votre profil.</p>
                     </div>
                     <div class=\"choice-icon\">
-                        <svg viewBox=\"0 0 24 24\" width=\"48\" height=\"48\">
-                            <path d=\"M12 2L2 7v10l10 5 10-5V7l-10-5zM12 4.47L19.53 8 12 11.53 4.47 8 12 4.47zM4 9.38v6.24l7 3.5v-6.24L4 9.38zM13 19.12l7-3.5V9.38l-7 3.5v6.24z\" fill=\"currentColor\"/>
-                        </svg>
+                        <img src=\"/assets/img/graducap.svg\" alt=\"Stage Icon\"  width=\"48\" height=\"48\" style=\"opacity: 0.4;\">
                     </div>
                 </a>
 
@@ -96,9 +94,8 @@ class __TwigTemplate_67b647af52baaacb611fc2d3eeb9dbde extends Template
                         <p>Découvrez des opportunités en alternance pour allier études et travail.</p>
                     </div>
                     <div class=\"choice-icon\">
-                        <svg viewBox=\"0 0 24 24\" width=\"48\" height=\"48\">
-                            <path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2V7zm0 8h2v2h-2v-2z\" fill=\"currentColor\"/>
-                        </svg>
+                    <br/>
+                        <img src=\"/assets/img/contract.svg\" alt=\"Alternance Icon\"  width=\"48\" height=\"48\" style=\"opacity: 0.4;\">
                     </div>
                 </a>
             </div>
@@ -108,14 +105,14 @@ class __TwigTemplate_67b647af52baaacb611fc2d3eeb9dbde extends Template
         yield from [];
     }
 
-    // line 43
+    // line 40
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 44
+        // line 41
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
@@ -144,7 +141,7 @@ class __TwigTemplate_67b647af52baaacb611fc2d3eeb9dbde extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  119 => 44,  112 => 43,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
+        return array (  116 => 41,  109 => 40,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
     }
 
     public function getSourceContext(): Source

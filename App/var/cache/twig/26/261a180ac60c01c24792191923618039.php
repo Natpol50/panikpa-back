@@ -32,6 +32,7 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
         $this->blocks = [
             'title' => [$this, 'block_title'],
             'content' => [$this, 'block_content'],
+            'javascripts' => [$this, 'block_javascripts'],
             'stylesheets' => [$this, 'block_stylesheets'],
         ];
     }
@@ -70,12 +71,13 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
     {
         $macros = $this->macros;
         // line 6
-        yield "    <div class=\"container\">
+        yield "
+    <div class=\"container\">
         <nav class=\"breadcrumb\">
             <span><a href=\"/\">Accueil</a></span>
             <span><a href=\"/offres\">Offres</a></span>
             <span>";
-        // line 10
+        // line 11
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["pageTitle"] ?? null), "html", null, true);
         yield "</span>
         </nav>
@@ -83,7 +85,7 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
         <section class=\"offers-section\">
             <header class=\"offers-header\">
                 <h1>";
-        // line 15
+        // line 16
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["pageTitle"] ?? null), "html", null, true);
         yield "</h1>
                 
@@ -98,10 +100,10 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
                     </div>
                     
                     ";
-        // line 27
+        // line 28
         if (($context["canCreateOffer"] ?? null)) {
-            // line 28
-            yield "                        <a href=\"/offres/create\" class=\"btn-primary\">
+            // line 29
+            yield "                        <a href=\"/offres/create\" class=\"create-btn\">
                             <svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" style=\"margin-right: 8px;\">
                                 <path d=\"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z\" fill=\"currentColor\"/>
                             </svg>
@@ -109,7 +111,7 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
                         </a>
                     ";
         }
-        // line 35
+        // line 36
         yield "                </div>
             </header>
 
@@ -126,7 +128,7 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
                 </svg>
                 <h3>Erreur lors du chargement des offres</h3>
                 <p id=\"error-message\">Impossible de charger les offres. Veuillez réessayer plus tard.</p>
-                <button class=\"btn-primary\" onclick=\"fetchOffers()\">Réessayer</button>
+                <button class=\"login-btn\" style=\"max-width: 300px;\" onclick=\"fetchOffers()\">Réessayer</button>
             </div>
 
             <!-- Empty state for no offers -->
@@ -153,14 +155,34 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
         yield from [];
     }
 
-    // line 76
+    // line 77
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_javascripts(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 78
+        yield "    ";
+        yield from $this->yieldParentBlock("javascripts", $context, $blocks);
+        yield "
+    <script> const offerType = \"";
+        // line 79
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["offerType"] ?? null), "html", null, true);
+        yield "\"; </script>
+    <script src=\"/assets/js/stages.js\" defer></script>
+";
+        yield from [];
+    }
+
+    // line 83
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_stylesheets(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 77
+        // line 84
         yield "    ";
         yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
         yield "
@@ -196,6 +218,14 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
             overflow: hidden;
             background-color: white;
         }
+
+        .offres-container {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
         
         #search-input {
             border: none;
@@ -218,6 +248,19 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .create-btn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            text-decoration: none;
         }
         
         /* Loading state */
@@ -354,7 +397,7 @@ class __TwigTemplate_a4e463cb78f17e4cfe524e973ec2a1e9 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  164 => 77,  157 => 76,  113 => 35,  104 => 28,  102 => 27,  87 => 15,  79 => 10,  73 => 6,  66 => 5,  53 => 3,  42 => 1,);
+        return array (  186 => 84,  179 => 83,  171 => 79,  166 => 78,  159 => 77,  115 => 36,  106 => 29,  104 => 28,  89 => 16,  81 => 11,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source

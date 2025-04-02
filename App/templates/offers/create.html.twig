@@ -16,15 +16,6 @@
             <p>Remplissez le formulaire ci-dessous pour créer une nouvelle offre de stage ou d'alternance.</p>
         </header>
 
-        {% if errors is defined and errors|length > 0 %}
-            <div class="error-message">
-                <ul>
-                    {% for error in errors %}
-                        <li>{{ error }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
 
         <form class="create-offer-form" method="POST" action="/offres">
             <div class="form-section">
@@ -38,6 +29,7 @@
                 <div class="form-group">
                     <label for="type">Type d'offre <span class="required">*</span></label>
                     <select id="type" name="type" required>
+                        <option value="" disabled {% if not formData.type is defined %}selected{% endif %}>Sélectionnez un type d'offre</option>
                         <option value="0" {% if formData.type is defined and formData.type == '0' %}selected{% endif %}>Stage</option>
                         <option value="1" {% if formData.type is defined and formData.type == '1' %}selected{% endif %}>Alternance</option>
                     </select>
@@ -72,6 +64,7 @@
                     <div class="form-group">
                         <label for="remuneration">Rémunération</label>
                         <select id="remuneration" name="remuneration">
+                            <option value="" disabled {% if not formData.Remuneration is defined %}selected{% endif %}>L'offre est-elle rémunérée ?</option>
                             <option value="0" {% if formData.remuneration is defined and formData.remuneration == '0' %}selected{% endif %}>Non rémunéré</option>
                             <option value="1" {% if formData.remuneration is defined and formData.remuneration == '1' %}selected{% endif %}>Rémunéré</option>
                         </select>

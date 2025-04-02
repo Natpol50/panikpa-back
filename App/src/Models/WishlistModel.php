@@ -52,7 +52,7 @@ class WishlistModel
                     o.offer_start,
                     o.offer_type,
                     o.offer_publish_date,
-                    o.offer_content_url,
+                    o.offer_content,
                     o.id_enterprise,
                     o.id_city,
                     e.enterprise_name,
@@ -104,7 +104,7 @@ class WishlistModel
             
             return true;
         } catch (PDOException $e) {
-            throw new ModelException("Failed to add offer to wishlist: " . $e->getMessage());
+            return false;
         }
     }
     
@@ -132,7 +132,7 @@ class WishlistModel
             // Check if a row was affected
             return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
-            throw new ModelException("Failed to remove offer from wishlist: " . $e->getMessage());
+            return false;
         }
     }
     
@@ -162,7 +162,7 @@ class WishlistModel
             
             return $result && $result['count'] > 0;
         } catch (PDOException $e) {
-            throw new ModelException("Failed to check wishlist status: " . $e->getMessage());
+            return false;
         }
     }
     

@@ -3,6 +3,7 @@
 {% block title %}{{ pageTitle }} - {{ parent() }}{% endblock %}
 
 {% block content %}
+
     <div class="container">
         <nav class="breadcrumb">
             <span><a href="/">Accueil</a></span>
@@ -25,7 +26,7 @@
                     </div>
                     
                     {% if canCreateOffer %}
-                        <a href="/offres/create" class="btn-primary">
+                        <a href="/offres/create" class="create-btn">
                             <svg viewBox="0 0 24 24" width="20" height="20" style="margin-right: 8px;">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
                             </svg>
@@ -48,7 +49,7 @@
                 </svg>
                 <h3>Erreur lors du chargement des offres</h3>
                 <p id="error-message">Impossible de charger les offres. Veuillez réessayer plus tard.</p>
-                <button class="btn-primary" onclick="fetchOffers()">Réessayer</button>
+                <button class="login-btn" style="max-width: 300px;" onclick="fetchOffers()">Réessayer</button>
             </div>
 
             <!-- Empty state for no offers -->
@@ -71,6 +72,12 @@
             </div>
         </section>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script> const offerType = "{{ offerType }}"; </script>
+    <script src="/assets/js/stages.js" defer></script>
 {% endblock %}
 
 {% block stylesheets %}
@@ -107,6 +114,14 @@
             overflow: hidden;
             background-color: white;
         }
+
+        .offres-container {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
         
         #search-input {
             border: none;
@@ -129,6 +144,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .create-btn {
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            text-decoration: none;
         }
         
         /* Loading state */

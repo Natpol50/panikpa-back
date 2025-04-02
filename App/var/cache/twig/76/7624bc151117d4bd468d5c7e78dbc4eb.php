@@ -74,20 +74,34 @@ class __TwigTemplate_dce4099a11e31d1d691d81ee22b9eb55 extends Template
         // line 17
         if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "isAuthenticated", [], "method", false, false, false, 17)) {
             // line 18
-            yield "            <span class=\"nav-links\" data-page=\"wishlist\"><a href=\"/wishlist\" ";
-            if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 9) == "/wishlist")) {
-                yield "class=\"selected\"";
+            yield "            ";
+            if (((CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasRole", [1], "method", false, false, false, 18) || CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasRole", [2], "method", false, false, false, 18)) || CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasRole", [3], "method", false, false, false, 18))) {
+                // line 19
+                yield "                <span class=\"nav-links\" data-page=\"gestion\"><a href=\"/gestion\" ";
+                if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 8) == "/gestion")) {
+                    yield "class=\"selected\"";
+                }
+                yield ">Gestion</a></span>
+            ";
+            } else {
+                // line 21
+                yield "                <span class=\"nav-links\" data-page=\"wishlist\"><a href=\"/wishlist\" ";
+                if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 9) == "/wishlist")) {
+                    yield "class=\"selected\"";
+                }
+                yield ">Wishlist</a></span>
+                <span class=\"nav-links\" data-page=\"interactions\"><a href=\"/interactions\" ";
+                // line 22
+                if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 13) == "/interactions")) {
+                    yield "class=\"selected\"";
+                }
+                yield ">Candidatures</a></span>
+            ";
             }
-            yield ">Wishlist</a></span>
-            <span class=\"nav-links\" data-page=\"interactions\"><a href=\"/interactions\" ";
-            // line 19
-            if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 13) == "/interactions")) {
-                yield "class=\"selected\"";
-            }
-            yield ">Candidatures</a></span>
-        ";
+            // line 24
+            yield "        ";
         } else {
-            // line 21
+            // line 25
             yield "            <span class=\"nav-links\" data-page=\"connexion\"><a href=\"/login\" ";
             if ((((is_string($_v0 = ($context["current_path"] ?? null)) && is_string($_v1 = "/login") && str_starts_with($_v0, $_v1)) || (is_string($_v2 = ($context["current_path"] ?? null)) && is_string($_v3 = "/new-account") && str_starts_with($_v2, $_v3))) || (is_string($_v4 = ($context["current_path"] ?? null)) && is_string($_v5 = "/forgot-password") && str_starts_with($_v4, $_v5)))) {
                 yield " class=\"selected\"";
@@ -95,7 +109,7 @@ class __TwigTemplate_dce4099a11e31d1d691d81ee22b9eb55 extends Template
             yield ">Connexion</a></span>
         ";
         }
-        // line 23
+        // line 27
         yield "    </div>
 </nav>";
         yield from [];
@@ -122,7 +136,7 @@ class __TwigTemplate_dce4099a11e31d1d691d81ee22b9eb55 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  99 => 23,  91 => 21,  84 => 19,  77 => 18,  75 => 17,  69 => 16,  63 => 15,  57 => 14,  42 => 1,);
+        return array (  113 => 27,  105 => 25,  102 => 24,  95 => 22,  88 => 21,  80 => 19,  77 => 18,  75 => 17,  69 => 16,  63 => 15,  57 => 14,  42 => 1,);
     }
 
     public function getSourceContext(): Source

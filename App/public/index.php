@@ -96,11 +96,11 @@ $router->get('/offres/stages', ['controller' => 'OfferController', 'action' => '
 $router->get('/offres/alternances', ['controller' => 'OfferController', 'action' => 'alternances']);
 $router->get('/offres/create', ['controller' => 'OfferController', 'action' => 'create', 'auth' => true]);
 $router->post('/offres', ['controller' => 'OfferController', 'action' => 'store', 'auth' => true]);
-$router->get('/offres/{id}', ['controller' => 'OfferController', 'action' => 'show']);
+$router->get('/offres/{id:[A-Za-z0-9]+}', ['controller' => 'OfferController', 'action' => 'show']);
 $router->get('/API/GetOffers', ['controller' => 'OfferController', 'action' => 'apiGetOffers']);
 
 // Add this for wishlist toggle functionality
-$router->post('API/wishlist/toggle/{id}', ['controller' => 'WishlistController', 'action' => 'toggle', 'auth' => true]);
+$router->post('/API/wishlist/toggle/{id:[A-Za-z0-9]+}', ['controller' => 'WishlistController', 'action' => 'toggle', 'auth' => true]);
 
 // Application routes
 $router->get('/form', ['controller' => 'ApplicationController', 'action' => 'form']);

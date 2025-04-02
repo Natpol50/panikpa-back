@@ -1,5 +1,7 @@
 <?php
 
+use App\Services\CacheService;
+
     /**
      * Class/object representing a specific user in the system, contains all the informations about that specific user
      * 
@@ -28,6 +30,7 @@
         public $user_refresh_token;
         public $id_acctype; // 1 to 6
         public array $promotion_code;
+        private CacheService $cache;
 
         public function __construct(array $data){
             $this->id_user = $data['id_user'] ?? null;
@@ -45,6 +48,7 @@
             $this->id_acctype = $data['id_acctype'] ?? null;
             $this->promotion_code = $data['promotion_code'] ?? [];
             $this->user_stype = $data['userSType'] ?? null;
+            $this->cache = new CacheService();
         }
 
         public function setUserID(int $user_id): null
@@ -52,5 +56,14 @@
             $this->id_user = $user_id;
             return null;
         }
+
+        public function hasPerm(string $perm): bool
+        {
+            if ($this->id_acctype == null) {
+                return false;
+            }
+            return $this->cache->checkRolePermission($this->id_acctype, $perm);
+        }
+
     }
 ?>

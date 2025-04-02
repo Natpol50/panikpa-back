@@ -22,10 +22,3 @@
     </div>
 {% endif %}
 
-{% if app.request is defined and app.request.pathInfo is defined %}
-    <div class="notifications-container active-path-container">
-        <div class="notification active-path">
-            <div class="notification-content">Current Path: {{ app.request.pathInfo }}</div>
-        </div>
-    </div>
-{% endif %}

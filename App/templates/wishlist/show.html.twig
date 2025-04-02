@@ -1,0 +1,85 @@
+// Add this to your JavaScript in the offer detail page
+document.addEventListener('DOMContentLoaded', () => {
+    const wishlistButton = document.getElementById('wishlist-button');
+    
+    if (wishlistButton) {
+        wishlistButton.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            // Add loading and clicked states for visual feedback
+            wishlistButton.classList.add('loading');
+            wishlistButton.classList.add('clicked');
+            
+            // Get the offer ID from the button's data attribute
+            const offerId = this.dataset.id;
+            
+            try {
+                // Send API request to toggle wishlist status
+                const response = await fetch(`/API/wishlist/toggle/${offerId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update button appearance based on new wishlist state
+                    if (data.wishlisted) {
+                        wishlistButton.classList.add('active');
+                        wishlistButton.setAttribute('aria-label', 'Retirer de la wishlist');
+                        wishlistButton.textContent = 'Retirer de la wishlist';
+                        
+                        // Add wishlist badge if it doesn't exist
+                        if (!document.querySelector('.wishlist-badge')) {
+                            const badge = document.createElement('p');
+                            badge.className = 'wishlist-badge';
+                            badge.textContent = 'Dans votre wishlist';
+                            document.querySelector('.offer-tags').appendChild(badge);
+                        }
+                    } else {
+                        wishlistButton.classList.remove('active');
+                        wishlistButton.setAttribute('aria-label', 'Ajouter à la wishlist');
+                        wishlistButton.textContent = 'Ajouter à la wishlist';
+                        
+                        // Remove wishlist badge if it exists
+                        const badge = document.querySelector('.wishlist-badge');
+                        if (badge) {
+                            badge.remove();
+                        }
+                    }
+                    
+                    // Show success notification
+                    addNotification(data.message, 'success');
+                } else {
+                    // Show error notification
+                    addNotification(data.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling wishlist:', error);
+                addNotification('Une erreur s\'est produite lors de la mise à jour de votre wishlist.', 'error');
+            } finally {
+                // Remove loading state
+                wishlistButton.classList.remove('loading');
+                
+                // Remove clicked class after animation completes
+                setTimeout(() => {
+                    wishlistButton.classList.remove('clicked');
+                }, 400);
+            }
+        });
+    }
+    
+    // Helper function to add notifications
+    function addNotification(message, type = 'success') {
+        // Check if notifications.js is available and provides the function
+        if (typeof window.addNotification === 'function') {
+            window.addNotification(message, type);
+        } else {
+            // Simple fallback if the notification system isn't available
+            alert(message);
+        }
+    }
+});

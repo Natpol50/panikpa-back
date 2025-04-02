@@ -144,19 +144,6 @@ class __TwigTemplate_2c1e8de87cf04b3ccd84b59e6cd7b6a7 extends Template
         // line 24
         yield "
 ";
-        // line 25
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", true, true, false, 25) && CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, true, false, 25), "pathInfo", [], "any", true, true, false, 25))) {
-            // line 26
-            yield "    <div class=\"notifications-container active-path-container\">
-        <div class=\"notification active-path\">
-            <div class=\"notification-content\">Current Path: ";
-            // line 28
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["app"] ?? null), "request", [], "any", false, false, false, 28), "pathInfo", [], "any", false, false, false, 28), "html", null, true);
-            yield "</div>
-        </div>
-    </div>
-";
-        }
         yield from [];
     }
 
@@ -181,7 +168,7 @@ class __TwigTemplate_2c1e8de87cf04b3ccd84b59e6cd7b6a7 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  154 => 28,  150 => 26,  148 => 25,  145 => 24,  141 => 22,  122 => 17,  117 => 16,  100 => 15,  97 => 14,  95 => 13,  92 => 12,  88 => 10,  69 => 5,  64 => 4,  47 => 3,  44 => 2,  42 => 1,);
+        return array (  145 => 24,  141 => 22,  122 => 17,  117 => 16,  100 => 15,  97 => 14,  95 => 13,  92 => 12,  88 => 10,  69 => 5,  64 => 4,  47 => 3,  44 => 2,  42 => 1,);
     }
 
     public function getSourceContext(): Source

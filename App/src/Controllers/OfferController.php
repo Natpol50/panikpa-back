@@ -113,144 +113,121 @@ class OfferController extends BaseController
         ]);
     }
 
-    /**
-     * API endpoint to fetch offers with pagination and filtering
-     * 
-     * @param RequestObject $request Current request information
-     * @return void
-     */
-    public function apiGetOffers(RequestObject $request): void
-    {
-        // Set response header to JSON
-        header('Content-Type: application/json');
+/**
+ * API endpoint to fetch offers with pagination and filtering
+ * 
+ * @param RequestObject $request Current request information
+ * @return void
+ */
+public function apiGetOffers(RequestObject $request): void
+{
+    // Set response header to JSON
+    header('Content-Type: application/json');
+    
+    try {
+        // Get query parameters
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $type = isset($_GET['type']) ? (int)$_GET['type'] : 0; // 0 = internship, 1 = traineeship
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
         
-        try {
-            // Get query parameters
-            $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-            $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
-            $type = isset($_GET['type']) ? (int)$_GET['type'] : 0; // 0 = internship, 1 = traineeship
-            $query = isset($_GET['query']) ? htmlspecialchars($_GET['query']) : '';
+        // Prepare search criteria
+        $searchCriteria = [];
+        if (!empty($query)) {
+            $searchCriteria['query'] = $query;
+        }
+        
+        // Fetch paginated and filtered offers directly from the database
+        $result = $type === 0 
+            ? $this->offerModel->getAllInternshipOffers($page, $limit, $searchCriteria) 
+            : $this->offerModel->getAllAlternanceOffers($page, $limit, $searchCriteria);
+        
+        $offers = $result['offers'];
+        $totalOffers = $result['totalRows'];
+        $totalPages = ceil($totalOffers / $limit);
+        
+        // Get wishlist and application data if user is authenticated
+        $wishlistOfferIds = [];
+        $appliedOffersIds = [];
+        
+        if ($request->isAuthenticated()) {
+            $userId = $request->userId;
+            $wishlistOffers = $this->wishlistModel->getWishlistOffersFromUserId($userId);
+            $wishlistOfferIds = array_column($wishlistOffers, 'id_offer');
             
-            // Calculate offset for pagination
-            $offset = ($page - 1) * $limit;
+            $appliedOffers = $this->interactionModel->getInteractionByUserId($userId);
+            $appliedOffersIds = array_column($appliedOffers, 'id_offer');
+        }
+        
+        // Format offer data with additional information
+        $formattedOffers = [];
+        
+        foreach ($offers as $offer) {
+            // Set wishlist status
+            $offer['wishlisted'] = in_array($offer['id_offer'], $wishlistOfferIds) ? 1 : 0;
             
-            // Fetch offers based on type
-            $offers = $type === 0 
-                ? $this->offerModel->getAllInternshipOffers() 
-                : $this->offerModel->getAllAlternanceOffers();
+            // Set applied status
+            $offer['applied'] = in_array($offer['id_offer'], $appliedOffersIds) ? 1 : 0;
             
-            // Apply search filtering if query parameter is present
-            if (!empty($query)) {
-                $offers = array_filter($offers, function($offer) use ($query) {
-                    $searchLower = strtolower($query);
-                    
-                    // Get enterprise and city data for searching
-                    $enterprise = $this->enterpriseModel->getEnterpriseById($offer['id_enterprise']);
-                    $city = $this->cityModel->getCityById($offer['id_city']);
-                    
-                    // Search in multiple fields
-                    return (
-                        strpos(strtolower($offer['offer_title']), $searchLower) !== false ||
-                        strpos(strtolower($enterprise['enterprise_name'] ?? ''), $searchLower) !== false ||
-                        strpos(strtolower($city['city_name'] ?? ''), $searchLower) !== false ||
-                        strpos(strtolower($offer['offer_level']), $searchLower) !== false ||
-                        strpos(strtolower($offer['offer_duration']), $searchLower) !== false
-                    );
-                });
-                
-                // Re-index array after filtering
-                $offers = array_values($offers);
-            }
+            // Get enterprise data
+            $enterprise = $this->enterpriseModel->getEnterpriseById($offer['id_enterprise']);
+            $enterpriseName = $enterprise ? $enterprise['enterprise_name'] : 'Unknown';
             
-            // Calculate total pages
-            $totalOffers = count($offers);
-            $totalPages = ceil($totalOffers / $limit);
+            // Get city data
+            $city = $this->cityModel->getCityById($offer['id_city']);
+            $cityName = $city ? $city['city_name'] . ' - ' . $city['city_postal'] : 'Unknown Location';
             
-            // Apply pagination
-            $paginatedOffers = array_slice($offers, $offset, $limit);
+            // Get tags for this offer
+            $tags = $this->tagModel->getTagsByOfferId($offer['id_offer']);
             
-            // Get wishlist and application data if user is authenticated
-            $wishlistOfferIds = [];
-            $appliedOffersIds = [];
-            
-            if ($request->isAuthenticated()) {
-                $userId = $request->userId;
-                $wishlistOffers = $this->wishlistModel->getWishlistOffersFromUserId($userId);
-                $wishlistOfferIds = array_column($wishlistOffers, 'id_offer');
-                
-                $appliedOffers = $this->interactionModel->getInteractionByUserId($userId);
-                $appliedOffersIds = array_column($appliedOffers, 'id_offer');
-            }
-            
-            // Format offer data with additional information
-            $formattedOffers = [];
-            
-            foreach ($paginatedOffers as $offer) {
-                // Set wishlist status
-                $offer['wishlisted'] = in_array($offer['id_offer'], $wishlistOfferIds) ? 1 : 0;
-                
-                // Set applied status
-                $offer['applied'] = in_array($offer['id_offer'], $appliedOffersIds) ? 1 : 0;
-                
-                // Get enterprise data
-                $enterprise = $this->enterpriseModel->getEnterpriseById($offer['id_enterprise']);
-                $enterpriseName = $enterprise ? $enterprise['enterprise_name'] : 'Unknown';
-                
-                // Get city data
-                $city = $this->cityModel->getCityById($offer['id_city']);
-                $cityName = $city ? $city['city_name'] . ' - ' . $city['city_postal'] : 'Unknown Location';
-                
-                // Get tags for this offer
-                $tags = $this->tagModel->getTagsByOfferId($offer['id_offer']);
-                
-                // Format tags for display
-                $formattedTags = [];
-                foreach ($tags as $tag) {
-                    $formattedTags[] = [
-                        'id' => $tag['id_tag'],
-                        'name' => $tag['tag_name'],
-                        'optional' => (bool)$tag['optional']
-                    ];
-                }
-                
-                // Create a nicely formatted offer object
-                $formattedOffers[] = [
-                    'id' => $offer['id_offer'],
-                    'title' => $offer['offer_title'],
-                    'company' => $enterpriseName,
-                    'location' => $cityName,
-                    'reference' => sprintf('%s%d', $offer['id_enterprise'], $offer['id_offer']),
-                    'duration' => $offer['offer_duration'],
-                    'level' => $offer['offer_level'],
-                    'startDate' => date('d/m/Y', strtotime($offer['offer_start'])),
-                    'publishDate' => date('d/m/Y', strtotime($offer['offer_publish_date'])),
-                    'remuneration' => $offer['offer_remuneration'],
-                    'wishlisted' => $offer['wishlisted'],
-                    'applied' => $offer['applied'],
-                    'tags' => $formattedTags,
-                    'highlighted' => stripos($offer['offer_level'], 'Bac+3, Bac+5') !== false
+            // Format tags for display
+            $formattedTags = [];
+            foreach ($tags as $tag) {
+                $formattedTags[] = [
+                    'id' => $tag['id_tag'],
+                    'name' => $tag['tag_name'],
+                    'optional' => (bool)$tag['optional']
                 ];
             }
             
-            // Return JSON response
-            echo json_encode([
-                'success' => true,
-                'offers' => $formattedOffers,
-                'totalPages' => $totalPages,
-                'currentPage' => $page,
-                'totalOffers' => $totalOffers,
-                'query' => $query
-            ]);
-            
-        } catch (\Exception $e) {
-            // Handle any errors
-            http_response_code(500);
-            echo json_encode([
-                'success' => false, 
-                'error' => 'Failed to fetch offers: ' . $e->getMessage()
-            ]);
+            // Create a nicely formatted offer object
+            $formattedOffers[] = [
+                'id' => $offer['id_offer'],
+                'title' => $offer['offer_title'],
+                'company' => $enterpriseName,
+                'location' => $cityName,
+                'reference' => sprintf('%s%d', $offer['id_enterprise'], $offer['id_offer']),
+                'duration' => $offer['offer_duration'],
+                'level' => $offer['offer_level'],
+                'startDate' => date('d/m/Y', strtotime($offer['offer_start'])),
+                'publishDate' => date('d/m/Y', strtotime($offer['offer_publish_date'])),
+                'remuneration' => $offer['offer_remuneration'],
+                'wishlisted' => $offer['wishlisted'],
+                'applied' => $offer['applied'],
+                'tags' => $formattedTags,
+                'highlighted' => stripos($offer['offer_level'], 'Bac+3, Bac+5') !== false
+            ];
         }
+        
+        // Return JSON response
+        echo json_encode([
+            'success' => true,
+            'offers' => $formattedOffers,
+            'totalPages' => $totalPages,
+            'currentPage' => $page,
+            'totalOffers' => $totalOffers,
+            'query' => $query
+        ]);
+        
+    } catch (\Exception $e) {
+        // Handle any errors
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Failed to fetch offers: ' . $e->getMessage()
+        ]);
     }
+}
 
     /**
      * Display form to create a new offer
@@ -322,42 +299,53 @@ class OfferController extends BaseController
         $postalCode = isset($_POST['postalCode']) ? (int)$_POST['postalCode'] : 0;
         
         // Validate required fields
-        $errors = [];
+        $error = [];
         
         if (empty($title)) {
-            $errors[] = 'Le titre est requis';
+            $error[] = 'Le titre est requis';
         }
         
         if (empty($level)) {
-            $errors[] = 'Le niveau d\'études est requis';
+            $error[] = 'Le niveau d\'études est requis';
         }
         
         if (empty($duration)) {
-            $errors[] = 'La durée est requise';
+            $error[] = 'La durée est requise';
         }
         
         if (empty($startDate)) {
-            $errors[] = 'La date de début est requise';
+            $error[] = 'La date de début est requise';
         }
         
         if (empty($description)) {
-            $errors[] = 'La description est requise';
+            $error[] = 'La description est requise';
         }
         
         if (empty($city)) {
-            $errors[] = 'La ville est requise';
+            $error[] = 'La ville est requise';
         }
         
         if ($postalCode <= 0) {
-            $errors[] = 'Le code postal est requis';
+            $error[] = 'Le code postal est requis';
         }
         
         // If there are validation errors, redisplay the form
-        if (!empty($errors)) {
+        if (!empty($error)) {
             echo $this->render('offers/create', [
                 'request' => $request,
-                'errors' => $errors,
-                'formData' => $_POST
+                'error' => $error,
+                'formData' => $_POST,
+                'success' => [
+                    'title' => $title,
+                    'remuneration' => $remuneration,
+                    'level' => $level,
+                    'duration' => $duration,
+                    'type' => $type,
+                    'startDate' => $startDate,
+                    'description' => $description,
+                    'city' => $city,
+                    'postalCode' => $postalCode
+                ]
             ]);
             return;
         }
@@ -370,7 +358,7 @@ class OfferController extends BaseController
             if (!$enterpriseId) {
                 echo $this->render('offers/create', [
                     'request' => $request,
-                    'errors' => ['Vous n\'êtes pas associé à une entreprise'],
+                    'error' => ['Vous n\'êtes pas associé à une entreprise'],
                     'formData' => $_POST
                 ]);
                 return;
@@ -392,15 +380,13 @@ class OfferController extends BaseController
                 $cityData = [
                     'city_name' => $city,
                     'city_postal' => $postalCode,
-                    'city_lat' => 0, // Default values
-                    'city_long' => 0
                 ];
                 
                 $cityId = $this->cityModel->addCity($cityData);
             }
             
             // Save offer content to file or database field
-            $contentUrl = "Description: $description";
+            $contentUrl = "$description";
             
             // Create offer data
             $offerData = [
@@ -410,7 +396,7 @@ class OfferController extends BaseController
                 'offer_duration' => $duration,
                 'offer_start' => date('Y-m-d', strtotime($startDate)),
                 'offer_type' => $type,
-                'offer_content_url' => $contentUrl,
+                'offer_content' => $contentUrl,
                 'id_enterprise' => $enterpriseId,
                 'id_city' => $cityId
             ];
@@ -443,7 +429,7 @@ class OfferController extends BaseController
             // Handle errors
             echo $this->render('offers/create', [
                 'request' => $request,
-                'errors' => ['Erreur lors de la création de l\'offre: ' . $e->getMessage()],
+                'error' => ['Erreur lors de la création de l\'offre: ' . $e->getMessage()],
                 'formData' => $_POST
             ]);
         }
@@ -456,11 +442,20 @@ class OfferController extends BaseController
      * @param int $id Offer ID
      * @return void
      */
-    public function show(RequestObject $request, Int $id = 0): void
-    {
-        // Get ID from route parameter if not provided
-        if ($id === 0) {
-            $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+    public function show(RequestObject $request): void
+    {   
+        // Extract the ID from the URL after "/offre/{3 characters to ignore}"
+        $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $segments = explode('/', trim($urlPath, '/'));
+        $idSegment = end($segments);
+
+        // Remove the first 3 characters from the ID segment
+        $id = (int)substr($idSegment, 3);
+
+        if ($id <= 0) {
+            // Redirect to offers page if invalid ID
+            header('Location: /offres');
+            exit;
         }
         
         if ($id <= 0) {
@@ -533,7 +528,7 @@ class OfferController extends BaseController
             'startDate' => date('d/m/Y', strtotime($offer['offer_start'])),
             'publishDate' => date('d/m/Y', strtotime($offer['offer_publish_date'])),
             'remuneration' => $offer['offer_remuneration'],
-            'description' => $offer['offer_content_url'],
+            'description' => $offer['offer_content'],
             'tags' => $formattedTags,
             'highlighted' => stripos($offer['offer_level'], 'Bac+3, Bac+5') !== false,
             'wishlisted' => $isInWishlist,

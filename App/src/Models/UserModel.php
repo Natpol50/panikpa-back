@@ -512,7 +512,7 @@ class UserModel
     public function getEnterpriseIdByUser(int $userId): array
     {
         try {
-            $query = "SELECT id_enterprise FROM companyusers WHERE id_user = :id_user";
+            $query = "SELECT id_enterprise FROM User WHERE id_user = :id_user";
             $stmt = $this->database->prepare($query);
             $stmt->execute([':id_user' => $userId]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -520,7 +520,7 @@ class UserModel
 
             return $result ?: []; // Return empty array if no result
         } catch (PDOException $e) {
-            throw new ModelException("Unable to fetch the id linked to the user: " . $e->getMessage());
+            throw new ModelException("Unable to fetch the enterprise ID linked to the user: " . $e->getMessage());
         }
     }
 }

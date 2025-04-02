@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\Services\CacheService;
+
 /**
  * RequestObject - Container for request information
  * 
@@ -20,6 +22,7 @@ class RequestObject
     public int $permissionInteger = 0;
     public ?string $profilePictureUrl = null;
     public ?string $userSType = null;
+    private CacheService $cache;
     
     /**
      * Create a new RequestObject instance
@@ -35,6 +38,7 @@ class RequestObject
         $this->permissionInteger = $params['permissionInteger'] ?? 0;
         $this->profilePictureUrl = $params['profilePictureUrl'] ?? '/assets/img/default-avatar.png';
         $this->userSType = $params['userSearchType'] ?? null;
+        $this->cache = new CacheService();
     }
     
     /**
@@ -48,14 +52,14 @@ class RequestObject
     }
     
     /**
-     * Check if the user has a specific permission
+     * Check if the user has a specific permission using CacheService
      * 
-     * @param int $permission Permission bit to check
+     * @param string $permissionKey Permission key to check
      * @return bool True if user has the permission
      */
-    public function hasPermission(int $permission): bool
+    public function hasPermission(string $permissionKey): bool
     {
-        return ($this->permissionInteger & $permission) === $permission;
+        return $this->cache->checkRolePermission($this->userRole, $permissionKey);
     }
     
     /**

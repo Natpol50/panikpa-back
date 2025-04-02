@@ -56,10 +56,9 @@ class CityModel {
         }
     }
 
-    /**
-     * Add a new city to the database and return its ID.
-     */
-    public function addCity(array $data) {
+    // Modified CityModel::addCity method
+    public function addCity(array $data)
+    {
         try {
             // Required fields
             if (empty($data["city_name"]) || empty($data["city_postal"])) {
@@ -69,34 +68,28 @@ class CityModel {
             // Assign values (default values for optional fields)
             $city_name = $data["city_name"];
             $city_postal = $data["city_postal"];
-            $city_lat = !empty($data["city_lat"]) ? $data["city_lat"] : 0;
-            $city_long = !empty($data["city_long"]) ? $data["city_long"] : 0;
 
-            // Insert query
+            // Modified INSERT query without RETURNING clause
             $query = "
-                INSERT INTO City (city_name, city_postal, city_lat, city_long)
-                VALUES (:city_name, :city_postal, :city_lat, :city_long)
-                RETURNING id_city
+                INSERT INTO City (city_name, city_postal)
+                VALUES (:city_name, :city_postal)
             ";
 
             $stmt = $this->database->prepare($query);
             $stmt->execute([
                 ":city_name"   => $city_name,
                 ":city_postal" => $city_postal,
-                ":city_lat"    => $city_lat,
-                ":city_long"   => $city_long
             ]);
 
-            // Retrieve inserted ID
-            $id_city = $stmt->fetchColumn();
-            $stmt->closeCursor();
+            // Get the inserted ID using lastInsertId() method
+            $id_city = $this->database->lastInsertId();
+            
             return $id_city;
 
         } catch (PDOException $e) {
             throw new ModelException("Unable to add the city: " . $e->getMessage());
         }
     }
-
     /**
      * Update a city's information based on provided data.
      */
@@ -115,8 +108,6 @@ class CityModel {
                 UPDATE City SET
                 city_name   = :city_name,
                 city_postal = :city_postal,
-                city_lat    = :city_lat,
-                city_long   = :city_long
                 WHERE id_city = :id_city
             ";
 
@@ -124,8 +115,6 @@ class CityModel {
             $stmt->execute([
                 ":city_name"   => $updated_data["city_name"],
                 ":city_postal" => $updated_data["city_postal"],
-                ":city_lat"    => $updated_data["city_lat"],
-                ":city_long"   => $updated_data["city_long"],
                 ":id_city"     => $cityId
             ]);
         } catch (PDOException $e) {
