@@ -359,7 +359,7 @@ class UserController extends BaseController
                 $messages['error'][] = "Current password is incorrect";
             } else {
                 // Hash new password
-                $user->passwordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+                $user->user_phash = password_hash($newPassword, PASSWORD_DEFAULT);
                 
                 // Update user in database
                 $this->userModel->updateUserPassword($user);

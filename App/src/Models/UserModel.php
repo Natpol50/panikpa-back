@@ -563,7 +563,7 @@ class UserModel
     public function updateUserPassword(object $user): bool
     {
         try {
-            if (!isset($user->userId) || !isset($user->userPassword)) {
+            if (!isset($user->userId) || !isset($user->user_phash)) {
                 throw new ModelException("User ID and password are required for password update");
             }
             
@@ -571,7 +571,7 @@ class UserModel
             
             $stmt = $this->database->prepare($query);
             $stmt->execute([
-                ':passwordHash' => password_hash($user->userPassword, PASSWORD_DEFAULT),
+                ':passwordHash' => $user->user_phash,
                 ':userId' => $user->userId
             ]);
             
