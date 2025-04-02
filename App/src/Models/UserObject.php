@@ -30,6 +30,8 @@ use App\Services\CacheService;
         public $user_refresh_token;
         public $id_acctype; // 1 to 6
         public array $promotion_code;
+        public int $pending_offers;
+        public int $total_offers;
         private CacheService $cache;
 
         public function __construct(array $data){
@@ -48,6 +50,8 @@ use App\Services\CacheService;
             $this->id_acctype = $data['id_acctype'] ?? null;
             $this->promotion_code = $data['promotion_code'] ?? [];
             $this->user_stype = $data['userSType'] ?? null;
+            $this->pending_offers = $data['user_pending_offers'] ?? null;
+            $this->total_offers = $data['user_total_offers'] ?? null;
             $this->cache = new CacheService();
         }
 

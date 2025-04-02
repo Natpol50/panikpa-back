@@ -22,6 +22,9 @@ class RequestObject
     public int $permissionInteger = 0;
     public ?string $profilePictureUrl = null;
     public ?string $userSType = null;
+    public ?string $userSex = null;
+    public ?int $offernumber = null;
+    public ?int $offerpending = null;
     private CacheService $cache;
     
     /**
@@ -38,6 +41,9 @@ class RequestObject
         $this->permissionInteger = $params['permissionInteger'] ?? 0;
         $this->profilePictureUrl = $params['profilePictureUrl'] ?? '/assets/img/default-avatar.png';
         $this->userSType = $params['userSearchType'] ?? null;
+        $this->userSex = $params['userGender'] ?? null;
+        $this->offernumber = $params['totalOffers'] ?? null;
+        $this->offerpending = $params['pendingOffers'] ?? null;
         $this->cache = new CacheService();
     }
     

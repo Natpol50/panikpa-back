@@ -139,6 +139,12 @@ $router->get('/', ['controller' => 'HomeController', 'action' => 'index']);
 $router->get('/API/latestupdates', ['controller' => 'HomeController', 'action' => 'apiUpdates']);
 $router->get('/API/favoffers', ['controller' => 'HomeController', 'action' => 'apiFavoriteOffers']);
 
+// User profile routes
+$router->get('/profile', ['controller' => 'UserController', 'action' => 'profile', 'auth' => true]);
+$router->post('/update-profile', ['controller' => 'UserController', 'action' => 'updateProfile', 'auth' => true]);
+$router->post('/upload-profile-picture', ['controller' => 'UserController', 'action' => 'uploadProfilePicture', 'auth' => true]);
+$router->post('/change-password', ['controller' => 'UserController', 'action' => 'changePassword', 'auth' => true]);
+$router->post('/delete-user/{id:[0-9]+}', ['controller' => 'UserController', 'action' => 'apiDeleteUser', 'auth' => true]);
 
 $router->get('/favicon.ico', ['controller' => 'AssetController', 'action' => 'favicon']);
 

@@ -32,6 +32,7 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
         $this->blocks = [
             'title' => [$this, 'block_title'],
             'content' => [$this, 'block_content'],
+            'javascripts' => [$this, 'block_javascripts'],
         ];
     }
 
@@ -71,7 +72,7 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
         yield "<div class=\"container\">
     <div class=\"auth-container\">
     <div class=\"login-header\">
-        <img src=\"/assets/img/PANIKPA.png\" alt=\"Logo PANIKPA\" class=\"logo\">
+        <img src=\"/assets/img/PANIKPA.webp\" alt=\"Logo PANIKPA\" class=\"logo\">
         <h1>Créer un compte</h1>
         <p>Pour créer votre compte, veuillez remplir les informations ci dessous.</p>
     </div>
@@ -167,12 +168,21 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
                     </label>
                 </div>
             </div>
+
+            <div id=\"student-type-section\" class=\"form-section\" style=\"display: none;\">
+                <label for=\"studentType\">type de recherche :</label>
+                <select id=\"studentType\" name=\"studentType\">
+                    <option value=\"\" disabled selected>Sélectionnez votre type de recherche</option>
+                    <option value=\"stage\">Stage</option>
+                    <option value=\"alternance\">Alternance</option>
+                </select>
+            </div>
             
             <div class=\"form-section\">
                 <label for=\"phone\">téléphone :</label>
                 <input type=\"tel\" id=\"phone\" name=\"phone\" placeholder=\"Votre numéro de téléphone\" value=\"";
-        // line 64
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", true, true, false, 64)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", false, false, false, 64), "")) : ("")), "html", null, true);
+        // line 73
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", true, true, false, 73)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", false, false, false, 73), "")) : ("")), "html", null, true);
         yield "\" required>
             </div>
 
@@ -200,6 +210,65 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
         yield from [];
     }
 
+    // line 98
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_javascripts(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 99
+        yield "    ";
+        yield from $this->yieldParentBlock("javascripts", $context, $blocks);
+        yield "
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const userTypeRadios = document.querySelectorAll('input[name=\"userType\"]');
+            const studentTypeSection = document.getElementById('student-type-section');
+            const studentTypeSelect = document.getElementById('studentType');
+
+            // Function to toggle student type section
+            function toggleStudentTypeSection() {
+                const isStudentSelected = document.querySelector('input[name=\"userType\"][value=\"etudiant\"]:checked');
+                
+                if (isStudentSelected) {
+                    studentTypeSection.style.display = 'block';
+                    studentTypeSelect.required = true;
+                } else {
+                    studentTypeSection.style.display = 'none';
+                    studentTypeSelect.required = false;
+                    studentTypeSelect.selectedIndex = 0; // Reset selection
+                }
+            }
+
+            // Add event listeners to all user type radio buttons
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleStudentTypeSection);
+            });
+
+            // Initial check on page load
+            toggleStudentTypeSection();
+
+            // Form validation
+            const registerForm = document.getElementById('register-form');
+            registerForm.addEventListener('submit', (e) => {
+                // Extra validation for student type
+                const isStudentSelected = document.querySelector('input[name=\"userType\"][value=\"etudiant\"]:checked');
+                const studentTypeSelected = studentTypeSelect.value;
+
+                if (isStudentSelected && !studentTypeSelected) {
+                    e.preventDefault();
+                    alert('Veuillez sélectionner votre type de recherche.');
+                    studentTypeSelect.focus();
+                    return false;
+                }
+            });
+        });
+    </script>
+";
+        yield from [];
+    }
+
     /**
      * @codeCoverageIgnore
      */
@@ -221,7 +290,7 @@ class __TwigTemplate_dda7c8590db214fe60eeeb6bbbb8d3fb extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  175 => 64,  162 => 56,  153 => 52,  144 => 48,  133 => 40,  125 => 35,  115 => 28,  104 => 22,  98 => 21,  92 => 20,  86 => 19,  71 => 6,  64 => 5,  52 => 3,  41 => 1,);
+        return array (  221 => 99,  214 => 98,  185 => 73,  163 => 56,  154 => 52,  145 => 48,  134 => 40,  126 => 35,  116 => 28,  105 => 22,  99 => 21,  93 => 20,  87 => 19,  72 => 6,  65 => 5,  53 => 3,  42 => 1,);
     }
 
     public function getSourceContext(): Source

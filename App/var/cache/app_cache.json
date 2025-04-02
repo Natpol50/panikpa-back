@@ -59,36 +59,6 @@
         },
         "expires_at": 1743583500
     },
-    "role_permissions_4": {
-        "value": {
-            "id_acctype": 4,
-            "acctype_name": "Student",
-            "perm_company_creation": 0,
-            "perm_modify_comp_info": 0,
-            "perm_grade_company": 1,
-            "perm_create_offer": 0,
-            "perm_modify_offer": 0,
-            "perm_delete_offer": 0,
-            "perm_delete_tutor": 0,
-            "perm_search_tutor": 0,
-            "perm_modify_tutor": 0,
-            "perm_search_student": 0,
-            "perm_create_student": 0,
-            "perm_modify_student": 0,
-            "perm_delete_student": 0,
-            "perm_consult_students_stats": 0,
-            "perm_consult_students_applications": 0,
-            "perm_wishlist": 1,
-            "perm_offer_apply": 1,
-            "perm_consult_offer_applications": 0,
-            "perm_reply_offer_applications": 0,
-            "perm_create_admin": 0,
-            "perm_modify_admin": 0,
-            "perm_delete_admin": 0,
-            "perm_admin": 0
-        },
-        "expires_at": 1743584427
-    },
     "role_permissions_5": {
         "value": {
             "id_acctype": 5,
@@ -147,6 +117,36 @@
             "perm_delete_admin": 0,
             "perm_admin": 0
         },
-        "expires_at": 1743590202
+        "expires_at": 1743596043
+    },
+    "role_permissions_4": {
+        "value": {
+            "id_acctype": 4,
+            "acctype_name": "Student",
+            "perm_company_creation": 0,
+            "perm_modify_comp_info": 0,
+            "perm_grade_company": 1,
+            "perm_create_offer": 0,
+            "perm_modify_offer": 0,
+            "perm_delete_offer": 0,
+            "perm_delete_tutor": 0,
+            "perm_search_tutor": 0,
+            "perm_modify_tutor": 0,
+            "perm_search_student": 0,
+            "perm_create_student": 0,
+            "perm_modify_student": 0,
+            "perm_delete_student": 0,
+            "perm_consult_students_stats": 0,
+            "perm_consult_students_applications": 0,
+            "perm_wishlist": 1,
+            "perm_offer_apply": 1,
+            "perm_consult_offer_applications": 0,
+            "perm_reply_offer_applications": 0,
+            "perm_create_admin": 0,
+            "perm_modify_admin": 0,
+            "perm_delete_admin": 0,
+            "perm_admin": 0
+        },
+        "expires_at": 1743599898
     }
 }

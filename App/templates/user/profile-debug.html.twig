@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Debug - {{ parent() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Debug Information</h1>
+    
+    <h2>User Data</h2>
+    <pre>{{ dump(user) }}</pre>
+    
+    <h2>Request Data</h2>
+    <pre>{{ dump(request) }}</pre>
+</div>
+{% endblock %}

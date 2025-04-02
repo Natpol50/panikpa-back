@@ -63,11 +63,53 @@ class UserModel
             // Get user's promotion codes
             $promoCodes = $this->getUserPromoCodes($userId);
             $user['promotionCode'] = $promoCodes;
+
+            $offers = $this->getUserOffersStatistics($userId); 
+
+            $user['user_pending_offers'] = $offers['user_pending_offers'];
+            $user['user_total_offers'] = $offers['user_total_offers'];
             
+            $offers = $this->getUserOffersStatistics($userId); 
+
+            $user['user_pending_offers'] = $offers['user_pending_offers'];
+            $user['user_total_offers'] = $offers['user_total_offers'];
             // Convert to object
             return $this->arrayToUserObject($user);
         } catch (PDOException $e) {
             throw new ModelException("Failed to get user by ID: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get user offers statistics
+     * 
+     * @param int $userId User ID
+     * @return array Array containing user_pending_offers and user_total_offers
+     * @throws ModelException If database error occurs
+     */
+    public function getUserOffersStatistics(int $userId): array
+    {
+        try {
+            $query = "
+                SELECT 
+                    COUNT(*) AS user_total_offers,
+                    SUM(CASE WHEN interaction_followup_reply_type IS NULL THEN 1 ELSE 0 END) AS user_pending_offers
+                FROM Interaction
+                WHERE id_user = :userId
+            ";
+
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return [
+                'user_total_offers' => (int)($result['user_total_offers'] ?? 0),
+                'user_pending_offers' => (int)($result['user_pending_offers'] ?? 0),
+            ];
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get user offers statistics: " . $e->getMessage());
         }
     }
     
@@ -96,6 +138,10 @@ class UserModel
             $promoCodes = $this->getUserPromoCodes($user['id_user']);
             $user['promotionCode'] = $promoCodes;
             
+            $offers = $this->getUserOffersStatistics($user['id_user']); 
+
+            $user['user_pending_offers'] = $offers['user_pending_offers'];
+            $user['user_total_offers'] = $offers['user_total_offers'];
             // Convert to object
             return $this->arrayToUserObject($user);
         } catch (PDOException $e) {
@@ -444,6 +490,9 @@ class UserModel
         $user->refreshToken = $data['user_refresh_token'] ?? null;
         $user->userRole = (int)$data['id_acctype'];
         $user->promotionCode = $data['promotionCode'] ?? [];
+        $user->user_stype = $data['userSType'] ?? null;
+        $user->pending_offers = $data['user_pending_offers'] ?? null;
+        $user->total_offers = $data['user_total_offers'] ?? null;
         
         return $user;
     }
@@ -502,6 +551,82 @@ class UserModel
             return $result ?: []; // Return empty array if no result
         } catch (PDOException $e) {
             throw new ModelException("Unable to fetch the enterprise ID linked to the user: " . $e->getMessage());
+        }
+    }
+    /**
+     * Update user password
+     * 
+     * @param array $userData User data containing userId and new password
+     * @return bool True on success
+     * @throws ModelException If update fails
+     */
+    public function updateUserPassword(object $user): bool
+    {
+        try {
+            if (!isset($user->userId) || !isset($user->userPassword)) {
+                throw new ModelException("User ID and password are required for password update");
+            }
+            
+            $query = "UPDATE User SET user_phash = :passwordHash WHERE id_user = :userId";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+                ':passwordHash' => password_hash($user->userPassword, PASSWORD_DEFAULT),
+                ':userId' => $user->userId
+            ]);
+            
+            // Check if a row was affected
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to update user password: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get user profile image path
+     * 
+     * @param int $userId User ID
+     * @return string|null Profile image path or null if not set
+     */
+    public function getUserProfileImagePath(int $userId): ?string
+    {
+        try {
+            $query = "SELECT user_photo_url FROM User WHERE id_user = :userId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result && $result['user_photo_url'] ? $result['user_photo_url'] : null;
+        } catch (PDOException $e) {
+            error_log("Failed to get user profile image path: " . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Check if email is already in use by another user
+     * 
+     * @param string $email Email to check
+     * @param int $excludeUserId User ID to exclude (for user's own email)
+     * @return bool True if email is already in use
+     */
+    public function isEmailInUse(string $email, int $excludeUserId = 0): bool
+    {
+        try {
+            $query = "SELECT COUNT(*) AS count FROM User WHERE user_email = :email AND id_user != :excludeUserId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':email', $email, PDO::PARAM_STR);
+            $stmt->bindValue(':excludeUserId', $excludeUserId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result && (int)$result['count'] > 0;
+        } catch (PDOException $e) {
+            error_log("Failed to check if email is in use: " . $e->getMessage());
+            return false;
         }
     }
 }
