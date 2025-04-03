@@ -106,7 +106,7 @@ class EnterpriseController extends BaseController
         }
         
         // Check if user has permission to create enterprises
-        if (!$request->hasPermission(4)) { // Assuming 4 is the permission bit for enterprise creation
+        if (!$request->hasPermission('perm_company_creation')) {
             throw new AuthorizationException("You don't have permission to create enterprises");
         }
         
@@ -131,7 +131,7 @@ class EnterpriseController extends BaseController
         }
         
         // Check if user has permission to create enterprises
-        if (!$request->hasPermission(4)) { // Assuming 4 is the permission bit for enterprise creation
+        if (!$request->hasPermission('perm_company_creation')) { 
             throw new AuthorizationException("You don't have permission to create enterprises");
         }
         
@@ -161,7 +161,7 @@ class EnterpriseController extends BaseController
         }
         
         // Check if user has permission to edit enterprises
-        if (!$request->hasPermission(8)) { // Assuming 8 is the permission bit for enterprise editing
+        if (!$request->hasPermission('perm_modify_comp_info')) {
             throw new AuthorizationException("You don't have permission to edit enterprises");
         }
         
@@ -201,7 +201,7 @@ class EnterpriseController extends BaseController
         }
         
         // Check if user has permission to edit enterprises
-        if (!$request->hasPermission(8)) { // Assuming 8 is the permission bit for enterprise editing
+        if (!$request->hasPermission('perm_modify_comp_info')) {
             throw new AuthorizationException("You don't have permission to edit enterprises");
         }
         
@@ -245,7 +245,7 @@ class EnterpriseController extends BaseController
         }
         
         // Check if user has permission to delete enterprises
-        if (!$request->hasPermission(16)) { // Assuming 16 is the permission bit for enterprise deletion
+        if (!$request->hasPermission('perm_modify_comp_info')) { 
             throw new AuthorizationException("You don't have permission to delete enterprises");
         }
         
@@ -324,7 +324,7 @@ class EnterpriseController extends BaseController
 
     /**
      * API endpoint to retrieve enterprises with filtering and pagination
-     * 
+     *
      * @param RequestObject $request Current request information
      * @return void Outputs JSON response
      */
@@ -344,18 +344,19 @@ class EnterpriseController extends BaseController
         try {
             // Retrieve filtered and paginated enterprises
             $results = $this->enterpriseModel->searchEnterprises(
-                $query, 
-                $pageSize, 
+                $query,
+                $pageSize,
                 $offset
             );
-
+            
             $enterprises = array_map(function ($enterprise) {
                 if (empty($enterprise['enterprise_photo_url'])) {
-                $enterprise['enterprise_photo_url'] = '/assets/pp/defaultenterprise.png';
+                    $enterprise['enterprise_photo_url'] = '/assets/pp/defaultenterprise.png';
                 }
                 return $enterprise;
             }, $results['results'] ?? []);
-            $count = $results['total_count'] ??0;
+            
+            $count = $results['total_count'] ?? 0;
             
             // Prepare response
             $response = [

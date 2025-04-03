@@ -680,4 +680,154 @@ class UserModel
             return false;
         }
     }
+
+
+    /**
+     * Retrieve user by many criterias with pagination and search
+     * 
+     * @param int $page Current page number
+     * @param int $itemsPerPage Items per page
+     * @param array $criteria Search criteria
+     * @return array Users and total count
+     */
+    public function getUserByAccountType(int $page, int $itemsPerPage, array $criteria = []): array
+    {
+        try {
+            $offset = ($page - 1) * $itemsPerPage;
+            
+            // Build the base query
+            $baseQuery = "
+            FROM User
+            WHERE 1=1";
+            
+            $params = [];
+            
+            // Add search criteria if provided
+            if (!empty($criteria['query'])) {
+                $search = '%' . $criteria['query'] . '%';
+                $baseQuery .= " AND (
+                    user_name LIKE :search_name OR
+                    user_fname LIKE :search_first_name OR
+                    user_stype LIKE :search_type OR
+                    id_enterprise LIKE :search_enterprise OR
+                    user_email LIKE :search_email OR
+                    id_acctype LIKE :search_acctype OR
+                    user_phone LIKE :search_phone 
+                )";
+                $params[':search_name'] = $search;
+                $params[':search_first_name'] = $search;
+                $params[':search_type'] = $search;
+                $params[':search_enterprise'] = $search;
+                $params[':search_email'] = $search;
+                $params[':search_acctype'] = $search;
+                $params[':search_phone'] = $search;
+            }
+            
+            // Count query for total results
+            $countQuery = "SELECT COUNT(*) as total " . $baseQuery;
+            $countStmt = $this->database->prepare($countQuery);
+            foreach ($params as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+            $countStmt->execute();
+            $totalRows = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+            
+            // Data query with pagination
+            $query = "SELECT * " . $baseQuery . " ORDER BY user_name DESC LIMIT :limit OFFSET :offset";
+            $stmt = $this->database->prepare($query);
+            
+            // Bind parameters
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':limit', $itemsPerPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            
+            $stmt->execute();
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return [
+                'users' => $users,
+                'totalRows' => $totalRows
+            ];
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to retrieve users: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Retrieve user by many criterias with pagination and search
+     * 
+     * @param int $page Current page number
+     * @param int $itemsPerPage Items per page
+     * @param string $promoCode promotion from where to fetch the use
+     * @param array $criteria Search criteria
+     * @return array Users and total count
+     */
+    public function getUserByAccountTypeFromPromotion(string $promoCode, int $page, int $itemsPerPage, array $criteria = []): array
+    {
+        try {
+            $offset = ($page - 1) * $itemsPerPage;
+            
+            // Build the base query
+            $baseQuery = "
+            FROM User
+            INNER JOIN Promo
+            ON User.id_user = Promo.id_user
+            WHERE Promo.promo_code = :promo_code";
+            
+            $params = [':promo_code' => $promoCode];
+            
+            // Add search criteria if provided
+            if (!empty($criteria['query'])) {
+                $search = '%' . $criteria['query'] . '%';
+                $baseQuery .= " AND (
+                    user_name LIKE :search_name OR
+                    user_fname LIKE :search_first_name OR
+                    user_stype LIKE :search_type OR
+                    id_enterprise LIKE :search_enterprise OR
+                    user_email LIKE :search_email OR
+                    id_acctype LIKE :search_acctype OR
+                    user_phone LIKE :search_phone 
+                )";
+                $params[':search_name'] = $search;
+                $params[':search_first_name'] = $search;
+                $params[':search_type'] = $search;
+                $params[':search_enterprise'] = $search;
+                $params[':search_email'] = $search;
+                $params[':search_acctype'] = $search;
+                $params[':search_phone'] = $search;
+            }
+            
+            // Count query for total results
+            $countQuery = "SELECT COUNT(*) as total " . $baseQuery;
+            $countStmt = $this->database->prepare($countQuery);
+            foreach ($params as $key => $value) {
+                $countStmt->bindValue($key, $value);
+            }
+            $countStmt->execute();
+            $totalRows = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+            
+            // Data query with pagination
+            $query = "SELECT User.* " . $baseQuery . " ORDER BY user_name DESC LIMIT :limit OFFSET :offset";
+            $stmt = $this->database->prepare($query);
+            
+            // Bind parameters
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':limit', $itemsPerPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            
+            $stmt->execute();
+            $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return [
+                'users' => $users,
+                'totalRows' => $totalRows
+            ];
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to retrieve users: " . $e->getMessage());
+        }
+    }
 }

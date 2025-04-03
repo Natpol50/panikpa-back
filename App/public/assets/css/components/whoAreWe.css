@@ -1,0 +1,28 @@
+/* Who Are We page styles */
+.container{
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.WAW-informations {
+    display: inline-block;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    margin: 5px;
+    max-width: 48%;
+    box-sizing: border-box;
+    text-align: center;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (max-width: 768px){
+    .container{
+        flex-direction: column;
+    }
+
+    .WAW-informations{
+        max-width: 100%;
+    }
+}

@@ -353,13 +353,13 @@ class GestionController extends BaseController
                 // If you can delete a user
                 if ($this->cacheService->checkRolePermission($request->userRole, "perm_delete_student")) {
                     // We check if you have the same Promotion as the user you want to delete
-                    $userToUpdatePromotion = $this->userModel->getUserById($userIdToUpdate)["promo_code"];
+                    $userToUpdatePromotion = $this->promoModel->getPromotionFromUserId($userIdToUpdate)["promo_code"];
 
                     // We check if you have the same Promotion as the user you want to delete
-                    $userToUpdatePromotion = $this->userModel->getUserById($request->userId)["promo_code"];
+                    $userWhoWantsToUpdate = $this->promoModel->getPromotionFromUserId($request->userId)["promo_code"];
 
-                    // Check si les deux utilisateurs sont dans la même promotion et check si ils sont dans une promotion
-                    if ($userToUpdatePromotion === $userToUpdatePromotion && $userToUpdatePromotion) {
+                    // Check if both users are in the same promotion
+                    if ($userToUpdatePromotion === $userWhoWantsToUpdate && $userToUpdatePromotion) {
                         $canUpdate = 1;
                     }
 
@@ -473,20 +473,230 @@ class GestionController extends BaseController
         }
 
         //End of function
-
-
     }
+
+
+
+
 
 
     // The API function that should answer this route : /API/gestion/user ?query="usertypetoget"page=x&limit=y&query=okdcehhergudcrvhcffhuqcvfcgqf
     // Avec usertypetoget the name of the acctype
-    public function apiGetUserController(): void
+    public function apiGetUserAdmin(RequestObject $request): void
     {
+        try{
+            // even if this function should only be used if you are both loged in and an admin, we still check it again, for security purposes
+
+            $canGetUsers = 0;
+
+            if($request->isAuthenticated()){
+            $canGetUsers = $this->cacheService->checkRolePermission(
+                $request->userRole,
+                "perm_admin"
+            );}
+        if($canGetUsers){
         // Get query parameters
         $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
         $promotionCode = isset($_GET['promotion']) ? (int) $_GET['promotion'] : 0;
         $query = isset($_GET['query']) ? $_GET['query'] : '';
 
+        // Prepare search criteria
+        $searchCriteria = [];
+        if (!empty($query)) {
+            $searchCriteria['query'] = $query;
+        }
+
+        
+        //Fetching the different users and information for the pagination
+
+        $result = $this->userModel->getUserByAccountType($page,$limit,$searchCriteria);
+
+        $users = $result['users'];
+        $totalUsers = $result['totalRows'];
+        $totalPages = ceil($totalUsers / $limit);
+
+        // Format user data with additional information
+        $formattedUsers = [];
+        
+        foreach ($users as $user) {
+            // Get enterprise data
+            $enterprise = $this->enterpriseModel->getEnterpriseById($user['id_enterprise']);
+            $enterpriseName = $enterprise ? $enterprise['enterprise_name'] : 'Unknown';
+            
+            // Get tags for this user
+            $tags = $this->tagModel->getTagsByUserId($user['id_user']);
+
+            // Format tags for display
+            $formattedTags = [];
+            foreach ($tags as $tag) {
+                $formattedTags[] = [
+                    'id' => $tag['id_tag'],
+                    'name' => $tag['tag_name']
+                ];
+            }
+
+            // Create a nicely formatted offer object
+            $formattedUsers[] = [
+                'id' => $user['id_user'],
+                'creationDate' => $user['user_creation_date'],
+                'name' => $user['user_name'],
+                'firstName' => $user['user_fname'],
+                'photoUrl' => $user['user_photo_url'],
+                'email' => $user['user_email'],
+                'searchType' => $user['user_stype'],
+                'acctypeName' => $this->cacheModel->getRolePermission($user['id_acctype']),
+                'phone' => $user['user_phone'],
+                'company' => $enterpriseName,
+                'tags' => $formattedTags
+            ];
+        }
+
+            // Return JSON response
+            echo json_encode([
+             'success' => true,
+             'offers' => $formattedUsers,
+             'totalPages' => $totalPages,
+             'currentPage' => $page,
+             'totalOffers' => $totalOffers,
+             'query' => $query
+        ]);
+
+    }}
+    catch (\Exception $e) {
+        // Handle any errors
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Failed to fetch offers: ' . $e->getMessage()
+        ]);
+
+        
     }
+}
+
+
+    public function apiGetUserTutor(RequestObject $request): void{
+        try{
+            // If function is for the tutors to see the users within their own promotion
+
+            $canGetUsers = 0;
+
+            if($request->isAuthenticated()){
+            $canGetUsers = $this->cacheService->checkRolePermission(
+                $request->userRole,
+                "perm_search_student"
+            );}
+        if($canGetUsers){
+        // Get query parameters
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+        $promotionCode = isset($_GET['promotion']) ? (int) $_GET['promotion'] : 0;
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
+
+        // Prepare search criteria
+        $searchCriteria = [];
+        if (!empty($query)) {
+            $searchCriteria['query'] = $query;
+        }
+
+        // fetching the promotions where the user is :
+
+        $promotions = $this->promoModel->getPromotionFromUserId($request->userId);
+
+        if($promotions){
+        
+        $fromattedPromo = [];
+
+        // For each promotion of the Tutor
+        foreach($promotions as $promotion){
+
+        // Get the Users from a specified promotion
+        $result = $this->userModel->getUserByAccountTypeFromPromotion($promotion,$page,$limit,$searchCriteria);
+
+        //Fetching the different users and information for the pagination
+        $users = $result['users'];
+        $totalUsers = $result['totalRows'];
+        $totalPages = ceil($totalUsers / $limit);
+
+        // Format user data with additional information
+        $formattedUsers = [];
+        
+        foreach ($users as $user) {
+            // Get enterprise data
+            $enterprise = $this->enterpriseModel->getEnterpriseById($user['id_enterprise']);
+            $enterpriseName = $enterprise ? $enterprise['enterprise_name'] : 'Unknown';
+            
+            // Get tags for this user
+            $tags = $this->tagModel->getTagsByUserId($user['id_user']);
+
+            // Format tags for display
+            $formattedTags = [];
+            foreach ($tags as $tag) {
+                $formattedTags[] = [
+                    'id' => $tag['id_tag'],
+                    'name' => $tag['tag_name']
+                ];
+            }
+
+            // Create a nicely formatted offer object
+            $formattedUsers[] = [
+                'id' => $user['id_user'],
+                'creationDate' => $user['user_creation_date'],
+                'name' => $user['user_name'],
+                'firstName' => $user['user_fname'],
+                'photoUrl' => $user['user_photo_url'],
+                'email' => $user['user_email'],
+                'searchType' => $user['user_stype'],
+                'acctypeName' => $this->cacheModel->getRolePermission($user['id_acctype']),
+                'phone' => $user['user_phone'],
+                'company' => $enterpriseName,
+                'tags' => $formattedTags
+            ];
+
+            
+          
+        }
+
+        $fromattedPromo[] = [
+            'promotion' => $promotion,
+            'users' => $formattedUsers
+        ];
+
+        }
+
+            // Return JSON response
+            echo json_encode([
+             
+             'success' => true,
+             'Promotions' => $fromattedPromo,
+             'totalPages' => $totalPages,
+             'currentPage' => $page,
+             'totalUssers' => $totalUsers,
+             'query' => $query
+        ]);
+
+    }}
+}catch (\Exception $e) {
+        // Handle any errors
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'error' => 'Failed to fetch offers: ' . $e->getMessage()
+        ]);
+
+        
+    }
+    }
+
+
+
+
+
+
+
+
+
+
+
 }

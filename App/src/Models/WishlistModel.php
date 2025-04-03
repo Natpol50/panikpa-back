@@ -215,4 +215,72 @@ class WishlistModel
             throw new ModelException("Failed to clear wishlist: " . $e->getMessage());
         }
     }
+
+    /**
+     * Get wishlist offers with pagination
+     * 
+     * @param int $userId User ID
+     * @param int $page Current page number
+     * @param int $itemsPerPage Items per page
+     * @return array Array containing offers and total count
+     * @throws ModelException If fetch fails
+     */
+    public function getWishlistOffersPaginated(int $userId, int $page = 1, int $itemsPerPage = 10): array
+    {
+        try {
+            // Calculate offset for pagination
+            $offset = ($page - 1) * $itemsPerPage;
+            
+            // Query to count total offers in wishlist
+            $countQuery = "
+                SELECT COUNT(*) as total
+                FROM Wishlist w
+                JOIN Offer o ON w.id_offer = o.id_offer
+                WHERE w.id_user = :userId
+            ";
+            
+            $countStmt = $this->database->prepare($countQuery);
+            $countStmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $countStmt->execute();
+            $totalOffers = (int)$countStmt->fetch(PDO::FETCH_ASSOC)['total'];
+            
+            // Query to fetch paginated offers
+            $query = "
+                SELECT 
+                    o.id_offer,
+                    o.offer_title,
+                    o.offer_remuneration,
+                    o.offer_level,
+                    o.offer_duration,
+                    o.offer_start,
+                    o.offer_type,
+                    o.offer_publish_date,
+                    o.offer_content,
+                    o.id_enterprise,
+                    o.id_city
+                FROM Wishlist w
+                JOIN Offer o ON w.id_offer = o.id_offer
+                JOIN Enterprise e ON o.id_enterprise = e.id_enterprise
+                JOIN City c ON o.id_city = c.id_city
+                WHERE w.id_user = :userId
+                ORDER BY o.offer_publish_date DESC
+                LIMIT :limit OFFSET :offset
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':limit', $itemsPerPage, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $offers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            return [
+                'offers' => $offers,
+                'totalOffers' => $totalOffers
+            ];
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get wishlist offers with pagination: " . $e->getMessage());
+        }
+    }
 }

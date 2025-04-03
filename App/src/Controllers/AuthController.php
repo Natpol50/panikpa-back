@@ -244,13 +244,15 @@ class AuthController extends BaseController
                 exit;
             }
             
-            // TODO : ALL USERS ROLEID
+            // TODO : ALL USERS ROLEID authorized by everyone
             // Determine role ID based on user type
-            $roleId = 3; // Default to student (3)
+            $roleId = 5; // Default to basic user (5)
             if ($userType === 'tuteur') {
-                $roleId = 4; // Pilote de promotion (4)
+                $roleId = 3; // Pilote de promotion (3)
             } else if ($userType === 'basic') {
-                $roleId = 1; // Admin user (4) TODO: CHANGE
+                $roleId = 5; // Admin user (5)
+            } else if ($userType === 'etudiant') {
+                $roleId = 4; // Student (4)
             }
             
             // Determine gender based on civilite

@@ -102,24 +102,26 @@ $router->get('/API/GetOffers', ['controller' => 'OfferController', 'action' => '
 
 // Add this for wishlist toggle functionality
 $router->post('/API/wishlist/toggle/{id:[A-Za-z0-9]+}', ['controller' => 'WishlistController', 'action' => 'toggle', 'auth' => true]);
+$router->get('/API/wishlist', ['controller' => 'WishlistController', 'action' => 'apiGetWishlist', 'auth' => true]);
 
 // Application routes
 $router->get('/form', ['controller' => 'ApplicationController', 'action' => 'form']);
-$router->post('/submit_application', ['controller' => 'ApplicationController', 'action' => 'submit']);
+$router->post('/submit_application', ['controller' => 'ApplicationController', 'action' => 'submit', 'auth'=> true]);
 
 // Wishlist routes
 $router->get('/wishlist', ['controller' => 'WishlistController', 'action' => 'index', 'auth' => true]);
-$router->post('/wishlist/add/{id}', ['controller' => 'WishlistController', 'action' => 'add', 'auth' => true]);
-$router->post('/wishlist/remove/{id}', ['controller' => 'WishlistController', 'action' => 'remove', 'auth' => true]);
 
 // User management routes
 $router->get('/users', ['controller' => 'UserController', 'action' => 'index', 'auth' => true]);
 $router->get('/users/create', ['controller' => 'UserController', 'action' => 'create', 'auth' => true]);
 $router->post('/users', ['controller' => 'UserController', 'action' => 'store', 'auth' => true]);
 $router->get('/users/{id}', ['controller' => 'UserController', 'action' => 'show', 'auth' => true]);
+
 // Legal pages
-$router->get('/CGU', ['controller' => 'LegalController', 'action' => 'cgu']);
-$router->get('/RGPD', ['controller' => 'LegalController', 'action' => 'rgpd']);
+$router->get('/CGU', ['controller' => 'StaticController', 'action' => 'showCguPage']);
+$router->get('/RGPD', ['controller' => 'StaticController', 'action' => 'showRgpdPage']);
+$router->get('/team', ['controller' => 'StaticController', 'action' => 'showOurTeamPage']);
+$router->get('/about', ['controller' => 'StaticController', 'action' => 'showWhoAreWePage']);
 
 
 // Account creation routes
@@ -148,6 +150,18 @@ $router->post('/delete-user/{id:[0-9]+}', ['controller' => 'UserController', 'ac
 $router->get('/API/enterpriseList', ['controller' => 'EnterpriseController', 'action' => 'apiEnterpriseList']);
 $router->get('/API/tagsList', ['controller' => 'OfferController', 'action' => 'apiTagsList']);
 $router->get('/API/citiesList', ['controller' => 'OfferController', 'action' => 'apiCityList']);
+
+// Gestion routes
+$router->get('/gestion', ['controller' => 'GestionController', 'action' => 'index', 'auth' => true]);
+$router->get('/gestion/promotion', ['controller' => 'GestionController', 'action' => 'promo', 'auth' => true]);
+$router->get('/gestion/user', ['controller' => 'GestionController', 'action' => 'userGestion', 'auth' => true]);
+$router->get('/API/gestionpromo', ['controller' => 'GestionController', 'action' => 'apiGetPromoUsers', 'auth' => true]);
+$router->get('/API/admingetuser', ['controller' => 'GestionController', 'action' => 'apiGetUserAdmin', 'auth' => true]);
+$router->get('/API/tutorgetser', ['controller' => 'GestionController', 'action' => 'apiGetUserTutor', 'auth' => true]);
+$router->post('/API/createuser', ['controller' => 'GestionController', 'action' => 'apiCreateUser', 'auth' => true]);
+$router->post('/API/updateuser', ['controller' => 'GestionController', 'action' => 'apiUpdateUser', 'auth' => true]);
+$router->post('/API/deleteuser', ['controller' => 'GestionController', 'action' => 'apiDeleteUser', 'auth' => true]);
+
 
 $router->get('/favicon.ico', ['controller' => 'AssetController', 'action' => 'favicon']);
 

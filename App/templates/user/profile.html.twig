@@ -580,12 +580,10 @@
         <!-- Profile Sidebar -->
         <div class="profile-sidebar">
             <div class="profile-picture-container">
-                {% if user.profilePictureUrl and user.profilePictureUrl != '/assets/img/default-avatar.png' %}
+                {% if user.profilePictureUrl %}
                     <img src="{{ user.profilePictureUrl }}" alt="{{ user.userFirstName }}" class="profile-picture" id="profileImage">
                 {% else %}
-                    <div class="profile-picture-placeholder" id="profilePlaceholder">
-                        {{ user.userFirstName|slice(0, 1)|upper }}
-                    </div>
+
                 {% endif %}
                 <div class="upload-overlay" id="uploadOverlay">
                     Changer la photo
