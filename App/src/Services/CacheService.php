@@ -229,10 +229,10 @@ class CacheService
     /**
      * Get the average rating and comment count for an enterprise
      * 
-     * @param int $enterpriseId Enterprise ID
+     * @param string $enterpriseId Enterprise ID
      * @return array|null ['average_rating' => float|null, 'comment_count' => int] or null if no data
      */
-    public function getEnterpriseAverage(int $enterpriseId): ?array
+    public function getEnterpriseAverage(string $enterpriseId): ?array
     {
         $cacheKey = "enterprise_average_$enterpriseId";
 
@@ -255,11 +255,11 @@ class CacheService
     /**
      * Update the average rating and comment count for an enterprise
      * 
-     * @param int $enterpriseId Enterprise ID
+     * @param string $enterpriseId Enterprise ID
      * @param float $newRating New rating to add or remove
      * @param bool $increment True to add, false to remove
      */
-    public function updateEnterpriseAverage(int $enterpriseId, float $newRating, bool $increment): void
+    public function updateEnterpriseAverage(string $enterpriseId, float $newRating, bool $increment): void
     {
         $cacheKey = "enterprise_average_$enterpriseId";
 

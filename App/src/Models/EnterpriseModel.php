@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\Database;
 use App\Exceptions\ModelException;
+use App\Services\CacheService;
 use PDO;
 use PDOException;
 
@@ -198,13 +199,17 @@ class EnterpriseModel
     /**
      * Update an enterprise
      * 
-     * @param int $enterpriseId ID of the enterprise
+     * @param string $enterpriseId ID of the enterprise (3 characters long)
      * @param array $data New enterprise data
      * @return bool Success status
      * @throws ModelException If update fails
      */
-    public function updateEnterprise(int $enterpriseId, array $data): bool
+    public function updateEnterprise(string $enterpriseId, array $data): bool
     {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
         try {
             $currentData = $this->getEnterpriseById($enterpriseId);
             
@@ -250,12 +255,16 @@ class EnterpriseModel
     /**
      * Delete an enterprise
      * 
-     * @param int $enterpriseId ID of the enterprise
+     * @param string $enterpriseId ID of the enterprise (3 characters long)
      * @return bool Success status
      * @throws ModelException If deletion fails
      */
-    public function deleteEnterprise(int $enterpriseId): bool
+    public function deleteEnterprise(string $enterpriseId): bool
     {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
         try {
             if (!$this->getEnterpriseById($enterpriseId)) {
                 throw new ModelException("Enterprise does not exist");
@@ -275,12 +284,16 @@ class EnterpriseModel
     /**
      * Get average rating for an enterprise
      * 
-     * @param int $enterpriseId ID of the enterprise
+     * @param string $enterpriseId ID of the enterprise (3 characters long)
      * @return float|null Average rating or null if no ratings
      * @throws ModelException If rating retrieval fails
      */
-    public function getAverageRating(int $enterpriseId): ?float
+    public function getAverageRating(string $enterpriseId): ?float
     {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
         try {
             $query = "
                 SELECT AVG(grade_UE) as average_rating
@@ -302,12 +315,16 @@ class EnterpriseModel
     /**
      * Count applications to enterprise offers
      * 
-     * @param int $enterpriseId ID of the enterprise
+     * @param string $enterpriseId ID of the enterprise (3 characters long)
      * @return int Number of applications
      * @throws ModelException If count fails
      */
-    public function countApplications(int $enterpriseId): int
+    public function countApplications(string $enterpriseId): int
     {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
         try {
             $query = "
                 SELECT COUNT(*) as application_count
@@ -324,6 +341,102 @@ class EnterpriseModel
             return $result ? (int)$result['application_count'] : 0;
         } catch (PDOException $e) {
             throw new ModelException("Failed to count enterprise applications: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Add or update an enterprise rating
+     * 
+     * @param string $enterpriseId Enterprise ID (3 characters long)
+     * @param int $userId User ID
+     * @param float $rating Rating value (1-5)
+     * @return bool Success status
+     * @throws ModelException If rating addition fails
+     */
+    public function addRating(string $enterpriseId, int $userId, float $rating): bool
+    {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        try {
+            // Check if enterprise exists
+            $enterprise = $this->getEnterpriseById($enterpriseId);
+            
+            if (!$enterprise) {
+                throw new ModelException("Enterprise not found");
+            }
+            
+            // Validate rating
+            if ($rating < 1 || $rating > 5) {
+                throw new ModelException("Invalid rating value. Must be between 1 and 5");
+            }
+            
+            // Check if user has already rated this enterprise
+            $existingRating = $this->getUserRating($enterpriseId, $userId);
+            
+            if ($existingRating) {
+                // Update existing rating
+                $query = "
+                    UPDATE Comment 
+                    SET grade_UE = :rating, comment_date = NOW() 
+                    WHERE id_enterprise = :enterpriseId AND id_user = :userId
+                ";
+            } else {
+                // Add new rating
+                $query = "
+                    INSERT INTO Comment (id_user, id_enterprise, grade_UE, comment_date) 
+                    VALUES (:userId, :enterpriseId, :rating, NOW())
+                ";
+            }
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':rating', $rating, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            // Update cache
+            $cacheService = new CacheService();
+            $cacheService->updateEnterpriseAverage($enterpriseId, $rating, !$existingRating);
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to add rating: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get user rating for an enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID (3 characters long)
+     * @param int $userId User ID
+     * @return float|null User rating or null if not found
+     * @throws ModelException If retrieval fails
+     */
+    public function getUserRating(string $enterpriseId, int $userId): ?float
+    {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        try {
+            $query = "
+                SELECT grade_UE 
+                FROM Comment 
+                WHERE id_enterprise = :enterpriseId AND id_user = :userId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? (float)$result['grade_UE'] : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get user rating: " . $e->getMessage());
         }
     }
 }

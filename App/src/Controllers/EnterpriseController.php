@@ -4,6 +4,11 @@ namespace App\Controllers;
 
 use App\Services\Database;
 use App\Models\EnterpriseModel;
+use App\Models\OfferModel;
+use App\Models\CityModel;
+use App\Models\TagModel;
+use App\Models\WishlistModel;
+use App\Services\CacheService;
 use App\Core\RequestObject;
 use App\Exceptions\AuthorizationException;
 use App\Exceptions\NotFoundException;
@@ -15,7 +20,12 @@ use App\Exceptions\ValidationException;
 class EnterpriseController extends BaseController
 {
     private EnterpriseModel $enterpriseModel;
-    
+    private OfferModel $offerModel;
+    private CityModel $cityModel;
+    private TagModel $tagModel;
+    private WishlistModel $wishlistModel;
+    private CacheService $cacheService;
+
     /**
      * Create a new EnterpriseController instance
      */
@@ -23,9 +33,14 @@ class EnterpriseController extends BaseController
     {
         // Initialize database connection
         $database = new Database();
-        
-        // Initialize enterprise model
+
+        // Initialize models and services
         $this->enterpriseModel = new EnterpriseModel();
+        $this->offerModel = new OfferModel();
+        $this->cityModel = new CityModel();
+        $this->tagModel = new TagModel();
+        $this->wishlistModel = new WishlistModel();
+        $this->cacheService = new CacheService();
     }
     
     /**
@@ -50,43 +65,6 @@ class EnterpriseController extends BaseController
             'enterprises' => $enterprises,
             'currentPage' => $page,
             'limit' => $limit,
-            'request' => $request
-        ]);
-    }
-    
-    /**
-     * Display the specified enterprise
-     * 
-     * @param RequestObject $request Current request information
-     * @return void
-     */
-    public function show(RequestObject $request): void
-    {
-        // Get enterprise ID from route parameters
-        $enterpriseId = (int)($_GET['id'] ?? 0);
-        
-        if ($enterpriseId <= 0) {
-            throw new NotFoundException("Enterprise not found");
-        }
-        
-        // Get enterprise details
-        $enterprise = $this->enterpriseModel->getEnterpriseById($enterpriseId);
-        
-        if (!$enterprise) {
-            throw new NotFoundException("Enterprise not found");
-        }
-        
-        // Get average rating
-        $averageRating = $this->enterpriseModel->getAverageRating($enterpriseId);
-        
-        // Get application count
-        $applicationCount = $this->enterpriseModel->countApplications($enterpriseId);
-        
-        // Load the view with the data
-        echo $this->render('enterprises/show', [
-            'enterprise' => $enterprise,
-            'averageRating' => $averageRating,
-            'applicationCount' => $applicationCount,
             'request' => $request
         ]);
     }
@@ -415,6 +393,189 @@ class EnterpriseController extends BaseController
                 'success' => false,
                 'error' => 'Failed to fetch enterprises',
                 'message' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Display the details of a specific enterprise
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     * @throws NotFoundException If the enterprise is not found
+     * @throws \Exception If an error occurs while fetching data
+     */
+    public function show(RequestObject $request): void
+    {
+        // Extract enterprise ID from URL
+        $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $segments = explode('/', trim($urlPath, '/'));
+        $enterpriseId = end($segments);
+
+        if (strlen($enterpriseId) !== 3) {
+            throw new NotFoundException("Invalid enterprise ID (enterprise ID: $enterpriseId, length: " . strlen($enterpriseId).")");
+        }
+
+        try {
+            // Get enterprise details
+            $enterprise = $this->enterpriseModel->getEnterpriseById($enterpriseId);
+
+            if (!$enterprise) {
+                throw new NotFoundException("Enterprise not found");
+            }
+
+            // Get associated offers
+            $offers = $this->offerModel->getOffersByEnterpriseId($enterpriseId);
+
+            // Format offers with additional data
+            $formattedOffers = [];
+            foreach ($offers as $offer) {
+                // Get city data
+                $city = $this->cityModel->getCityById($offer['id_city']);
+                $cityName = $city ? $city['city_name'] . ' - ' . $city['city_postal'] : 'Unknown location';
+
+                // Get tags for this offer
+                $tags = $this->tagModel->getTagsByOfferId($offer['id_offer']);
+
+                // Format tags for display
+                $formattedTags = [];
+                foreach ($tags as $tag) {
+                    $formattedTags[] = [
+                        'id' => $tag['id_tag'],
+                        'name' => $tag['tag_name'],
+                        'optional' => (bool)$tag['optional']
+                    ];
+                }
+
+                // Check if offer is in user's wishlist
+                $isInWishlist = false;
+                if ($request->isAuthenticated()) {
+                    $isInWishlist = $this->wishlistModel->isInWishlist($request->userId, $offer['id_offer']);
+                }
+
+                // Add formatted offer
+                $formattedOffers[] = [
+                    'id' => $offer['id_offer'],
+                    'title' => $offer['offer_title'],
+                    'location' => $cityName,
+                    'reference' => sprintf('%s%d', $enterprise['id_enterprise'], $offer['id_offer']),
+                    'duration' => $offer['offer_duration'],
+                    'level' => $offer['offer_level'],
+                    'startDate' => date('d/m/Y', strtotime($offer['offer_start'])),
+                    'publishDate' => date('d/m/Y', strtotime($offer['offer_publish_date'])),
+                    'remuneration' => $offer['offer_remuneration'],
+                    'wishlisted' => $isInWishlist,
+                    'tags' => $formattedTags,
+                    'highlighted' => stripos($offer['offer_level'], 'Bac+3, Bac+5') !== false
+                ];
+            }
+
+            // Get average rating and count
+            $ratings = $this->cacheService->getEnterpriseAverage($enterpriseId);
+
+            // Get application count
+            $applicationCount = $this->enterpriseModel->countApplications($enterpriseId);
+
+            // Check if user has permission to edit
+            $canEdit = false;
+            if ($request->isAuthenticated()) {
+                $canEdit = $request->hasPermission('perm_modify_comp_info');
+            }
+
+            // Check if user has permission to evaluate
+            $canEvaluate = false;
+            if ($request->isAuthenticated()) {
+                $canEvaluate = $request->hasPermission('perm_rate_enterprise');
+            }
+
+            // Render the enterprise details view
+            $this->renderView('enterprises/show', [
+                'request' => $request,
+                'enterprise' => $enterprise,
+                'offers' => $formattedOffers,
+                'ratings' => $ratings,
+                'applicationCount' => $applicationCount,
+                'canEdit' => $canEdit,
+                'canEvaluate' => $canEvaluate
+            ]);
+        } catch (\Exception $e) {
+            throw new \Exception("An error occurred while loading enterprise information: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * API endpoint to evaluate an enterprise
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function apiEvaluate(RequestObject $request): void
+    {
+        // Set response headers
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vous devez être connecté pour évaluer une entreprise',
+                'redirect' => '/login'
+            ]);
+            return;
+        }
+        
+        // Check if user has permission to evaluate enterprises
+        if (!$request->hasPermission('perm_rate_enterprise')) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vous n\'avez pas la permission d\'évaluer des entreprises'
+            ]);
+            return;
+        }
+        
+        // Get form data
+        $enterpriseId = (int)($_POST['enterpriseId'] ?? 0);
+        $rating = (float)($_POST['rating'] ?? 0);
+        
+        // Validate enterprise ID
+        if ($enterpriseId <= 0) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID d\'entreprise invalide'
+            ]);
+            return;
+        }
+        
+        // Validate rating
+        if ($rating < 1 || $rating > 5) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'La note doit être comprise entre 1 et 5'
+            ]);
+            return;
+        }
+        
+        try {
+            // Save rating
+            $success = $this->enterpriseModel->addRating($enterpriseId, $request->userId, $rating);
+            
+            if ($success) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Évaluation enregistrée avec succès'
+                ]);
+            } else {
+                throw new \Exception('Échec de l\'enregistrement de l\'évaluation');
+            }
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage()
             ]);
         }
     }

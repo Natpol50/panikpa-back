@@ -24,7 +24,7 @@ class StaticController extends BaseController
 
     public function showCookiesPage(RequestObject $request)
     {
-        return $this->render('cookies');
+        echo $this->render('cookies');
     }
     
     public function acceptCookies(RequestObject $request)
@@ -59,21 +59,21 @@ class StaticController extends BaseController
 
     public function showCguPage(RequestObject $request)
     {
-        return $this->render('static/cgu');
+        echo $this->render('static/cgu');
     }
 
     public function showOurTeamPage(RequestObject $request)
     {
-        return $this->render('static/ourTeam');
+        echo $this->render('static/ourTeam');
     }
 
     public function showRgpdPage(RequestObject $request)
     {
-        return $this->render('static/RGPD');
+        echo $this->render('static/RGPD');
     }
 
     public function showWhoAreWePage(RequestObject $request)
     {
-        return $this->render('static/whoareWe');
+        echo $this->render('static/whoareWe');
     }
 }

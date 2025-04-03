@@ -87,9 +87,11 @@ $router->get('/logout', ['controller' => 'AuthController', 'action' => 'logout']
 
 // Enterprise routes
 $router->get('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'index']);
+$router->get('/entreprises/{id:[A-Za-z0-9]+}', ['controller' => 'EnterpriseController', 'action' => 'show']);
 $router->get('/entreprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true]);
 $router->post('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'store', 'auth' => true]);
 $router->get('/API/entreprises', ['controller' => 'EnterpriseController', 'action' => 'ApiList']);
+$router->post('/api/evaluate-enterprise', ['controller' => 'EnterpriseController', 'action' => 'apiEvaluate', 'auth' => true]);
 
 // Offer routes
 $router->get('/offres', ['controller' => 'OfferController', 'action' => 'index']);

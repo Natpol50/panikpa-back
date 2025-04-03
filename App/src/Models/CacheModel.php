@@ -114,11 +114,11 @@ class CacheModel
     /**
      * Get enterprise review ratings
      * 
-     * @param int $enterpriseId Enterprise ID
+     * @param string $enterpriseId Enterprise ID (3-character string)
      * @return array|null Array of ratings or null if none found
      * @throws ModelException If fetch fails
      */
-    public function getEnterpriseReviews(int $enterpriseId): ?array
+    public function getEnterpriseReviews(string $enterpriseId): ?array
     {
         try {
             $query = "
@@ -128,7 +128,7 @@ class CacheModel
             ";
             
             $stmt = $this->database->prepare($query);
-            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_INT);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
             $stmt->execute();
             
             $grades = $stmt->fetchAll(PDO::FETCH_COLUMN);
@@ -142,11 +142,11 @@ class CacheModel
     /**
      * Get average enterprise rating
      * 
-     * @param int $enterpriseId Enterprise ID
+     * @param string $enterpriseId Enterprise ID (3-character string)
      * @return float|null Average rating or null if no ratings
      * @throws ModelException If calculation fails
      */
-    public function getAverageEnterpriseRating(int $enterpriseId): ?array
+    public function getAverageEnterpriseRating(string $enterpriseId): ?array
     {
         try {
             $query = "
@@ -156,7 +156,7 @@ class CacheModel
             ";
             
             $stmt = $this->database->prepare($query);
-            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_INT);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
             $stmt->execute();
             
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
