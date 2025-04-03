@@ -178,4 +178,108 @@ class CacheService
         return isset($permissions[$permissionName]) && 
                $permissions[$permissionName] === 1;
     }
+
+    /**
+     * Get the number of applicants for a specific offer
+     * 
+     * @param int $offerId Offer ID
+     * @return int Number of applicants
+     */
+    public function getOfferApplicantsCount(int $offerId): int
+    {
+        $cacheKey = "offer_applicants_count_$offerId";
+
+        // Try to get from cache first
+        $applicantsCount = $this->get($cacheKey);
+
+        if ($applicantsCount === null) {
+            // Not in cache, fetch from database
+            $applicantsCount = $this->cacheModel->getOfferApplicantsCount($offerId);
+
+            // Store in cache for 1 hour (3600 seconds)
+            if ($applicantsCount !== null) {
+                $this->set($cacheKey, $applicantsCount, 3600);
+            }
+        }
+
+        return $applicantsCount ?: 0;
+    }
+
+    /**
+     * Update the number of applicants for a specific offer
+     * 
+     * @param int $offerId Offer ID
+     * @param bool $increment True to increment, false to decrement
+     */
+    public function updateOfferApplicantsCount(int $offerId, bool $increment): void
+    {
+        $cacheKey = "offer_applicants_count_$offerId";
+
+        // Try to get the current count from cache
+        $applicantsCount = $this->get($cacheKey, 0);
+
+        // Update the count based on the increment flag
+        $applicantsCount = $increment ? $applicantsCount + 1 : max(0, $applicantsCount - 1);
+
+        // Store the updated count in the cache for 1 hour (3600 seconds)
+        $this->set($cacheKey, $applicantsCount, 3600);
+    }
+
+
+    /**
+     * Get the average rating and comment count for an enterprise
+     * 
+     * @param int $enterpriseId Enterprise ID
+     * @return array|null ['average_rating' => float|null, 'comment_count' => int] or null if no data
+     */
+    public function getEnterpriseAverage(int $enterpriseId): ?array
+    {
+        $cacheKey = "enterprise_average_$enterpriseId";
+
+        // Try to get from cache first
+        $averageData = $this->get($cacheKey);
+
+        if ($averageData === null) {
+            // Not in cache, fetch from database
+            $averageData = $this->cacheModel->getAverageEnterpriseRating($enterpriseId);
+
+            // Store in cache for 1 hour (3600 seconds)
+            if ($averageData) {
+                $this->set($cacheKey, $averageData, 3600);
+            }
+        }
+
+        return $averageData ?: null;
+    }
+
+    /**
+     * Update the average rating and comment count for an enterprise
+     * 
+     * @param int $enterpriseId Enterprise ID
+     * @param float $newRating New rating to add or remove
+     * @param bool $increment True to add, false to remove
+     */
+    public function updateEnterpriseAverage(int $enterpriseId, float $newRating, bool $increment): void
+    {
+        $cacheKey = "enterprise_average_$enterpriseId";
+
+        // Get the current data from cache
+        $averageData = $this->get($cacheKey, ['average_rating' => null, 'comment_count' => 0]);
+
+        $currentAverage = $averageData['average_rating'] ?? 0;
+        $currentCount = $averageData['comment_count'];
+
+        if ($increment) {
+            // Add new rating
+            $newCount = $currentCount + 1;
+            $newAverage = (($currentAverage * $currentCount) + $newRating) / $newCount;
+        } else {
+            // Remove rating
+            $newCount = max(0, $currentCount - 1);
+            $newAverage = $newCount > 0 ? (($currentAverage * $currentCount) - $newRating) / $newCount : null;
+        }
+
+        // Update the cache
+        $this->set($cacheKey, ['average_rating' => $newAverage, 'comment_count' => $newCount], 3600);
+    }
 }

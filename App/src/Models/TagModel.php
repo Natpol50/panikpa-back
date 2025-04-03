@@ -41,7 +41,7 @@ class TagModel
     }
     
     /**
-     * Add a tag by name
+     * Add a tag by name, with improved duplicate detection
      * 
      * @param string $tagName Tag name
      * @return int ID of the tag
@@ -50,33 +50,168 @@ class TagModel
     public function addTag(string $tagName): int
     {
         try {
-            // Normalize the tag name (e.g., trim and lowercase)
-            $normalizedTagName = strtolower(trim($tagName));
-
-            // Check for similar tags using regex
-            $query = "SELECT id_tag FROM Tag WHERE tag_name REGEXP :pattern";
-            $stmt = $this->database->prepare($query);
-            $pattern = '^' . preg_quote($normalizedTagName, '/') . '$';
-            $stmt->bindValue(':pattern', $pattern, PDO::PARAM_STR);
-            $stmt->execute();
-
-            $existingTag = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if ($existingTag) {
-                return (int) $existingTag['id_tag'];
+            // Normalize the tag name (trim, lowercase, and remove extra spaces)
+            $normalizedTagName = strtolower(trim(preg_replace('/\s+/', ' ', $tagName)));
+            
+            if (empty($normalizedTagName)) {
+                throw new ModelException("Tag name cannot be empty");
+            }
+            
+            // First check for exact match (most efficient)
+            $exactQuery = "SELECT id_tag FROM Tag WHERE LOWER(tag_name) = :exactName";
+            $exactStmt = $this->database->prepare($exactQuery);
+            $exactStmt->bindValue(':exactName', $normalizedTagName, PDO::PARAM_STR);
+            $exactStmt->execute();
+            $exactMatch = $exactStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($exactMatch) {
+                return (int) $exactMatch['id_tag'];
+            }
+            
+            // Then check for case-insensitive pattern match
+            $patternQuery = "SELECT id_tag, tag_name FROM Tag WHERE LOWER(tag_name) REGEXP :pattern";
+            $patternStmt = $this->database->prepare($patternQuery);
+            
+            // Create pattern to match both singular and plural forms
+            // This handles common variations like "PHP" vs "php" vs "Php"
+            $pattern = '^' . preg_quote($normalizedTagName, '/') . 's?$';
+            $patternStmt->bindValue(':pattern', $pattern, PDO::PARAM_STR);
+            $patternStmt->execute();
+            $patternMatch = $patternStmt->fetch(PDO::FETCH_ASSOC);
+            
+            if ($patternMatch) {
+                return (int) $patternMatch['id_tag'];
+            }
+            
+            // Check for similar tags using Levenshtein distance for common typos
+            $similarQuery = "SELECT id_tag, tag_name FROM Tag";
+            $similarStmt = $this->database->prepare($similarQuery);
+            $similarStmt->execute();
+            $allTags = $similarStmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($allTags as $tag) {
+                $existingTagName = strtolower($tag['tag_name']);
+                
+                // Calculate similarity based on tag length
+                $maxLength = max(strlen($normalizedTagName), strlen($existingTagName));
+                $maxDistance = min(3, ceil($maxLength * 0.25)); // Allow 25% difference but max 3 chars
+                
+                if (levenshtein($normalizedTagName, $existingTagName) <= $maxDistance) {
+                    return (int) $tag['id_tag'];
+                }
+            }
+            
+            // Handle common technology acronyms and variations
+            $acronyms = [
+                'js' => 'javascript',
+                'ts' => 'typescript',
+                'py' => 'python',
+                'react' => 'reactjs',
+                'reactjs' => 'react',
+                'vue' => 'vuejs',
+                'vuejs' => 'vue',
+                'node' => 'nodejs',
+                'nodejs' => 'node',
+                'dotnet' => '.net',
+                '.net' => 'dotnet',
+                'oop' => 'object-oriented programming',
+                'sql' => 'database',
+                'db' => 'database',
+                'ui' => 'user interface',
+                'ux' => 'user experience',
+                'front' => 'frontend',
+                'frontend' => 'front-end',
+                'front-end' => 'frontend',
+                'back' => 'backend',
+                'backend' => 'back-end',
+                'back-end' => 'backend'
+            ];
+            
+            // Check if the tag is an acronym or has common variations
+            foreach ($acronyms as $variant => $standard) {
+                if ($normalizedTagName === $variant || $normalizedTagName === $standard) {
+                    // Check if the standard form or variant exists
+                    $variantQuery = "SELECT id_tag FROM Tag WHERE LOWER(tag_name) IN (:variant, :standard)";
+                    $variantStmt = $this->database->prepare($variantQuery);
+                    $variantStmt->bindValue(':variant', $variant, PDO::PARAM_STR);
+                    $variantStmt->bindValue(':standard', $standard, PDO::PARAM_STR);
+                    $variantStmt->execute();
+                    $variantMatch = $variantStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    if ($variantMatch) {
+                        return (int) $variantMatch['id_tag'];
+                    }
+                    
+                    break;
+                }
             }
 
-            // Insert the new tag if it doesn't exist
+            // No similar tag found, insert the new tag with proper capitalization
+            $formattedTagName = $this->formatTagName($normalizedTagName);
             $insertQuery = "INSERT INTO Tag (tag_name) VALUES (:tagName)";
             $insertStmt = $this->database->prepare($insertQuery);
-            $insertStmt->bindValue(':tagName', $normalizedTagName, PDO::PARAM_STR);
+            $insertStmt->bindValue(':tagName', $formattedTagName, PDO::PARAM_STR);
             $insertStmt->execute();
-
+            
             return (int) $this->database->lastInsertId();
         } catch (PDOException $e) {
             throw new ModelException("Failed to add or fetch tag: " . $e->getMessage());
         }
     }
+
+    /**
+     * Format tag name with proper capitalization
+     * 
+     * @param string $tagName Normalized tag name (lowercase)
+     * @return string Properly formatted tag name
+     */
+    private function formatTagName(string $tagName): string
+    {
+        // List of special case tags that have specific capitalization
+        $specialCases = [
+            'php' => 'PHP',
+            'css' => 'CSS',
+            'html' => 'HTML',
+            'sql' => 'SQL',
+            'mysql' => 'MySQL',
+            'postgresql' => 'PostgreSQL',
+            'javascript' => 'JavaScript',
+            'typescript' => 'TypeScript',
+            'nodejs' => 'Node.js',
+            'vuejs' => 'Vue.js',
+            'reactjs' => 'React.js',
+            'angularjs' => 'AngularJS',
+            'c#' => 'C#',
+            'c++' => 'C++',
+            '.net' => '.NET',
+            'asp.net' => 'ASP.NET',
+            'ui/ux' => 'UI/UX',
+            'api' => 'API',
+            'rest' => 'REST',
+            'json' => 'JSON',
+            'xml' => 'XML',
+            'aws' => 'AWS',
+            'azure' => 'Azure',
+            'gcp' => 'GCP',
+            'devops' => 'DevOps',
+            'ci/cd' => 'CI/CD'
+        ];
+        
+        // Check if tag is a special case
+        if (array_key_exists($tagName, $specialCases)) {
+            return $specialCases[$tagName];
+        }
+        
+        // For compound words (separated by space, hyphen, or slash)
+        if (preg_match('/[\s\-\/]/', $tagName)) {
+            // Capitalize each word in a compound tag
+            return implode(' ', array_map('ucfirst', explode(' ', str_replace(['-', '/'], ' ', $tagName))));
+        }
+        
+        // For regular words, just capitalize the first letter
+        return ucfirst($tagName);
+    }
+
     /**
      * Get a tag by ID
      * 

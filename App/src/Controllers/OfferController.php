@@ -352,8 +352,12 @@ public function apiGetOffers(RequestObject $request): void
         
         try {
             // Get the user's enterprise
-            $enterpriseId = $this->userModel->getEnterpriseIdByUser($request->userId)['id_enterprise'] ?? null;
-            
+            if ($_POST['enterprise']) {
+                $enterpriseId = $_POST['enterprise'];
+            } else {
+                $enterpriseId = $this->userModel->getEnterpriseIdByUser($request->userId)['id_enterprise'] ?? null;
+            }
+
             // If user is not linked to an enterprise, show error
             if (!$enterpriseId) {
                 echo $this->render('offers/create', [
@@ -532,7 +536,8 @@ public function apiGetOffers(RequestObject $request): void
             'tags' => $formattedTags,
             'highlighted' => stripos($offer['offer_level'], 'Bac+3, Bac+5') !== false,
             'wishlisted' => $isInWishlist,
-            'hasApplied' => $hasApplied
+            'hasApplied' => $hasApplied,
+            'applicantsCount' => $this->cacheService->getOfferApplicantsCount($id)
         ];
         
         // Render the offer detail view
@@ -543,5 +548,94 @@ public function apiGetOffers(RequestObject $request): void
             'city' => $city,
             'canApply' => $canApply
         ]);
+    }
+
+    /**
+     * API endpoint to retrieve existing tags for autocomplete
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiTagsList(RequestObject $request): void
+    {
+        // Set content type header for JSON response
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+
+        try {
+            // Get all tags from the database
+            $tags = $this->tagModel->getAllTags();
+            
+            // Format data for the autocomplete (just tag names)
+            $formattedTags = array_map(function($tag) {
+                return [
+                    'id' => $tag['id_tag'],
+                    'name' => $tag['tag_name']
+                ];
+            }, $tags);
+            
+            // Return JSON response
+            echo json_encode($formattedTags);
+        } catch (\Exception $e) {
+            // Handle errors
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch tags: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * API endpoint to fetch the list of cities for autocomplete
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function apiCityList(RequestObject $request): void
+    {   
+        // Set response header to JSON
+        header('Content-Type: application/json');
+
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+
+        try {
+            // Get cities from database using CityModel
+            $cities = $this->cityModel->getAllCities();
+            
+            // Format city data for easier use in frontend
+            $formattedCities = array_map(function($city) {
+                return [
+                    'id_city' => $city['id_city'],
+                    'city_name' => $city['city_name'],
+                    'city_postal' => $city['city_postal']
+                ];
+            }, $cities);
+            
+            // Return JSON response
+            echo json_encode($formattedCities);
+            
+        } catch (\Exception $e) {
+            // Log the error
+            error_log('Error fetching cities list: ' . $e->getMessage());
+            
+            // Return error response
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch cities list: ' . $e->getMessage()
+            ]);
+        }
     }
 }

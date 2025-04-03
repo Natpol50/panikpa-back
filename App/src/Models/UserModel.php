@@ -343,7 +343,7 @@ class UserModel
     }
     
     /**
-     * Delete a user
+     * Delete a user and all related data
      * 
      * @param int $userId User ID to delete
      * @return bool True on success
@@ -352,15 +352,66 @@ class UserModel
     public function deleteUser(int $userId): bool
     {
         try {
-            $query = "DELETE FROM User WHERE id_user = :userId";
-            $stmt = $this->database->prepare($query);
+            $this->database->beginTransaction();
+
+            // Check if user is a tutor and has promo codes
+            $promoCodes = $this->getUserPromoCodes($userId);
+            if (!empty($promoCodes)) {
+                // Delete all rows with those promo codes
+                $queryDeletePromoCodes = "DELETE FROM Promo WHERE promo_code IN (" . implode(',', array_fill(0, count($promoCodes), '?')) . ")";
+                $stmt = $this->database->prepare($queryDeletePromoCodes);
+                $stmt->execute($promoCodes);
+            }
+
+            // Delete from Wishlist
+            $queryWishlist = "DELETE FROM Wishlist WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryWishlist);
             $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
             $stmt->execute();
-            
+
+            // Delete from Interaction
+            $queryInteraction = "DELETE FROM Interaction WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryInteraction);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Delete from Promo
+            $queryPromo = "DELETE FROM Promo WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryPromo);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Delete from User_tag
+            $queryUserTag = "DELETE FROM User_tag WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryUserTag);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Delete from Comment
+            $queryComment = "DELETE FROM Comment WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryComment);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Delete from CompanyUsers
+            $queryCompanyUsers = "DELETE FROM CompanyUsers WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryCompanyUsers);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            // Finally, delete the user
+            $queryUser = "DELETE FROM User WHERE id_user = :userId";
+            $stmt = $this->database->prepare($queryUser);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $this->database->commit();
+
             // Check if a row was affected
             return $stmt->rowCount() > 0;
         } catch (PDOException $e) {
-            throw new ModelException("Failed to delete user: " . $e->getMessage());
+            $this->database->rollBack();
+            throw new ModelException("Failed to delete user and related data: " . $e->getMessage());
         }
     }
     

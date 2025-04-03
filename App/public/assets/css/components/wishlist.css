@@ -67,9 +67,19 @@
     padding: 0.3rem 0.8rem;
     border-radius: 15px;
     font-size: 0.9rem;
-    margin-top: 1rem;
     transition: all 0.3s ease;
 }
+
+.postu-badge {
+    display: inline-block;
+    background-color: var(--realsecondary-color);
+    color: white;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
 
 /* Add a loading state for the star */
 .wishlist-star.loading {

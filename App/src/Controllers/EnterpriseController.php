@@ -36,11 +36,6 @@ class EnterpriseController extends BaseController
      */
     public function index(RequestObject $request): void
     {
-        // Check if user is authenticated
-        if (!$request->isAuthenticated()) {
-            header('Location: /login');
-            exit;
-        }
         
         // Get query parameters
         $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
@@ -328,62 +323,98 @@ class EnterpriseController extends BaseController
     }
 
     /**
- * API endpoint to retrieve enterprises with filtering and pagination
- * 
- * @param RequestObject $request Current request information
- * @return void Outputs JSON response
- */
-public function apiList(RequestObject $request): void
-{
-    // Set headers for JSON response
-    header('Content-Type: application/json');
-    
-    // Validate and sanitize input parameters
-    $query = trim($_GET['query'] ?? '');
-    $pageSize = isset($_GET['pageSize']) ? max(1, min(100, (int)$_GET['pageSize'])) : 10;
-    $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
-    
-    // Calculate offset
-    $offset = ($page - 1) * $pageSize;
-    
-    try {
-        // Retrieve filtered and paginated enterprises
-        $results = $this->enterpriseModel->searchEnterprises(
-            $query, 
-            $pageSize, 
-            $offset
-        );
+     * API endpoint to retrieve enterprises with filtering and pagination
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiList(RequestObject $request): void
+    {
+        // Set headers for JSON response
+        header('Content-Type: application/json');
+        
+        // Validate and sanitize input parameters
+        $query = trim($_GET['query'] ?? '');
+        $pageSize = isset($_GET['pageSize']) ? max(1, min(100, (int)$_GET['pageSize'])) : 10;
+        $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+        
+        // Calculate offset
+        $offset = ($page - 1) * $pageSize;
+        
+        try {
+            // Retrieve filtered and paginated enterprises
+            $results = $this->enterpriseModel->searchEnterprises(
+                $query, 
+                $pageSize, 
+                $offset
+            );
 
-        $enterprises = array_map(function ($enterprise) {
-            if (empty($enterprise['enterprise_photo_url'])) {
-            $enterprise['enterprise_photo_url'] = '/assets/pp/defaultenterprise.png';
-            }
-            return $enterprise;
-        }, $results['results'] ?? []);
-        $count = $results['total_count'] ??0;
-        
-        // Prepare response
-        $response = [
-            'success' => true,
-            'data' => $enterprises,
-            'pagination' => [
-                'currentPage' => $page,
-                'pageSize' => $pageSize,
-                'totalEnterprises' => $count,
-                'totalPages' => ceil($count / $pageSize)
-            ]
-        ];
-        
-        // Output JSON response
-        echo json_encode($response, JSON_PRETTY_PRINT);
-    } catch (\Exception $e) {
-        // Handle any errors
-        http_response_code(500);
-        echo json_encode([
-            'success' => false,
-            'error' => 'Internal Server Error',
-            'message' => $e->getMessage()
-        ]);
+            $enterprises = array_map(function ($enterprise) {
+                if (empty($enterprise['enterprise_photo_url'])) {
+                $enterprise['enterprise_photo_url'] = '/assets/pp/defaultenterprise.png';
+                }
+                return $enterprise;
+            }, $results['results'] ?? []);
+            $count = $results['total_count'] ??0;
+            
+            // Prepare response
+            $response = [
+                'success' => true,
+                'data' => $enterprises,
+                'pagination' => [
+                    'currentPage' => $page,
+                    'pageSize' => $pageSize,
+                    'totalEnterprises' => $count,
+                    'totalPages' => ceil($count / $pageSize)
+                ]
+            ];
+            
+            // Output JSON response
+            echo json_encode($response, JSON_PRETTY_PRINT);
+        } catch (\Exception $e) {
+            // Handle any errors
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Internal Server Error',
+                'message' => $e->getMessage()
+            ]);
+        }
     }
-}
+
+    /**
+     * API endpoint to retrieve enterprises list
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiEnterpriseList(RequestObject $request): void
+    {
+        // Set headers for JSON response
+        header('Content-Type: application/json');
+        
+        try {
+            // Fetch all enterprises from the database
+            $enterprises = $this->enterpriseModel->getAllEnterprises();
+            
+            // Format data to include only the fields we need
+            $formattedEnterprises = array_map(function ($enterprise) {
+                return [
+                    'enterprise_id' => $enterprise['id_enterprise'],
+                    'enterprise_name' => $enterprise['enterprise_name']
+                ];
+            }, $enterprises);
+            
+            // Return formatted JSON
+            echo json_encode($formattedEnterprises);
+        } catch (\Exception $e) {
+            // Handle any errors
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Failed to fetch enterprises',
+                'message' => $e->getMessage()
+            ]);
+        }
+    }
 }

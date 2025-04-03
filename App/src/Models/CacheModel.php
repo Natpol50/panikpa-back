@@ -146,11 +146,11 @@ class CacheModel
      * @return float|null Average rating or null if no ratings
      * @throws ModelException If calculation fails
      */
-    public function getAverageEnterpriseRating(int $enterpriseId): ?float
+    public function getAverageEnterpriseRating(int $enterpriseId): ?array
     {
         try {
             $query = "
-                SELECT AVG(grade_UE) as average_rating
+                SELECT AVG(grade_UE) as average_rating, COUNT(*) as comment_count
                 FROM Comment
                 WHERE id_enterprise = :enterpriseId
             ";
@@ -161,9 +161,44 @@ class CacheModel
             
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
             
-            return $result && $result['average_rating'] ? (float)$result['average_rating'] : null;
+            if ($result) {
+                return [
+                    'average_rating' => $result['average_rating'] ? (float)$result['average_rating'] : null,
+                    'comment_count' => (int)$result['comment_count']
+                ];
+            }
+            
+            return null;
         } catch (PDOException $e) {
-            throw new ModelException("Failed to calculate average rating: " . $e->getMessage());
+            throw new ModelException("Failed to calculate average rating and comment count: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get the count of applicants for a specific offer
+     * 
+     * @param int $offerId Offer ID
+     * @return int Number of applicants
+     * @throws ModelException If query fails
+     */
+    public function getOfferApplicantsCount(int $offerId): int
+    {
+        try {
+            $query = "
+                SELECT COUNT(*) as applicant_count
+                FROM Interaction
+                WHERE id_offer = :offerId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':offerId', $offerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? (int)$result['applicant_count'] : 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch offer applicants count: " . $e->getMessage());
         }
     }
 }

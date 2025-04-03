@@ -233,7 +233,10 @@ class UserController extends BaseController
     }
     
     /**
-     * Process and save image with cropping
+     * Process and save image with centered cropping
+     * 
+     * This method ensures that the image is cropped from the center of the selected area,
+     * maintaining aspect ratio and preventing off-center cropping.
      * 
      * @param string $sourcePath Source image path
      * @param string $destinationPath Destination image path
@@ -253,14 +256,14 @@ class UserController extends BaseController
         int $cropHeight
     ): bool {
         // Get image information
-        $fileInfo = getimagesize($sourcePath);
+        $sourceInfo = getimagesize($sourcePath);
         
-        if (!$fileInfo) {
+        if (!$sourceInfo) {
             throw new FileSystemException("Could not determine image size");
         }
         
         // Create source image based on file type
-        switch ($fileInfo[2]) {
+        switch ($sourceInfo[2]) {
             case IMAGETYPE_JPEG:
                 $sourceImage = imagecreatefromjpeg($sourcePath);
                 break;
@@ -278,6 +281,18 @@ class UserController extends BaseController
             throw new FileSystemException("Failed to create image from source");
         }
         
+        // Calculate the actual crop area to ensure centered cropping
+        $sourceWidth = imagesx($sourceImage);
+        $sourceHeight = imagesy($sourceImage);
+        
+        // Determine the source crop area
+        $sourceCropWidth = min($sourceWidth, $sourceHeight);
+        $sourceCropHeight = $sourceCropWidth;
+        
+        // Calculate centered crop coordinates
+        $sourceCropX = ($sourceWidth - $sourceCropWidth) / 2;
+        $sourceCropY = ($sourceHeight - $sourceCropHeight) / 2;
+        
         // Create destination image
         $destinationImage = imagecreatetruecolor($cropWidth, $cropHeight);
         
@@ -287,18 +302,18 @@ class UserController extends BaseController
         $transparent = imagecolorallocatealpha($destinationImage, 255, 255, 255, 127);
         imagefilledrectangle($destinationImage, 0, 0, $cropWidth, $cropHeight, $transparent);
         
-        // Crop the image
+        // Crop and resize the image from the center
         imagecopyresampled(
             $destinationImage,    // Destination image
             $sourceImage,         // Source image
             0,                    // Destination X
             0,                    // Destination Y
-            $cropX,               // Source X
-            $cropY,               // Source Y
+            $sourceCropX,         // Source X (centered)
+            $sourceCropY,         // Source Y (centered)
             $cropWidth,           // Destination width
             $cropHeight,          // Destination height
-            $cropWidth,           // Source width
-            $cropHeight           // Source height
+            $sourceCropWidth,     // Source width
+            $sourceCropHeight     // Source height
         );
         
         // Save as PNG
@@ -314,7 +329,6 @@ class UserController extends BaseController
         
         return true;
     }
-    
     /**
      * Change user password
      * 
@@ -376,5 +390,44 @@ class UserController extends BaseController
             'success' => $messages['success'],
             'error' => $messages['error']
         ]);
+    }
+
+    /**
+     * Delete user account
+     * 
+     * This API endpoint deletes the account of the authenticated user.
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function apiDeleteUser(RequestObject $request): void
+    {
+        // Set response headers for JSON response
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Authentication required']);
+            exit;
+        }
+        
+        try {
+            // Get the authenticated user
+            $user = $this->userModel->getUserById($request->userId);
+            
+            if (!$user) {
+                throw new \Exception("User not found");
+            }
+            
+            // Delete the user account
+            $this->userModel->deleteUser($user->userId);
+            
+            // Return success response
+            echo json_encode(['success' => true, 'message' => 'Your account has been deleted successfully']);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
+        }
     }
 }

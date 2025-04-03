@@ -36,6 +36,7 @@
                 <div class="offer-details">
                     <p class="offer-date">Publié le {{ offer.publishDate }}</p>
                     <p class="reference">Référence: {{ offer.reference }}</p>
+                    <p class="applicants-count">Nombre de candidatures {{ offer.applicantsCount }}</p>
                 </div>
             </div>
             
@@ -524,71 +525,6 @@
             const fileName = document.querySelector('.file-name');
             const wishlistButton = document.getElementById('wishlist-button');
             
-            // Set up wishlist button functionality
-            if (wishlistButton) {
-                wishlistButton.addEventListener('click', async function() {
-                    const offerId = this.dataset.id;
-                    
-                    // Add clicked class for animation
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 400);
-                    
-                    try {
-                        // Send API request to toggle wishlist status
-                        const response = await fetch('/API/wishlist/toggle/' + offerId, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Toggle active class
-                            this.classList.toggle('active');
-                            
-                            // Update button text and aria-label
-                            if (data.wishlisted) {
-                                this.textContent = 'Retirer de la wishlist';
-                                this.setAttribute('aria-label', 'Retirer de la wishlist');
-                            } else {
-                                this.textContent = 'Ajouter à la wishlist';
-                                this.setAttribute('aria-label', 'Ajouter à la wishlist');
-                            }
-                            
-                            // Re-add the SVG that got replaced by textContent
-                            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                            svg.setAttribute('viewBox', '0 0 24 24');
-                            svg.setAttribute('width', '24');
-                            svg.setAttribute('height', '24');
-                            
-                            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                            path.setAttribute('d', 'M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z');
-                            
-                            svg.appendChild(path);
-                            this.prepend(svg);
-                            
-                            // Display notification if provided
-                            if (data.message) {
-                                showNotification(data.message, data.wishlisted ? 'success' : 'info');
-                            }
-                        } else {
-                            throw new Error(data.message || 'Something went wrong');
-                        }
-                    } catch (error) {
-                        console.error('Error toggling wishlist:', error);
-                        showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
-                    }
-                });
-            }
             
             // Set up application modal functionality
             if (applyButton) {

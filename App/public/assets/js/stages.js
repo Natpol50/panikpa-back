@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </p>
                 ${highlight ? '<p class="tag_star">Candidat star !</p>' : ''}
                 ${wishlist ? '<p class="wishlist-badge">Dans votre wishlist</p>' : ''}
-                ${applied ? '<p class="wishlist-badge">Déjà postulé</p>' : ''}
+                ${applied ? '<p class="postu-badge">Déjà postulé</p>' : ''}
             `;
             
             // Add click handler to navigate to offer details

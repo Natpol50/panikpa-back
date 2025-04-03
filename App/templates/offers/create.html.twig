@@ -16,10 +16,18 @@
             <p>Remplissez le formulaire ci-dessous pour créer une nouvelle offre de stage ou d'alternance.</p>
         </header>
 
-
         <form class="create-offer-form" method="POST" action="/offres">
             <div class="form-section">
                 <h2>Informations générales</h2>
+                
+                {% if request.hasPermission('perm_admin') %}
+                <div class="form-group">
+                    <label for="enterprise">[ADMIN] Sélectionnez une entreprise <span class="required">*</span></label>
+                    <select id="enterprise" name="enterprise" required>
+                        <option value="" disabled selected>Chargement des entreprises...</option>
+                    </select>
+                </div>
+                {% endif %}
                 
                 <div class="form-group">
                     <label for="title">Titre de l'offre <span class="required">*</span></label>
@@ -92,7 +100,6 @@
                 <h2>Compétences</h2>
                 
                 <div id="tags-container">
-                    <!-- Initial tag input field -->
                     <div class="tag-input-group">
                         <div class="form-row">
                             <div class="form-group tag-input">
@@ -291,7 +298,18 @@
             padding-left: 1.5rem;
         }
         
-        /* Responsive adjustments */
+        /* Improved responsiveness */
+        @media screen and (max-width: 992px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            
+            .create-offer-container {
+                padding: 1.75rem;
+            }
+        }
+        
         @media screen and (max-width: 768px) {
             .create-offer-container {
                 padding: 1.5rem;
@@ -312,6 +330,61 @@
                 width: 100%;
                 text-align: center;
             }
+            
+            .checkbox-container {
+                margin-top: 1rem;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .create-offer-container {
+                padding: 1rem;
+            }
+            
+            .create-offer-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-section h2 {
+                font-size: 1.2rem;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 0.6rem;
+                font-size: 0.95rem;
+            }
+            
+            .btn-secondary, .btn-primary {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Autocomplete styling */
+        input[list] {
+            position: relative;
+        }
+
+        datalist {
+            position: absolute;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            z-index: 10;
+        }
+
+        datalist option {
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        datalist option:hover {
+            background-color: var(--tag-background);
         }
     </style>
 {% endblock %}
@@ -327,13 +400,48 @@
             // Initial tag count
             let tagCount = 1;
             
+            // Store available tags for autocomplete
+            let availableTags = [];
+            
+            // Store available cities for autocomplete
+            let availableCities = [];
+            
+            // Fetch tags for autocomplete
+            fetch('/api/tagsList')
+                .then(response => response.json())
+                .then(tagsData => {
+                    // Store tags data for autocomplete
+                    availableTags = tagsData.map(tag => tag.name);
+                    
+                    // Initialize autocomplete on existing tag inputs
+                    document.querySelectorAll('[id^="tags["]').forEach(input => {
+                        initializeTagAutocomplete(input);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching tags for autocomplete:', error);
+                });
+            
+            // Fetch cities for autocomplete
+            fetch('/api/citiesList')
+                .then(response => response.json())
+                .then(citiesData => {
+                    availableCities = citiesData;
+                    
+                    // Initialize city autocomplete
+                    initializeCityAutocomplete();
+                })
+                .catch(error => {
+                    console.error('Error fetching cities for autocomplete:', error);
+                });
+            
             // Add tag button click handler
             addTagButton.addEventListener('click', () => {
                 // Create new tag input group
                 const tagInputGroup = document.createElement('div');
                 tagInputGroup.className = 'tag-input-group';
                 
-                // Create tag input
+                // Create tag input with unique ID based on tagCount
                 tagInputGroup.innerHTML = `
                     <div class="form-row">
                         <div class="form-group tag-input">
@@ -362,9 +470,131 @@
                     tagInputGroup.remove();
                 });
                 
+                // Initialize autocomplete on the new tag input
+                const newInput = tagInputGroup.querySelector(`input[id="tags[${tagCount}]"]`);
+                initializeTagAutocomplete(newInput);
+                
                 // Increment tag count
                 tagCount++;
             });
+            
+            // Function to initialize tag autocomplete
+            function initializeTagAutocomplete(inputElement) {
+                if (!inputElement || !availableTags.length) return;
+                
+                // Create a datalist element for autocomplete
+                const datalistId = `autocomplete-tag-${Math.random().toString(36).substr(2, 9)}`;
+                let datalist = document.createElement('datalist');
+                datalist.id = datalistId;
+                
+                // Populate datalist with available tags
+                availableTags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    datalist.appendChild(option);
+                });
+                
+                // Add datalist to the DOM
+                document.body.appendChild(datalist);
+                
+                // Connect input to datalist
+                inputElement.setAttribute('list', datalistId);
+            }
+            
+            // Function to initialize city autocomplete
+            function initializeCityAutocomplete() {
+                const cityInput = document.getElementById('city');
+                const postalCodeInput = document.getElementById('postalCode');
+                
+                if (!cityInput || !postalCodeInput || !availableCities.length) return;
+                
+                // Create datalist for city autocomplete
+                const cityDatalistId = 'autocomplete-city';
+                let cityDatalist = document.getElementById(cityDatalistId);
+                
+                if (!cityDatalist) {
+                    cityDatalist = document.createElement('datalist');
+                    cityDatalist.id = cityDatalistId;
+                    document.body.appendChild(cityDatalist);
+                }
+                
+                // Populate city datalist
+                const uniqueCities = [...new Set(availableCities.map(city => city.city_name))];
+                uniqueCities.forEach(cityName => {
+                    const option = document.createElement('option');
+                    option.value = cityName;
+                    cityDatalist.appendChild(option);
+                });
+                
+                // Connect city input to datalist
+                cityInput.setAttribute('list', cityDatalistId);
+                
+                // Create datalist for postal code autocomplete
+                const postalDatalistId = 'autocomplete-postal';
+                let postalDatalist = document.getElementById(postalDatalistId);
+                
+                if (!postalDatalist) {
+                    postalDatalist = document.createElement('datalist');
+                    postalDatalist.id = postalDatalistId;
+                    document.body.appendChild(postalDatalist);
+                }
+                
+                // Populate postal code datalist
+                const uniquePostalCodes = [...new Set(availableCities.map(city => city.city_postal))];
+                uniquePostalCodes.forEach(postalCode => {
+                    const option = document.createElement('option');
+                    option.value = postalCode;
+                    postalDatalist.appendChild(option);
+                });
+                
+                // Connect postal code input to datalist
+                postalCodeInput.setAttribute('list', postalDatalistId);
+                
+                // City input event listener
+                cityInput.addEventListener('input', () => {
+                    const selectedCity = cityInput.value;
+                    const matchedCity = availableCities.find(city => city.city_name === selectedCity);
+                    
+                    if (matchedCity) {
+                        postalCodeInput.value = matchedCity.city_postal;
+                    }
+                });
+                
+                // Postal code input event listener
+                postalCodeInput.addEventListener('input', () => {
+                    const selectedPostal = postalCodeInput.value;
+                    const matchedCity = availableCities.find(city => city.city_postal === selectedPostal);
+                    
+                    if (matchedCity) {
+                        cityInput.value = matchedCity.city_name;
+                    }
+                });
+            }
+            
+            // Admin-only code for enterprise dropdown
+            {% if request.hasPermission('perm_admin') %}
+                const enterpriseDropdown = document.getElementById('enterprise');
+
+                // Fetch enterprise list
+                fetch('/api/enterpriseList')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Clear existing options
+                        enterpriseDropdown.innerHTML = '<option value="" disabled selected>Sélectionnez une entreprise</option>';
+
+                        // Populate dropdown with enterprise data
+                        data.forEach(enterprise => {
+                            const option = document.createElement('option');
+                            option.value = enterprise.enterprise_id;
+                            option.textContent = `${enterprise.enterprise_name} (${enterprise.enterprise_id})`;
+                            enterpriseDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching enterprise list:', error);
+                        enterpriseDropdown.innerHTML = '<option value="" disabled>Erreur lors du chargement des entreprises</option>';
+                    });
+            {% endif %}
         });
     </script>
 {% endblock %}

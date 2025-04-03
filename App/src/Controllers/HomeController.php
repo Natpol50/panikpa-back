@@ -125,7 +125,7 @@ class HomeController extends BaseController
             $userId = null;
             
             // Ensure only authenticated users can access
-            if (!$request->isAuthenticated() or $request->userSType == null) {
+            if (!$request->isAuthenticated() or $request->userSType == null or !$request->hasPermission('perm_offer_apply')) {
                 http_response_code(401);
                 echo json_encode(['error' => 'Unauthorized']);
                 return;

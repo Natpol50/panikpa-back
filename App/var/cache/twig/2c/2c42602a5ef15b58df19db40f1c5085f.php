@@ -143,51 +143,55 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
         // line 38
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "reference", [], "any", false, false, false, 38), "html", null, true);
         yield "</p>
+                    <p class=\"applicants-count\">Nombre de candidatures ";
+        // line 39
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "applicantsCount", [], "any", false, false, false, 39), "html", null, true);
+        yield "</p>
                 </div>
             </div>
             
             <div class=\"offer-tags\">
                 <span class=\"tag\">";
-        // line 43
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "duration", [], "any", false, false, false, 43), "html", null, true);
+        // line 44
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "duration", [], "any", false, false, false, 44), "html", null, true);
         yield "</span>
                 <span class=\"tag\">";
-        // line 44
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "level", [], "any", false, false, false, 44), "html", null, true);
+        // line 45
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "level", [], "any", false, false, false, 45), "html", null, true);
         yield "</span>
                 ";
-        // line 45
+        // line 46
         $context['_parent'] = $context;
-        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "tags", [], "any", false, false, false, 45));
+        $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "tags", [], "any", false, false, false, 46));
         foreach ($context['_seq'] as $context["_key"] => $context["tag"]) {
-            // line 46
+            // line 47
             yield "                    <span class=\"";
-            yield ((CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "optional", [], "any", false, false, false, 46)) ? ("tag_optional") : ("tag"));
+            yield ((CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "optional", [], "any", false, false, false, 47)) ? ("tag_optional") : ("tag"));
             yield "\">";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "name", [], "any", false, false, false, 46), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "name", [], "any", false, false, false, 47), "html", null, true);
             yield "</span>
                 ";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_key'], $context['tag'], $context['_parent']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 48
+        // line 49
         yield "                <span class=\"";
-        yield (((CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "remuneration", [], "any", false, false, false, 48) == "0")) ? ("remuneration_negative") : ("remuneration"));
+        yield (((CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "remuneration", [], "any", false, false, false, 49) == "0")) ? ("remuneration_negative") : ("remuneration"));
         yield "\">
                     ";
-        // line 49
-        yield (((CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "remuneration", [], "any", false, false, false, 49) == "0")) ? ("Non Rémunéré") : ("Rémunéré"));
+        // line 50
+        yield (((CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "remuneration", [], "any", false, false, false, 50) == "0")) ? ("Non Rémunéré") : ("Rémunéré"));
         yield "
                 </span>
                 ";
-        // line 51
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "highlighted", [], "any", false, false, false, 51)) {
-            // line 52
+        // line 52
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "highlighted", [], "any", false, false, false, 52)) {
+            // line 53
             yield "                    <span class=\"tag_star\">Candidat star !</span>
                 ";
         }
-        // line 54
+        // line 55
         yield "            </div>
         </header>
 
@@ -197,8 +201,8 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
                     <h3>Description du poste</h3>
                     <div class=\"offer-description\">
                         ";
-        // line 62
-        yield Twig\Extension\CoreExtension::nl2br($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::replace(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "description", [], "any", false, false, false, 62), ["Description: " => ""]), "html", null, true));
+        // line 63
+        yield Twig\Extension\CoreExtension::nl2br($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::replace(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "description", [], "any", false, false, false, 63), ["Description: " => ""]), "html", null, true));
         yield "
                     </div>
                 </section>
@@ -207,38 +211,38 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
                     <h3>Entreprise</h3>
                     <div class=\"company-details\">
                         <h4>";
-        // line 69
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 69), "html", null, true);
+        // line 70
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 70), "html", null, true);
         yield "</h4>
                         ";
-        // line 70
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 70)) {
-            // line 71
+        // line 71
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 71)) {
+            // line 72
             yield "                            <p>";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 71), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 72), "html", null, true);
             yield "</p>
                         ";
         }
-        // line 73
+        // line 74
         yield "                        <p><strong>Contact:</strong> ";
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_email", [], "any", false, false, false, 73), "html", null, true);
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_email", [], "any", false, false, false, 74), "html", null, true);
         yield "</p>
                         <p><strong>Téléphone:</strong> ";
-        // line 74
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_phone", [], "any", false, false, false, 74), "html", null, true);
+        // line 75
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_phone", [], "any", false, false, false, 75), "html", null, true);
         yield "</p>
                         ";
-        // line 75
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 75)) {
-            // line 76
+        // line 76
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 76)) {
+            // line 77
             yield "                            <p><strong>Site web:</strong> <a href=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 76), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 77), "html", null, true);
             yield "\" target=\"_blank\" rel=\"noopener\">";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 76), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 77), "html", null, true);
             yield "</a></p>
                         ";
         }
-        // line 78
+        // line 79
         yield "                    </div>
                 </section>
                 
@@ -246,20 +250,20 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
                     <h3>Informations pratiques</h3>
                     <div class=\"practical-info\">
                         <p><strong>Date de début:</strong> ";
-        // line 84
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "startDate", [], "any", false, false, false, 84), "html", null, true);
+        // line 85
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "startDate", [], "any", false, false, false, 85), "html", null, true);
         yield "</p>
                         <p><strong>Durée:</strong> ";
-        // line 85
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "duration", [], "any", false, false, false, 85), "html", null, true);
+        // line 86
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "duration", [], "any", false, false, false, 86), "html", null, true);
         yield "</p>
                         <p><strong>Lieu:</strong> ";
-        // line 86
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "location", [], "any", false, false, false, 86), "html", null, true);
+        // line 87
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "location", [], "any", false, false, false, 87), "html", null, true);
         yield "</p>
                         <p><strong>Niveau requis:</strong> ";
-        // line 87
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "level", [], "any", false, false, false, 87), "html", null, true);
+        // line 88
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "level", [], "any", false, false, false, 88), "html", null, true);
         yield "</p>
                     </div>
                 </section>
@@ -267,19 +271,19 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
             
             <div class=\"offer-actions\">
                 ";
-        // line 93
-        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "isAuthenticated", [], "method", false, false, false, 93)) {
-            // line 94
+        // line 94
+        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "isAuthenticated", [], "method", false, false, false, 94)) {
+            // line 95
             yield "                    <a href=\"/login\" class=\"btn-primary login-to-apply\">Se connecter pour postuler</a>
                 ";
-        } elseif ((        // line 95
-($context["canApply"] ?? null) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 95))) {
-            // line 96
+        } elseif ((        // line 96
+($context["canApply"] ?? null) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 96))) {
+            // line 97
             yield "                    <button id=\"apply-button\" class=\"btn-primary login-to-apply\">Postuler à cette offre</button>
                 ";
-        } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 97
-($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 97)) {
-            // line 98
+        } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 98
+($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 98)) {
+            // line 99
             yield "                    <div class=\"already-applied\">
                         <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\">
                             <path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z\" fill=\"currentColor\"/>
@@ -288,13 +292,13 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
                     </div>
                 ";
         } else {
-            // line 105
+            // line 106
             yield "                    <div class=\"cannot-apply\">
                         <p>Vous n'avez pas les permissions nécessaires pour postuler à cette offre.</p>
                     </div>
                 ";
         }
-        // line 109
+        // line 110
         yield "            </div>
         </div>
     </div>
@@ -304,16 +308,16 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
         <div class=\"modal-content\">
             <div class=\"modal-header\">
                 <h2>Postuler à l'offre: ";
-        // line 117
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "title", [], "any", false, false, false, 117), "html", null, true);
+        // line 118
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "title", [], "any", false, false, false, 118), "html", null, true);
         yield "</h2>
                 <button class=\"close-modal\">&times;</button>
             </div>
             <div class=\"modal-body\">
                 <form id=\"application-form\" enctype=\"multipart/form-data\">
                     <input type=\"hidden\" name=\"offerId\" value=\"";
-        // line 122
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 122), "html", null, true);
+        // line 123
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 123), "html", null, true);
         yield "\">
                     
                     <div class=\"form-group\">
@@ -349,14 +353,14 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
         yield from [];
     }
 
-    // line 155
+    // line 156
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_stylesheets(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 156
+        // line 157
         yield "    ";
         yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
         yield "
@@ -717,14 +721,14 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
         yield from [];
     }
 
-    // line 512
+    // line 513
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 513
+        // line 514
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
@@ -741,71 +745,6 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
             const fileName = document.querySelector('.file-name');
             const wishlistButton = document.getElementById('wishlist-button');
             
-            // Set up wishlist button functionality
-            if (wishlistButton) {
-                wishlistButton.addEventListener('click', async function() {
-                    const offerId = this.dataset.id;
-                    
-                    // Add clicked class for animation
-                    this.classList.add('clicked');
-                    setTimeout(() => {
-                        this.classList.remove('clicked');
-                    }, 400);
-                    
-                    try {
-                        // Send API request to toggle wishlist status
-                        const response = await fetch('/API/wishlist/toggle/' + offerId, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Toggle active class
-                            this.classList.toggle('active');
-                            
-                            // Update button text and aria-label
-                            if (data.wishlisted) {
-                                this.textContent = 'Retirer de la wishlist';
-                                this.setAttribute('aria-label', 'Retirer de la wishlist');
-                            } else {
-                                this.textContent = 'Ajouter à la wishlist';
-                                this.setAttribute('aria-label', 'Ajouter à la wishlist');
-                            }
-                            
-                            // Re-add the SVG that got replaced by textContent
-                            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                            svg.setAttribute('viewBox', '0 0 24 24');
-                            svg.setAttribute('width', '24');
-                            svg.setAttribute('height', '24');
-                            
-                            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                            path.setAttribute('d', 'M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z');
-                            
-                            svg.appendChild(path);
-                            this.prepend(svg);
-                            
-                            // Display notification if provided
-                            if (data.message) {
-                                showNotification(data.message, data.wishlisted ? 'success' : 'info');
-                            }
-                        } else {
-                            throw new Error(data.message || 'Something went wrong');
-                        }
-                    } catch (error) {
-                        console.error('Error toggling wishlist:', error);
-                        showNotification('Une erreur est survenue. Veuillez réessayer.', 'error');
-                    }
-                });
-            }
             
             // Set up application modal functionality
             if (applyButton) {
@@ -1108,7 +1047,7 @@ class __TwigTemplate_8658fd48beaf64cfbf19081129a255b1 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  728 => 513,  721 => 512,  360 => 156,  353 => 155,  316 => 122,  308 => 117,  298 => 109,  292 => 105,  283 => 98,  281 => 97,  278 => 96,  276 => 95,  273 => 94,  271 => 93,  262 => 87,  258 => 86,  254 => 85,  250 => 84,  242 => 78,  234 => 76,  232 => 75,  228 => 74,  223 => 73,  217 => 71,  215 => 70,  211 => 69,  201 => 62,  191 => 54,  187 => 52,  185 => 51,  180 => 49,  175 => 48,  164 => 46,  160 => 45,  156 => 44,  152 => 43,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
+        return array (  732 => 514,  725 => 513,  364 => 157,  357 => 156,  320 => 123,  312 => 118,  302 => 110,  296 => 106,  287 => 99,  285 => 98,  282 => 97,  280 => 96,  277 => 95,  275 => 94,  266 => 88,  262 => 87,  258 => 86,  254 => 85,  246 => 79,  238 => 77,  236 => 76,  232 => 75,  227 => 74,  221 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source

@@ -86,7 +86,7 @@ $router->post('/login', ['controller' => 'AuthController', 'action' => 'login'])
 $router->get('/logout', ['controller' => 'AuthController', 'action' => 'logout']);
 
 // Enterprise routes
-$router->get('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'index', 'auth' => true]);
+$router->get('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'index']);
 $router->get('/entreprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true]);
 $router->post('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'store', 'auth' => true]);
 $router->get('/API/entreprises', ['controller' => 'EnterpriseController', 'action' => 'ApiList']);
@@ -145,6 +145,9 @@ $router->post('/update-profile', ['controller' => 'UserController', 'action' => 
 $router->post('/upload-profile-picture', ['controller' => 'UserController', 'action' => 'uploadProfilePicture', 'auth' => true]);
 $router->post('/change-password', ['controller' => 'UserController', 'action' => 'changePassword', 'auth' => true]);
 $router->post('/delete-user/{id:[0-9]+}', ['controller' => 'UserController', 'action' => 'apiDeleteUser', 'auth' => true]);
+$router->get('/API/enterpriseList', ['controller' => 'EnterpriseController', 'action' => 'apiEnterpriseList']);
+$router->get('/API/tagsList', ['controller' => 'OfferController', 'action' => 'apiTagsList']);
+$router->get('/API/citiesList', ['controller' => 'OfferController', 'action' => 'apiCityList']);
 
 $router->get('/favicon.ico', ['controller' => 'AssetController', 'action' => 'favicon']);
 

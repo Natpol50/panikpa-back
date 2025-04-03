@@ -83,16 +83,29 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
             <p>Remplissez le formulaire ci-dessous pour créer une nouvelle offre de stage ou d'alternance.</p>
         </header>
 
-
         <form class=\"create-offer-form\" method=\"POST\" action=\"/offres\">
             <div class=\"form-section\">
                 <h2>Informations générales</h2>
                 
+                ";
+        // line 23
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 23)) {
+            // line 24
+            yield "                <div class=\"form-group\">
+                    <label for=\"enterprise\">[ADMIN] Sélectionnez une entreprise <span class=\"required\">*</span></label>
+                    <select id=\"enterprise\" name=\"enterprise\" required>
+                        <option value=\"\" disabled selected>Chargement des entreprises...</option>
+                    </select>
+                </div>
+                ";
+        }
+        // line 31
+        yield "                
                 <div class=\"form-group\">
                     <label for=\"title\">Titre de l'offre <span class=\"required\">*</span></label>
                     <input type=\"text\" id=\"title\" name=\"title\" value=\"";
-        // line 26
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "title", [], "any", true, true, false, 26)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "title", [], "any", false, false, false, 26), "")) : ("")), "html", null, true);
+        // line 34
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "title", [], "any", true, true, false, 34)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "title", [], "any", false, false, false, 34), "")) : ("")), "html", null, true);
         yield "\" required>
                 </div>
                 
@@ -100,20 +113,20 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                     <label for=\"type\">Type d'offre <span class=\"required\">*</span></label>
                     <select id=\"type\" name=\"type\" required>
                         <option value=\"\" disabled ";
-        // line 32
-        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", true, true, false, 32)) {
+        // line 40
+        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", true, true, false, 40)) {
             yield "selected";
         }
         yield ">Sélectionnez un type d'offre</option>
                         <option value=\"0\" ";
-        // line 33
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", true, true, false, 33) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", false, false, false, 33) == "0"))) {
+        // line 41
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", true, true, false, 41) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", false, false, false, 41) == "0"))) {
             yield "selected";
         }
         yield ">Stage</option>
                         <option value=\"1\" ";
-        // line 34
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", true, true, false, 34) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", false, false, false, 34) == "1"))) {
+        // line 42
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", true, true, false, 42) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "type", [], "any", false, false, false, 42) == "1"))) {
             yield "selected";
         }
         yield ">Alternance</option>
@@ -125,44 +138,44 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                         <label for=\"level\">Niveau d'études requis <span class=\"required\">*</span></label>
                         <select id=\"level\" name=\"level\" required>
                             <option value=\"\" disabled ";
-        // line 42
-        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 42)) {
+        // line 50
+        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 50)) {
             yield "selected";
         }
         yield ">Sélectionnez un niveau</option>
                             <option value=\"Bac\" ";
-        // line 43
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 43) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 43) == "Bac"))) {
+        // line 51
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 51) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 51) == "Bac"))) {
             yield "selected";
         }
         yield ">Bac</option>
                             <option value=\"Bac +2\" ";
-        // line 44
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 44) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 44) == "Bac +2"))) {
+        // line 52
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 52) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 52) == "Bac +2"))) {
             yield "selected";
         }
         yield ">Bac +2</option>
                             <option value=\"Bac +3\" ";
-        // line 45
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 45) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 45) == "Bac +3"))) {
+        // line 53
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 53) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 53) == "Bac +3"))) {
             yield "selected";
         }
         yield ">Bac +3</option>
                             <option value=\"Bac +4\" ";
-        // line 46
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 46) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 46) == "Bac +4"))) {
+        // line 54
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 54) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 54) == "Bac +4"))) {
             yield "selected";
         }
         yield ">Bac +4</option>
                             <option value=\"Bac +5\" ";
-        // line 47
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 47) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 47) == "Bac +5"))) {
+        // line 55
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 55) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 55) == "Bac +5"))) {
             yield "selected";
         }
         yield ">Bac +5</option>
                             <option value=\"Bac +3, Bac +5\" ";
-        // line 48
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 48) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 48) == "Bac +3, Bac +5"))) {
+        // line 56
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", true, true, false, 56) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "level", [], "any", false, false, false, 56) == "Bac +3, Bac +5"))) {
             yield "selected";
         }
         yield ">Bac +3, Bac +5</option>
@@ -172,8 +185,8 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                     <div class=\"form-group\">
                         <label for=\"duration\">Durée <span class=\"required\">*</span></label>
                         <input type=\"text\" id=\"duration\" name=\"duration\" value=\"";
-        // line 54
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "duration", [], "any", true, true, false, 54)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "duration", [], "any", false, false, false, 54), "")) : ("")), "html", null, true);
+        // line 62
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "duration", [], "any", true, true, false, 62)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "duration", [], "any", false, false, false, 62), "")) : ("")), "html", null, true);
         yield "\" required placeholder=\"Ex: 3 mois, 6 mois, 1 an\">
                     </div>
                 </div>
@@ -182,8 +195,8 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                     <div class=\"form-group\">
                         <label for=\"startDate\">Date de début <span class=\"required\">*</span></label>
                         <input type=\"date\" id=\"startDate\" name=\"startDate\" value=\"";
-        // line 61
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "startDate", [], "any", true, true, false, 61)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "startDate", [], "any", false, false, false, 61), "")) : ("")), "html", null, true);
+        // line 69
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "startDate", [], "any", true, true, false, 69)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "startDate", [], "any", false, false, false, 69), "")) : ("")), "html", null, true);
         yield "\" required>
                     </div>
                     
@@ -191,20 +204,20 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                         <label for=\"remuneration\">Rémunération</label>
                         <select id=\"remuneration\" name=\"remuneration\">
                             <option value=\"\" disabled ";
-        // line 67
-        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "Remuneration", [], "any", true, true, false, 67)) {
+        // line 75
+        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "Remuneration", [], "any", true, true, false, 75)) {
             yield "selected";
         }
         yield ">L'offre est-elle rémunérée ?</option>
                             <option value=\"0\" ";
-        // line 68
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", true, true, false, 68) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", false, false, false, 68) == "0"))) {
+        // line 76
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", true, true, false, 76) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", false, false, false, 76) == "0"))) {
             yield "selected";
         }
         yield ">Non rémunéré</option>
                             <option value=\"1\" ";
-        // line 69
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", true, true, false, 69) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", false, false, false, 69) == "1"))) {
+        // line 77
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", true, true, false, 77) && (CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "remuneration", [], "any", false, false, false, 77) == "1"))) {
             yield "selected";
         }
         yield ">Rémunéré</option>
@@ -220,16 +233,16 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                     <div class=\"form-group\">
                         <label for=\"city\">Ville <span class=\"required\">*</span></label>
                         <input type=\"text\" id=\"city\" name=\"city\" value=\"";
-        // line 81
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "city", [], "any", true, true, false, 81)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "city", [], "any", false, false, false, 81), "")) : ("")), "html", null, true);
+        // line 89
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "city", [], "any", true, true, false, 89)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "city", [], "any", false, false, false, 89), "")) : ("")), "html", null, true);
         yield "\" required>
                     </div>
                     
                     <div class=\"form-group\">
                         <label for=\"postalCode\">Code postal <span class=\"required\">*</span></label>
                         <input type=\"number\" id=\"postalCode\" name=\"postalCode\" value=\"";
-        // line 86
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "postalCode", [], "any", true, true, false, 86)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "postalCode", [], "any", false, false, false, 86), "")) : ("")), "html", null, true);
+        // line 94
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "postalCode", [], "any", true, true, false, 94)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "postalCode", [], "any", false, false, false, 94), "")) : ("")), "html", null, true);
         yield "\" required>
                     </div>
                 </div>
@@ -239,22 +252,21 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                 <h2>Compétences</h2>
                 
                 <div id=\"tags-container\">
-                    <!-- Initial tag input field -->
                     <div class=\"tag-input-group\">
                         <div class=\"form-row\">
                             <div class=\"form-group tag-input\">
                                 <label for=\"tags[0]\">Compétence</label>
                                 <input type=\"text\" id=\"tags[0]\" name=\"tags[]\" value=\"";
-        // line 100
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "tags", [], "any", false, true, false, 100), 0, [], "array", true, true, false, 100)) ? (Twig\Extension\CoreExtension::default((($_v0 = CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "tags", [], "any", false, false, false, 100)) && is_array($_v0) || $_v0 instanceof ArrayAccess ? ($_v0[0] ?? null) : null), "")) : ("")), "html", null, true);
+        // line 107
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "tags", [], "any", false, true, false, 107), 0, [], "array", true, true, false, 107)) ? (Twig\Extension\CoreExtension::default((($_v0 = CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "tags", [], "any", false, false, false, 107)) && is_array($_v0) || $_v0 instanceof ArrayAccess ? ($_v0[0] ?? null) : null), "")) : ("")), "html", null, true);
         yield "\" placeholder=\"Ex: PHP, JavaScript, Réseau...\">
                             </div>
                             
                             <div class=\"form-group optional-checkbox\">
                                 <label class=\"checkbox-container\">
                                     <input type=\"checkbox\" id=\"optional_tags[0]\" name=\"optional_tags[0]\" value=\"1\" ";
-        // line 105
-        if ((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "optional_tags", [], "any", false, true, false, 105), 0, [], "array", true, true, false, 105) && ((($_v1 = CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "optional_tags", [], "any", false, false, false, 105)) && is_array($_v1) || $_v1 instanceof ArrayAccess ? ($_v1[0] ?? null) : null) == "1"))) {
+        // line 112
+        if ((CoreExtension::getAttribute($this->env, $this->source, CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "optional_tags", [], "any", false, true, false, 112), 0, [], "array", true, true, false, 112) && ((($_v1 = CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "optional_tags", [], "any", false, false, false, 112)) && is_array($_v1) || $_v1 instanceof ArrayAccess ? ($_v1[0] ?? null) : null) == "1"))) {
             yield "checked";
         }
         yield ">
@@ -274,8 +286,8 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                 <div class=\"form-group\">
                     <label for=\"description\">Description détaillée de l'offre <span class=\"required\">*</span></label>
                     <textarea id=\"description\" name=\"description\" rows=\"10\" required>";
-        // line 121
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "description", [], "any", true, true, false, 121)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "description", [], "any", false, false, false, 121), "")) : ("")), "html", null, true);
+        // line 128
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "description", [], "any", true, true, false, 128)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "description", [], "any", false, false, false, 128), "")) : ("")), "html", null, true);
         yield "</textarea>
                     <p class=\"form-hint\">Décrivez les missions, les responsabilités, le contexte et les objectifs du stage/alternance.</p>
                 </div>
@@ -292,14 +304,14 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
         yield from [];
     }
 
-    // line 135
+    // line 142
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_stylesheets(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 136
+        // line 143
         yield "    ";
         yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
         yield "
@@ -460,7 +472,18 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
             padding-left: 1.5rem;
         }
         
-        /* Responsive adjustments */
+        /* Improved responsiveness */
+        @media screen and (max-width: 992px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            
+            .create-offer-container {
+                padding: 1.75rem;
+            }
+        }
+        
         @media screen and (max-width: 768px) {
             .create-offer-container {
                 padding: 1.5rem;
@@ -481,20 +504,75 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                 width: 100%;
                 text-align: center;
             }
+            
+            .checkbox-container {
+                margin-top: 1rem;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .create-offer-container {
+                padding: 1rem;
+            }
+            
+            .create-offer-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .form-section h2 {
+                font-size: 1.2rem;
+            }
+            
+            .form-group input,
+            .form-group select,
+            .form-group textarea {
+                padding: 0.6rem;
+                font-size: 0.95rem;
+            }
+            
+            .btn-secondary, .btn-primary {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Autocomplete styling */
+        input[list] {
+            position: relative;
+        }
+
+        datalist {
+            position: absolute;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            z-index: 10;
+        }
+
+        datalist option {
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        datalist option:hover {
+            background-color: var(--tag-background);
         }
     </style>
 ";
         yield from [];
     }
 
-    // line 319
+    // line 392
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 320
+        // line 393
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
@@ -507,13 +585,48 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
             // Initial tag count
             let tagCount = 1;
             
+            // Store available tags for autocomplete
+            let availableTags = [];
+            
+            // Store available cities for autocomplete
+            let availableCities = [];
+            
+            // Fetch tags for autocomplete
+            fetch('/api/tagsList')
+                .then(response => response.json())
+                .then(tagsData => {
+                    // Store tags data for autocomplete
+                    availableTags = tagsData.map(tag => tag.name);
+                    
+                    // Initialize autocomplete on existing tag inputs
+                    document.querySelectorAll('[id^=\"tags[\"]').forEach(input => {
+                        initializeTagAutocomplete(input);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching tags for autocomplete:', error);
+                });
+            
+            // Fetch cities for autocomplete
+            fetch('/api/citiesList')
+                .then(response => response.json())
+                .then(citiesData => {
+                    availableCities = citiesData;
+                    
+                    // Initialize city autocomplete
+                    initializeCityAutocomplete();
+                })
+                .catch(error => {
+                    console.error('Error fetching cities for autocomplete:', error);
+                });
+            
             // Add tag button click handler
             addTagButton.addEventListener('click', () => {
                 // Create new tag input group
                 const tagInputGroup = document.createElement('div');
                 tagInputGroup.className = 'tag-input-group';
                 
-                // Create tag input
+                // Create tag input with unique ID based on tagCount
                 tagInputGroup.innerHTML = `
                     <div class=\"form-row\">
                         <div class=\"form-group tag-input\">
@@ -542,10 +655,137 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
                     tagInputGroup.remove();
                 });
                 
+                // Initialize autocomplete on the new tag input
+                const newInput = tagInputGroup.querySelector(`input[id=\"tags[\${tagCount}]\"]`);
+                initializeTagAutocomplete(newInput);
+                
                 // Increment tag count
                 tagCount++;
             });
-        });
+            
+            // Function to initialize tag autocomplete
+            function initializeTagAutocomplete(inputElement) {
+                if (!inputElement || !availableTags.length) return;
+                
+                // Create a datalist element for autocomplete
+                const datalistId = `autocomplete-tag-\${Math.random().toString(36).substr(2, 9)}`;
+                let datalist = document.createElement('datalist');
+                datalist.id = datalistId;
+                
+                // Populate datalist with available tags
+                availableTags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    datalist.appendChild(option);
+                });
+                
+                // Add datalist to the DOM
+                document.body.appendChild(datalist);
+                
+                // Connect input to datalist
+                inputElement.setAttribute('list', datalistId);
+            }
+            
+            // Function to initialize city autocomplete
+            function initializeCityAutocomplete() {
+                const cityInput = document.getElementById('city');
+                const postalCodeInput = document.getElementById('postalCode');
+                
+                if (!cityInput || !postalCodeInput || !availableCities.length) return;
+                
+                // Create datalist for city autocomplete
+                const cityDatalistId = 'autocomplete-city';
+                let cityDatalist = document.getElementById(cityDatalistId);
+                
+                if (!cityDatalist) {
+                    cityDatalist = document.createElement('datalist');
+                    cityDatalist.id = cityDatalistId;
+                    document.body.appendChild(cityDatalist);
+                }
+                
+                // Populate city datalist
+                const uniqueCities = [...new Set(availableCities.map(city => city.city_name))];
+                uniqueCities.forEach(cityName => {
+                    const option = document.createElement('option');
+                    option.value = cityName;
+                    cityDatalist.appendChild(option);
+                });
+                
+                // Connect city input to datalist
+                cityInput.setAttribute('list', cityDatalistId);
+                
+                // Create datalist for postal code autocomplete
+                const postalDatalistId = 'autocomplete-postal';
+                let postalDatalist = document.getElementById(postalDatalistId);
+                
+                if (!postalDatalist) {
+                    postalDatalist = document.createElement('datalist');
+                    postalDatalist.id = postalDatalistId;
+                    document.body.appendChild(postalDatalist);
+                }
+                
+                // Populate postal code datalist
+                const uniquePostalCodes = [...new Set(availableCities.map(city => city.city_postal))];
+                uniquePostalCodes.forEach(postalCode => {
+                    const option = document.createElement('option');
+                    option.value = postalCode;
+                    postalDatalist.appendChild(option);
+                });
+                
+                // Connect postal code input to datalist
+                postalCodeInput.setAttribute('list', postalDatalistId);
+                
+                // City input event listener
+                cityInput.addEventListener('input', () => {
+                    const selectedCity = cityInput.value;
+                    const matchedCity = availableCities.find(city => city.city_name === selectedCity);
+                    
+                    if (matchedCity) {
+                        postalCodeInput.value = matchedCity.city_postal;
+                    }
+                });
+                
+                // Postal code input event listener
+                postalCodeInput.addEventListener('input', () => {
+                    const selectedPostal = postalCodeInput.value;
+                    const matchedCity = availableCities.find(city => city.city_postal === selectedPostal);
+                    
+                    if (matchedCity) {
+                        cityInput.value = matchedCity.city_name;
+                    }
+                });
+            }
+            
+            // Admin-only code for enterprise dropdown
+            ";
+        // line 575
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 575)) {
+            // line 576
+            yield "                const enterpriseDropdown = document.getElementById('enterprise');
+
+                // Fetch enterprise list
+                fetch('/api/enterpriseList')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Clear existing options
+                        enterpriseDropdown.innerHTML = '<option value=\"\" disabled selected>Sélectionnez une entreprise</option>';
+
+                        // Populate dropdown with enterprise data
+                        data.forEach(enterprise => {
+                            const option = document.createElement('option');
+                            option.value = enterprise.enterprise_id;
+                            option.textContent = `\${enterprise.enterprise_name} (\${enterprise.enterprise_id})`;
+                            enterpriseDropdown.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching enterprise list:', error);
+                        enterpriseDropdown.innerHTML = '<option value=\"\" disabled>Erreur lors du chargement des entreprises</option>';
+                    });
+            ";
+        }
+        // line 598
+        yield "        });
     </script>
 ";
         yield from [];
@@ -572,7 +812,7 @@ class __TwigTemplate_8e1beb3cdd6fda5353171f77f2fad5bc extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  498 => 320,  491 => 319,  303 => 136,  296 => 135,  278 => 121,  257 => 105,  249 => 100,  232 => 86,  224 => 81,  207 => 69,  201 => 68,  195 => 67,  186 => 61,  176 => 54,  165 => 48,  159 => 47,  153 => 46,  147 => 45,  141 => 44,  135 => 43,  129 => 42,  116 => 34,  110 => 33,  104 => 32,  95 => 26,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
+        return array (  788 => 598,  764 => 576,  762 => 575,  576 => 393,  569 => 392,  315 => 143,  308 => 142,  290 => 128,  269 => 112,  261 => 107,  245 => 94,  237 => 89,  220 => 77,  214 => 76,  208 => 75,  199 => 69,  189 => 62,  178 => 56,  172 => 55,  166 => 54,  160 => 53,  154 => 52,  148 => 51,  142 => 50,  129 => 42,  123 => 41,  117 => 40,  108 => 34,  103 => 31,  94 => 24,  92 => 23,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
