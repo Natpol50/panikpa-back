@@ -11,6 +11,7 @@ use App\Models\WishlistModel;
 use App\Services\CacheService;
 use App\Core\RequestObject;
 use App\Exceptions\AuthorizationException;
+use App\Exceptions\AuthenticationException;
 use App\Exceptions\NotFoundException;
 use App\Exceptions\ValidationException;
 
@@ -70,61 +71,6 @@ class EnterpriseController extends BaseController
     }
     
     /**
-     * Show the form for creating a new enterprise
-     * 
-     * @param RequestObject $request Current request information
-     * @return void
-     */
-    public function create(RequestObject $request): void
-    {
-        // Check if user is authenticated and has permission
-        if (!$request->isAuthenticated()) {
-            header('Location: /login');
-            exit;
-        }
-        
-        // Check if user has permission to create enterprises
-        if (!$request->hasPermission('perm_company_creation')) {
-            throw new AuthorizationException("You don't have permission to create enterprises");
-        }
-        
-        // Load the view with the data
-        echo $this->render('enterprises/create', [
-            'request' => $request
-        ]);
-    }
-    
-    /**
-     * Store a newly created enterprise
-     * 
-     * @param RequestObject $request Current request information
-     * @return void
-     */
-    public function store(RequestObject $request): void
-    {
-        // Check if user is authenticated and has permission
-        if (!$request->isAuthenticated()) {
-            header('Location: /login');
-            exit;
-        }
-        
-        // Check if user has permission to create enterprises
-        if (!$request->hasPermission('perm_company_creation')) { 
-            throw new AuthorizationException("You don't have permission to create enterprises");
-        }
-        
-        // Validate input
-        $data = $this->validateEnterpriseInput($_POST);
-        
-        // Create the enterprise
-        $enterpriseId = $this->enterpriseModel->createEnterprise($data);
-        
-        // Redirect to the new enterprise page
-        header("Location: /enterprises/{$enterpriseId}");
-        exit;
-    }
-    
-    /**
      * Show the form for editing an enterprise
      * 
      * @param RequestObject $request Current request information
@@ -143,11 +89,13 @@ class EnterpriseController extends BaseController
             throw new AuthorizationException("You don't have permission to edit enterprises");
         }
         
-        // Get enterprise ID from route parameters
-        $enterpriseId = (int)($_GET['id'] ?? 0);
-        
-        if ($enterpriseId <= 0) {
-            throw new NotFoundException("Enterprise not found");
+        // Extract enterprise ID from URL
+        $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $segments = explode('/', trim($urlPath, '/'));
+        $enterpriseId = $segments[count($segments) - 2]; // Get the segment before "edit"
+
+        if (strlen($enterpriseId) !== 3) {
+            throw new NotFoundException("Invalid enterprise ID (enterprise ID: $enterpriseId, length: " . strlen($enterpriseId) . ")");
         }
         
         // Get enterprise details
@@ -209,95 +157,80 @@ class EnterpriseController extends BaseController
     }
     
     /**
-     * Delete the specified enterprise
+     * API endpoint to delete the specified enterprise
      * 
      * @param RequestObject $request Current request information
-     * @return void
+     * @return void Outputs JSON response
      */
-    public function delete(RequestObject $request): void
+    public function apiDelete(RequestObject $request): void
     {
-        // Check if user is authenticated and has permission
+        // Set response headers
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
         if (!$request->isAuthenticated()) {
-            header('Location: /login');
-            exit;
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vous devez être connecté pour effectuer cette action',
+                'redirect' => '/'
+            ]);
+            return;
         }
         
-        // Check if user has permission to delete enterprises
-        if (!$request->hasPermission('perm_modify_comp_info')) { 
-            throw new AuthorizationException("You don't have permission to delete enterprises");
-        }
+        // Get enterprise ID from GET parameter
+        $enterpriseId = (string)($_GET['id'] ?? 0);
         
-        // Get enterprise ID from route parameters
-        $enterpriseId = (int)($_GET['id'] ?? 0);
-        
-        if ($enterpriseId <= 0) {
-            throw new NotFoundException("Enterprise not found");
+        if (strlen((string)$enterpriseId) !== 3) {
+            http_response_code(400);
+            echo json_encode([
+            'success' => false,
+            'message' => 'ID d\'entreprise invalide.'
+            ]);
+            return;
         }
         
         // Check if enterprise exists
         $enterprise = $this->enterpriseModel->getEnterpriseById($enterpriseId);
         
         if (!$enterprise) {
-            throw new NotFoundException("Enterprise not found");
+            http_response_code(404);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Entreprise introuvable'
+            ]);
+            return;
         }
         
-        // Delete the enterprise
-        $this->enterpriseModel->deleteEnterprise($enterpriseId);
+        // Check if user has permission to delete the enterprise
+        $isAdmin = $request->hasPermission('perm_admin');
+        $isAffiliated = $this->enterpriseModel->isUserAffiliatedToEnterprise($request->userId, $enterpriseId);
         
-        // Redirect to the enterprises list
-        header("Location: /enterprises");
-        exit;
-    }
-    
-    /**
-     * Validate enterprise input data
-     * 
-     * @param array $input Raw input data
-     * @return array Validated data
-     * @throws ValidationException If validation fails
-     */
-    private function validateEnterpriseInput(array $input): array
-    {
-        $errors = [];
-        
-        // Validate enterprise name
-        if (empty($input['enterpriseName'])) {
-            $errors['enterpriseName'] = 'Enterprise name is required';
-        } elseif (strlen($input['enterpriseName']) > 100) {
-            $errors['enterpriseName'] = 'Enterprise name must be 100 characters or less';
+        if (!($isAdmin || ($request->hasPermission('perm_modify_comp_info') && $isAffiliated))) {
+            http_response_code(403);
+            echo json_encode([
+            'success' => false,
+            'message' => 'Vous n\'avez pas la permission de supprimer cette entreprise'
+            ]);
+            return;
         }
         
-        // Validate enterprise phone
-        if (empty($input['enterprisePhone'])) {
-            $errors['enterprisePhone'] = 'Enterprise phone is required';
-        } elseif (!preg_match('/^[0-9+\s()-]{10,20}$/', $input['enterprisePhone'])) {
-            $errors['enterprisePhone'] = 'Invalid phone number format';
+        try {
+            // Delete the enterprise
+            $this->enterpriseModel->deleteEnterpriseById($enterpriseId);
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Entreprise supprimée avec succès'
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de la suppression de l\'entreprise',
+                'error' => $e->getMessage()
+            ]);
         }
-        
-        // Validate enterprise email
-        if (empty($input['enterpriseEmail'])) {
-            $errors['enterpriseEmail'] = 'Enterprise email is required';
-        } elseif (!filter_var($input['enterpriseEmail'], FILTER_VALIDATE_EMAIL)) {
-            $errors['enterpriseEmail'] = 'Invalid email format';
-        }
-        
-        // If there are validation errors, throw an exception
-        if (!empty($errors)) {
-            throw new ValidationException("Validation failed", $errors);
-        }
-        
-        // Return sanitized data
-        return [
-            'enterpriseName' => htmlspecialchars($input['enterpriseName']),
-            'enterprisePhone' => htmlspecialchars($input['enterprisePhone']),
-            'enterpriseEmail' => htmlspecialchars($input['enterpriseEmail']),
-            'enterpriseDescriptionUrl' => isset($input['enterpriseDescriptionUrl']) ? 
-                htmlspecialchars($input['enterpriseDescriptionUrl']) : '',
-            'enterprisePhotoUrl' => isset($input['enterprisePhotoUrl']) ? 
-                htmlspecialchars($input['enterprisePhotoUrl']) : '',
-            'enterpriseSite' => isset($input['enterpriseSite']) ? 
-                htmlspecialchars($input['enterpriseSite']) : ''
-        ];
     }
 
     /**
@@ -576,6 +509,210 @@ class EnterpriseController extends BaseController
             echo json_encode([
                 'success' => false,
                 'message' => 'Une erreur est survenue: ' . $e->getMessage()
+            ]);
+        }
+    }
+    /**
+     * Show the form for creating a new enterprise
+     * 
+     * This method handles the display of the enterprise creation form.
+     * It performs two key checks:
+     * 1. Ensures the user is authenticated
+     * 2. Verifies the user has permission to create enterprises
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Renders the create enterprise form
+     * @throws AuthenticationException If user is not authenticated
+     * @throws AuthorizationException If user lacks required permissions
+     */
+    public function create(RequestObject $request): void
+    {
+        // Redirect to login if not authenticated
+        if (!$request->isAuthenticated()) {
+            // Store the intended destination in session for post-login redirect
+            header('Location: /login');
+            exit;
+        }
+        
+        // Check for company creation permission
+        if (!$request->hasPermission('perm_company_creation')) { 
+            // Throw a descriptive authorization exception
+            throw new AuthorizationException(
+                "Vous n'avez pas l'autorisation de créer des entreprises. " .
+                "Contactez un administrateur si vous pensez que c'est une erreur."
+            );
+        }
+        
+        // Render the enterprise creation form
+        echo $this->render('enterprises/create', [
+            'request' => $request
+        ]);
+    }
+
+    /**
+     * Validate enterprise input data
+     * 
+     * Performs comprehensive validation on enterprise input:
+     * - Validates required fields
+     * - Checks field lengths
+     * - Validates email and URL formats
+     * - Sanitizes input to prevent XSS
+     * 
+     * @param array $input Raw input data from form submission
+     * @return array Validated and sanitized enterprise data
+     * @throws ValidationException If any validation rules are violated
+     */
+    private function validateEnterpriseInput(array $input): array
+    {
+        // Initialize error collection
+        $errors = [];
+
+        // Validate enterprise name
+        $enterpriseName = trim($input['enterpriseName'] ?? '');
+        if (empty($enterpriseName)) {
+            $errors[] = 'Le nom de l\'entreprise est obligatoire.';
+        } elseif (mb_strlen($enterpriseName) > 100) {
+            $errors[] = 'Le nom de l\'entreprise ne doit pas dépasser 100 caractères.';
+        }
+
+        // Validate phone number
+        $enterprisePhone = preg_replace('/\s+/', '', $input['enterprisePhone'] ?? '');
+        if (empty($enterprisePhone)) {
+            $errors[] = 'Le numéro de téléphone est obligatoire.';
+        } elseif (!preg_match('/^(0|\+33)[1-9]([-. ]?[0-9]{2}){4}$/', $enterprisePhone)) {
+            $errors[] = 'Le numéro de téléphone doit être un format français valide (0X XX XX XX XX ou +33X XX XX XX XX).';
+        }
+
+        // Validate email
+        $enterpriseEmail = trim($input['enterpriseEmail'] ?? '');
+        if (empty($enterpriseEmail)) {
+            $errors[] = 'L\'adresse email est obligatoire.';
+        } elseif (!filter_var($enterpriseEmail, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'L\'adresse email n\'est pas valide.';
+        }
+
+        // Optional: Validate website URL
+        $enterpriseSite = trim($input['enterpriseSite'] ?? '');
+        if (!empty($enterpriseSite)) {
+            // Ensure URL starts with http:// or https://
+            if (!preg_match('/^https?:\/\//', $enterpriseSite)) {
+                $enterpriseSite = 'https://' . $enterpriseSite;
+            }
+
+            if (!filter_var($enterpriseSite, FILTER_VALIDATE_URL)) {
+                $errors[] = 'L\'URL du site web n\'est pas valide.';
+            }
+        }
+
+        // Optional: Validate description URL
+        $enterpriseDescriptionUrl = trim($input['enterpriseDescriptionUrl'] ?? '');
+
+        $enterprisePhotoUrl = trim($input['enterprisePhotoUrl'] ?? '');
+        // Optional: Validate photo URL
+        if (!empty($enterprisePhotoUrl)) {
+            // Optional: Check if URL points to an image (non-blocking)
+            try {
+                $headers = @get_headers($enterprisePhotoUrl, 1);
+                $contentType = is_array($headers) ? ($headers['Content-Type'] ?? '') : '';
+                
+                if (!preg_match('/^image\/(jpeg|png|gif|webp|svg\+xml)$/', $contentType)) {
+                    $errors[] = 'L\'URL de la photo doit pointer vers une image.';
+                }
+            } catch (\Exception $e) {
+                // Silently catch any errors during image URL validation
+            }
+        }
+
+        // Throw validation exception if any errors exist
+        if (!empty($errors)) {
+            throw new ValidationException("Validation des données de l'entreprise échouée", $errors);
+        }
+
+        // Sanitize and return validated data
+        return [
+            'enterpriseName' => htmlspecialchars($enterpriseName, ENT_QUOTES, 'UTF-8'),
+            'enterprisePhone' => htmlspecialchars($enterprisePhone, ENT_QUOTES, 'UTF-8'),
+            'enterpriseEmail' => htmlspecialchars($enterpriseEmail, ENT_QUOTES, 'UTF-8'),
+            'enterpriseSite' => !empty($enterpriseSite) ? htmlspecialchars($enterpriseSite, ENT_QUOTES, 'UTF-8') : null,
+            'enterpriseDescriptionUrl' => !empty($enterpriseDescriptionUrl) ? htmlspecialchars($enterpriseDescriptionUrl, ENT_QUOTES, 'UTF-8') : null,
+            'enterprisePhotoUrl' => !empty($enterprisePhotoUrl) ? htmlspecialchars($enterprisePhotoUrl, ENT_QUOTES, 'UTF-8') : null
+        ];
+        }
+
+        /**
+        * Store a newly created enterprise
+        * 
+        * Handles the process of creating a new enterprise:
+        * 1. Authenticates the user
+        * 2. Validates input data
+        * 3. Creates the enterprise
+        * 4. Handles success and error scenarios
+        * 
+        * @param RequestObject $request Current request information
+        * @return void Redirects or renders the form with errors
+        * @throws AuthenticationException If user is not authenticated
+        * @throws AuthorizationException If user lacks required permissions
+        * @throws ValidationException If input data is invalid
+        */
+        public function store(RequestObject $request): void
+        {
+        // Ensure authentication
+        if (!$request->isAuthenticated()) {
+            header('Location: /login');
+            exit;
+        }
+
+        // Check permission to create enterprises
+        if (!$request->hasPermission('perm_company_creation')) { 
+            header('Location: /login');
+            exit;
+        }
+
+        try {
+            // Validate and sanitize input data
+            $validatedData = $this->validateEnterpriseInput($_POST);
+            
+            // Generate a unique enterprise ID
+            do {
+                $uniqueId = strtoupper(substr($validatedData['enterpriseName'], 0, 1)) . bin2hex(random_bytes(1));
+                $error[''] = $uniqueId;
+            } while ($this->enterpriseModel->getEnterpriseById($uniqueId));
+
+            $validatedData['id_enterprise'] = $uniqueId;
+            
+            // Fallback default photo if not provided
+            if (empty($validatedData['enterprisePhotoUrl'])) {
+                $validatedData['enterprisePhotoUrl'] = '/assets/pp/defaultenterprise.png';
+            }
+            
+            // Create the enterprise
+            $enterpriseId = $this->enterpriseModel->createEnterprise($validatedData);
+            
+            // Log the creation event (optional)
+            error_log("Enterprise created: {$enterpriseId} by user {$request->userId}");
+            
+            // Redirect to the new enterprise's details page
+            header("Location: /entreprises/{$enterpriseId}");
+            exit;
+        } catch (ValidationException $e) {
+            // Re-render the form with validation errors
+            echo $this->render('enterprises/create', [
+                'request' => $request,
+                'error' => $e->getErrors(),
+                'formData' => $_POST
+            ]);
+        } catch (\Exception $e) {
+            // Log unexpected errors
+            error_log("Enterprise creation error: " . $e->getMessage());
+            
+            // Render form with a generic error message
+            echo $this->render('enterprises/create', [
+                'request' => $request,
+                'error' => [
+                    'Une erreur inattendue est survenue lors de la création de l\'entreprise.',
+                    'Veuillez réessayer ou contacter le support technique.'
+                ],
+                'formData' => $_POST
             ]);
         }
     }

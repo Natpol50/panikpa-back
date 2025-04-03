@@ -29,13 +29,6 @@
         },
         "expires_at": 1743691540
     },
-    "enterprise_average_E01": {
-        "value": {
-            "average_rating": 4,
-            "comment_count": 1
-        },
-        "expires_at": 1743691763
-    },
     "role_permissions_4": {
         "value": {
             "id_acctype": 4,
@@ -65,10 +58,6 @@
             "perm_admin": 0
         },
         "expires_at": 1743691917
-    },
-    "offer_applicants_count_7": {
-        "value": 0,
-        "expires_at": 1743692135
     },
     "role_permissions_1": {
         "value": {
@@ -106,5 +95,111 @@
             "comment_count": 0
         },
         "expires_at": 1743692580
+    },
+    "enterprise_average_E01": {
+        "value": {
+            "average_rating": 4,
+            "comment_count": 1
+        },
+        "expires_at": 1743710813
+    },
+    "offer_applicants_count_7": {
+        "value": 0,
+        "expires_at": 1743711284
+    },
+    "enterprise_average_A11": {
+        "value": {
+            "average_rating": null,
+            "comment_count": 0
+        },
+        "expires_at": 1743714368
+    },
+    "role_permissions_3": {
+        "value": {
+            "id_acctype": 3,
+            "acctype_name": "Tutor",
+            "perm_company_creation": 1,
+            "perm_modify_comp_info": 1,
+            "perm_grade_company": 1,
+            "perm_create_offer": 1,
+            "perm_modify_offer": 1,
+            "perm_delete_offer": 1,
+            "perm_delete_tutor": 0,
+            "perm_search_tutor": 1,
+            "perm_modify_tutor": 0,
+            "perm_search_student": 1,
+            "perm_create_student": 1,
+            "perm_modify_student": 1,
+            "perm_delete_student": 0,
+            "perm_consult_students_stats": 1,
+            "perm_consult_students_applications": 1,
+            "perm_wishlist": 0,
+            "perm_offer_apply": 0,
+            "perm_consult_offer_applications": 1,
+            "perm_reply_offer_applications": 1,
+            "perm_create_admin": 0,
+            "perm_modify_admin": 0,
+            "perm_delete_admin": 0,
+            "perm_admin": 0
+        },
+        "expires_at": 1743714564
+    },
+    "enterprise_average_A42": {
+        "value": {
+            "average_rating": null,
+            "comment_count": 0
+        },
+        "expires_at": 1743714606
+    },
+    "enterprise_average_Ta5": {
+        "value": {
+            "average_rating": null,
+            "comment_count": 0
+        },
+        "expires_at": 1743714638
+    },
+    "enterprise_average_T86": {
+        "value": {
+            "average_rating": null,
+            "comment_count": 0
+        },
+        "expires_at": 1743714832
+    },
+    "enterprise_average_Tc2": {
+        "value": {
+            "average_rating": null,
+            "comment_count": 0
+        },
+        "expires_at": 1743714908
+    },
+    "role_permissions_5": {
+        "value": {
+            "id_acctype": 5,
+            "acctype_name": "Other",
+            "perm_company_creation": 0,
+            "perm_modify_comp_info": 1,
+            "perm_grade_company": 1,
+            "perm_create_offer": 1,
+            "perm_modify_offer": 1,
+            "perm_delete_offer": 1,
+            "perm_delete_tutor": 0,
+            "perm_search_tutor": 0,
+            "perm_modify_tutor": 0,
+            "perm_search_student": 0,
+            "perm_create_student": 0,
+            "perm_modify_student": 0,
+            "perm_delete_student": 0,
+            "perm_consult_students_stats": 0,
+            "perm_consult_students_applications": 0,
+            "perm_wishlist": 1,
+            "perm_offer_apply": 0,
+            "perm_consult_offer_applications": 0,
+            "perm_reply_offer_applications": 0,
+            "perm_create_admin": 0,
+            "perm_modify_admin": 0,
+            "perm_delete_admin": 0,
+            "perm_admin": 0
+        },
+        "expires_at": 1743716566
     }
 }

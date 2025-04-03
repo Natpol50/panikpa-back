@@ -31,26 +31,27 @@ class EnterpriseModel
      * Create a new enterprise
      * 
      * @param array $data Enterprise data
-     * @return int ID of the created enterprise
+     * @return string ID of the created enterprise
      * @throws ModelException If creation fails or required fields are missing
      */
-    public function createEnterprise(array $data): int
+    public function createEnterprise(array $data): string
     {
         // Validate required fields
         if (empty($data["enterpriseName"]) || 
             empty($data["enterprisePhone"]) || 
-            empty($data["enterpriseEmail"])) {
+            empty($data["enterpriseEmail"]) ||
+            empty($data["id_enterprise"])) {
             throw new ModelException("Missing required fields for enterprise creation");
         }
-        
         // Set default values for optional fields
         $descriptionUrl = $data["enterpriseDescriptionUrl"] ?? "";
-        $photoUrl = $data["enterprisePhotoUrl"] ?? "";
+        $photoUrl = $data["enterprisePhotoUrl"] ?? "/assets/pp/defaultenterprise.png";
         $site = $data["enterpriseSite"] ?? "";
         
         try {
             $query = "
                 INSERT INTO Enterprise(
+                    id_enterprise,
                     enterprise_name, 
                     enterprise_phone, 
                     enterprise_description_url, 
@@ -58,6 +59,7 @@ class EnterpriseModel
                     enterprise_photo_url, 
                     enterprise_site
                 ) VALUES (
+                    :enterpriseId,
                     :enterpriseName, 
                     :enterprisePhone, 
                     :enterpriseDescriptionUrl, 
@@ -70,15 +72,16 @@ class EnterpriseModel
             $stmt = $this->database->prepare($query);
             
             $stmt->execute([
+                ":enterpriseId" => $data["id_enterprise"],
                 ":enterpriseName" => $data["enterpriseName"],
                 ":enterprisePhone" => $data["enterprisePhone"],
                 ":enterpriseDescriptionUrl" => $descriptionUrl,
                 ":enterpriseEmail" => $data["enterpriseEmail"],
                 ":enterprisePhotoUrl" => $photoUrl,
-                ":enterpriseSite" => $site
+                ":enterpriseSite" => $site,
             ]);
             
-            return (int)$this->database->lastInsertId();
+            return $data["id_enterprise"];
         } catch (PDOException $e) {
             throw new ModelException("Failed to create enterprise: " . $e->getMessage());
         }
@@ -437,6 +440,132 @@ class EnterpriseModel
             return $result ? (float)$result['grade_UE'] : null;
         } catch (PDOException $e) {
             throw new ModelException("Failed to get user rating: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Check if a user is affiliated with an enterprise
+     * 
+     * @param int $userId User ID
+     * @param string $enterpriseId Enterprise ID
+     * @return bool True if the user is affiliated, false otherwise
+     * @throws ModelException If the check fails
+     */
+    public function isUserAffiliatedToEnterprise(int $userId, string $enterpriseId): bool
+    {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        try {
+            $query = "
+            SELECT 1
+            FROM User
+            WHERE id_user = :userId AND id_enterprise = :enterpriseId
+            LIMIT 1
+            ";
+
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+            ":userId" => $userId,
+            ":enterpriseId" => $enterpriseId
+            ]);
+
+            return (bool) $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to check user affiliation: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Delete an enterprise and wipe its affiliations
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @return bool Success status
+     * @throws ModelException If deletion fails
+     */
+    public function deleteEnterpriseById(string $enterpriseId): bool
+    {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        try {
+            $this->database->beginTransaction();
+
+            // Remove enterprise ID from affiliated users
+            $query = "
+                UPDATE User
+                SET id_enterprise = NULL
+                WHERE id_enterprise = :enterpriseId
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+
+            // Delete related comments
+            $query = "
+                DELETE FROM Comment
+                WHERE id_enterprise IN (
+                    SELECT id_enterprise FROM Offer WHERE id_enterprise = :enterpriseId
+                )
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+
+            // Delete related interactions
+            $query = "
+                DELETE FROM Interaction
+                WHERE id_offer IN (
+                    SELECT id_offer FROM Offer WHERE id_enterprise = :enterpriseId
+                )
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+
+            // Delete related wishlist items
+            $query = "
+                DELETE FROM wishlist
+                WHERE id_offer IN (
+                    SELECT id_offer FROM Offer WHERE id_enterprise = :enterpriseId
+                )
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);            
+
+            // Delete related offer tags
+            $query = "
+                DELETE FROM Offer_tag
+                WHERE id_offer IN (
+                    SELECT id_offer FROM Offer WHERE id_enterprise = :enterpriseId
+                )
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+
+            // Delete related offers
+            $query = "
+                DELETE FROM Offer
+                WHERE id_enterprise = :enterpriseId
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+
+
+
+            // Delete the enterprise itself
+            $query = "
+                DELETE FROM Enterprise
+                WHERE id_enterprise = :enterpriseId
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([":enterpriseId" => $enterpriseId]);
+
+            $this->database->commit();
+
+            return true;
+        } catch (PDOException $e) {
+            $this->database->rollBack();
+            throw new ModelException("Failed to delete enterprise: " . $e->getMessage());
         }
     }
 }

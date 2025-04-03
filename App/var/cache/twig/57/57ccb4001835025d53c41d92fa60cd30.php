@@ -109,7 +109,7 @@ class __TwigTemplate_a9d1e64096a4b7a95e064a8152dc7981 extends Template
                 <ul>
                     <li><strong>Nathan Polette</strong> - Lead Développeur & Full-Stack</li>
                     <li><strong id=\"tonio-trigger\">Antoine Von Tokarski</strong> - Développeur Back</li>
-                    <li><strong>Jeanne Guibert</strong> - Développeuse</li>
+                    <li><strong>Jeanne Guibert</strong> - Développeuse statique et reviews</li>
                 </ul>
             </div>
             <div class=\"cgu-section\">
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <ul>
                     <li><strong>Nathan Polette</strong> - Lead Développeur & Full-Stack</li>
                     <li><strong id=\"tonio-trigger\">Antoine Von Tokarski</strong> - Développeur Back</li>
-                    <li><strong>Jeanne Guibert</strong> - Développeuse</li>
+                    <li><strong>Jeanne Guibert</strong> - Développeuse statique et reviews</li>
                 </ul>
             </div>
             <div class=\"cgu-section\">
