@@ -90,9 +90,9 @@ class __TwigTemplate_c70f06ae3f6b99230434d19922271e5f extends Template
                     yield "class=\"selected\"";
                 }
                 yield ">Wishlist</a></span>
-                <span class=\"nav-links\" data-page=\"interactions\"><a href=\"/interactions\" ";
+                <span class=\"nav-links\" data-page=\"candidatures\"><a href=\"/applications\" ";
                 // line 22
-                if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 13) == "/interactions")) {
+                if ((Twig\Extension\CoreExtension::slice($this->env->getCharset(), ($context["current_path"] ?? null), 0, 13) == "/applications")) {
                     yield "class=\"selected\"";
                 }
                 yield ">Candidatures</a></span>
@@ -162,7 +162,7 @@ class __TwigTemplate_c70f06ae3f6b99230434d19922271e5f extends Template
                 <span class=\"nav-links\" data-page=\"gestion\"><a href=\"/gestion\" {% if current_path|slice(0, 8) == '/gestion' %}class=\"selected\"{% endif %}>Gestion</a></span>
             {% else %}
                 <span class=\"nav-links\" data-page=\"wishlist\"><a href=\"/wishlist\" {% if current_path|slice(0, 9) == '/wishlist' %}class=\"selected\"{% endif %}>Wishlist</a></span>
-                <span class=\"nav-links\" data-page=\"interactions\"><a href=\"/interactions\" {% if current_path|slice(0, 13) == '/interactions' %}class=\"selected\"{% endif %}>Candidatures</a></span>
+                <span class=\"nav-links\" data-page=\"candidatures\"><a href=\"/applications\" {% if current_path|slice(0, 13) == '/applications' %}class=\"selected\"{% endif %}>Candidatures</a></span>
             {% endif %}
         {% else %}
             <span class=\"nav-links\" data-page=\"connexion\"><a href=\"/login\" {% if current_path starts with '/login' or current_path starts with '/new-account' or current_path starts with '/forgot-password'%} class=\"selected\"{% endif %}>Connexion</a></span>

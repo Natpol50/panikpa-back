@@ -112,7 +112,7 @@
                             pagination.style.display = 'flex';
                         } else {
                             // Show empty state
-                            emptyContainer.style.display = 'block';
+                            emptyContainer.style.display = 'flex';
                         }
                     } else {
                         // Show error state
@@ -427,6 +427,14 @@
                 animation: none;
                 opacity: 1;
             }
+        }
+
+                .offres-container {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
     </style>
 {% endblock %}

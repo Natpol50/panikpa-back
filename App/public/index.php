@@ -178,6 +178,12 @@ $router->get('/API/user/tags', ['controller' => 'UserController', 'action' => 'a
 $router->post('/API/user/tags/add', ['controller' => 'UserController', 'action' => 'apiAddUserTag', 'auth' => true]);
 $router->post('/API/user/tags/remove', ['controller' => 'UserController', 'action' => 'apiRemoveUserTag', 'auth' => true]);
 
+// Application routes
+$router->get('/form', ['controller' => 'ApplicationController', 'action' => 'form']);
+$router->post('/submit_application', ['controller' => 'ApplicationController', 'action' => 'submit', 'auth'=> true]);
+$router->get('/applications', ['controller' => 'ApplicationController', 'action' => 'viewApplications', 'auth' => true]);
+$router->post('/apply', ['controller' => 'ApplicationController', 'action' => 'submit', 'auth' => true]);
+
 $router->get('/favicon.ico', ['controller' => 'AssetController', 'action' => 'favicon']);
 
 // Dispatch the request

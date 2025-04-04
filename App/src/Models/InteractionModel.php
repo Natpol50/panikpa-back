@@ -130,79 +130,41 @@ class InteractionModel{
 
     }
 
-    function createInteraction(array $data){
-        // checking the fields for $data
-
-        // Required
-
-        if(empty($data["id_offer"]) || empty($data["id_user"]) || empty($data["interaction_cv_url"] || empty($data["interaction_cover_letter_url"]))){
-        throw new ModelException("error, there isn't the requiried fields to creat an interaction");
+    function createInteraction(array $interactionData) {
+        // Required fields validation
+        if (empty($interactionData["id_offer"]) || empty($interactionData["id_user"]) || empty($interactionData["interaction_cv_url"]) || empty($interactionData["interaction_cover_letter_url"])) {
+            throw new ModelException("Error: Missing required fields to create an interaction.");
         }
-        
-        $id_offer_to_register = $data["id_offer"];
 
-        $id_user_to_register = $data["id_user"];
+        try {
+            // Prepare the SQL query
+            $sql = "INSERT INTO Interaction (
+                id_offer,
+                id_user,
+                interaction_cv_url,
+                interaction_cover_letter_url,
+                interaction_first_date
+            ) VALUES (
+                :id_offer,
+                :id_user,
+                :interaction_cv_url,
+                :interaction_cover_letter_url,
+                :interaction_first_date
+            )";
 
-        $id_interaction_to_register = $id_offer_to_register . $id_user_to_register;
+            // Prepare the statement
+            $stmt = $this->database->prepare($sql);
 
-        $interaction_cv_url_to_register = $data["interaction_cv_url"];
-
-        $interaction_cover_letter_url = $data["interaction_cover_letter_url"];
-
-        
-
-        
-        // Optional
-
-        //None, since it's created by the user and not the enterprise, so the rest is null
-
-        try{
-        // Prepare the SQL query
-    $sql = "INSERT INTO Interaction (
-        id_offer,
-        id_user,
-        id_interaction,
-        interaction_type,
-        interaction_cv_url,
-        interaction_first_date,
-        interaction_followup_interview_date,
-        interaction_cover_letter_url,
-        interaction_followup_reply
-    ) VALUES (
-        :id_offer,
-        :id_user,
-        :id_interaction,
-        :interaction_type,
-        :interaction_cv_url,
-        :interaction_first_date,
-        :interaction_followup_interview_date,
-        :interaction_cover_letter_url,
-        :interaction_followup_reply
-    )";
-
-        // Prepare the statement
-        $stmt = $this->database->prepare($sql);
-
-        $stmt->execute(
-            [
-
-        ":id_offer"                            => $id_offer_to_register,
-        ":id_user"                             => $id_user_to_register,
-        ":id_interaction"                      => $id_interaction_to_register,
-        ":interaction_type"                    => null,
-        ":interaction_cv_url"                  => $interaction_cv_url_to_register,
-        ":interaction_first_date"              => date("Y-m-d",time()),
-        ":interaction_followup_interview_date" => null,
-        ":interaction_cover_letter_url"        => $interaction_cover_letter_url,
-        ":interaction_followup_reply"          => null,
-               
-
-        ]);
-    }catch(PDOException $e){
-        throw new ModelException("unable to start the interaction, internal error".$e->getMessage());
-    }
-
-
+            $stmt->execute([
+                ":id_offer"                 => $interactionData["id_offer"],
+                ":id_user"                  => $interactionData["id_user"],
+                ":interaction_cv_url"       => $interactionData["interaction_cv_url"],
+                ":interaction_cover_letter_url" => $interactionData["interaction_cover_letter_url"],
+                ":interaction_first_date"   => date("Y-m-d", time()),
+            ]);
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to start the interaction, internal error: " . $e->getMessage());
+        }
     }
 
 

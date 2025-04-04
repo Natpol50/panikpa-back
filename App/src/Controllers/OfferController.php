@@ -922,8 +922,7 @@ public function apiGetOffers(RequestObject $request): void
             }
             
             // Redirect to the offer details page with success message
-            $_SESSION['success'] = ['Offre mise à jour avec succès'];
-            header('Location: /offres/' . $offerId);
+            header('Location: /offres/' . $enterpriseId . $offerId);
             exit;
             
         } catch (\Exception $e) {

@@ -270,7 +270,9 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 93
 ($context["request"] ?? null), "hasPermission", ["perm_offer_apply"], "method", false, false, false, 93) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 93))) {
             // line 94
-            yield "                    <button id=\"apply-button\" class=\"btn-primary login-to-apply\">Postuler à cette offre</button>
+            yield "                    <a href=\"/form?offerId=";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 94), "html", null, true);
+            yield "\" class=\"btn-primary login-to-apply\">Postuler à cette offre</a>
                 ";
         } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 95
 ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 95)) {
@@ -738,294 +740,300 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const applyButton = document.getElementById('apply-button');
-            const modal = document.getElementById('application-modal');
-            const closeModalButton = document.querySelector('.close-modal');
-            const cancelButton = document.querySelector('.cancel-application');
-            const applicationForm = document.getElementById('application-form');
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const fileInput = document.getElementById('cv');
-            const fileName = document.querySelector('.file-name');
-            const wishlistButton = document.getElementById('wishlist-button');
+document.addEventListener('DOMContentLoaded', function() {
+    // -------------------- APPLICATION MODAL FUNCTIONALITY --------------------
+    
+    // DOM Elements
+    const applyButton = document.getElementById('apply-button');
+    const modal = document.getElementById('application-modal');
+    const closeModalButton = document.querySelector('.close-modal');
+    const cancelButton = document.querySelector('.cancel-application');
+    const applicationForm = document.getElementById('application-form');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const fileInput = document.getElementById('cv');
+    const fileName = document.querySelector('.file-name');
+    const wishlistButton = document.getElementById('wishlist-button');
+    
+    // Set up application modal functionality if apply button exists
+    if (applyButton) {
+        // Open the modal when apply button is clicked
+        applyButton.addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
+        
+        // Close the modal with X button
+        closeModalButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close the modal with Cancel button
+        cancelButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close the modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Update file name when file is selected
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = 'Aucun fichier choisi';
+            }
+        });
+        
+        // Handle form submission
+        applicationForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
             
-            
-            // Set up application modal functionality
-            if (applyButton) {
-                // Open the modal when apply button is clicked
-                applyButton.addEventListener('click', function() {
-                    modal.style.display = 'block';
-                });
-                
-                // Close the modal with X button
-                closeModalButton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-                
-                // Close the modal with Cancel button
-                cancelButton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-                
-                // Close the modal when clicking outside
-                window.addEventListener('click', function(event) {
-                    if (event.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                });
-                
-                // Update file name when file is selected
-                fileInput.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        fileName.textContent = this.files[0].name;
-                    } else {
-                        fileName.textContent = 'Aucun fichier choisi';
-                    }
-                });
-                
-                // Handle form submission
-                applicationForm.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    
-                    // Validate form
-                    const motivation = document.getElementById('motivation').value.trim();
-                    if (!motivation) {
-                        showNotification('Veuillez rédiger une lettre de motivation.', 'error');
-                        return;
-                    }
-                    
-                    if (!fileInput.files.length) {
-                        showNotification('Veuillez sélectionner un CV.', 'error');
-                        return;
-                    }
-                    
-                    // Check file type and size
-                    const file = fileInput.files[0];
-                    if (file.type !== 'application/pdf') {
-                        showNotification('Veuillez sélectionner un fichier PDF.', 'error');
-                        return;
-                    }
-                    
-                    if (file.size > 5 * 1024 * 1024) { // 5MB max
-                        showNotification('Le fichier est trop volumineux. Maximum 5 Mo.', 'error');
-                        return;
-                    }
-                    
-                    // Show loading overlay
-                    loadingOverlay.style.display = 'flex';
-                    
-                    try {
-                        // Create FormData for file upload
-                        const formData = new FormData(applicationForm);
-                        
-                        // Send the application to the server
-                        const response = await fetch('/apply', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Close modal and show success message
-                            modal.style.display = 'none';
-                            showNotification(data.message || 'Votre candidature a été envoyée avec succès.', 'success');
-                            
-                            // Refresh the page after a short delay
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 2000);
-                        } else {
-                            throw new Error(data.message || 'Something went wrong');
-                        }
-                    } catch (error) {
-                        console.error('Error submitting application:', error);
-                        showNotification('Une erreur est survenue lors de l\\'envoi de votre candidature. Veuillez réessayer.', 'error');
-                    } finally {
-                        // Hide loading overlay
-                        loadingOverlay.style.display = 'none';
-                    }
-                });
+            // Validate form
+            const motivation = document.getElementById('motivation').value.trim();
+            if (!motivation) {
+                showNotification('Veuillez rédiger une lettre de motivation.', 'error');
+                return;
             }
             
-            // Utility function to create and show notifications
-            function showNotification(message, type = 'info') {
-                // Create notification element if it doesn't already exist
-                let notificationContainer = document.querySelector('.notification-container');
+            if (!fileInput.files.length) {
+                showNotification('Veuillez sélectionner un CV.', 'error');
+                return;
+            }
+            
+            // Check file type and size
+            const file = fileInput.files[0];
+            if (file.type !== 'application/pdf') {
+                showNotification('Veuillez sélectionner un fichier PDF.', 'error');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) { // 2MB max
+                showNotification('Le fichier est trop volumineux. Maximum 2 Mo.', 'error');
+                return;
+            }
+            
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                // Create FormData for file upload
+                const formData = new FormData(applicationForm);
                 
-                if (!notificationContainer) {
-                    notificationContainer = document.createElement('div');
-                    notificationContainer.className = 'notification-container';
-                    notificationContainer.style.position = 'fixed';
-                    notificationContainer.style.bottom = '20px';
-                    notificationContainer.style.right = '20px';
-                    notificationContainer.style.zIndex = '1200';
-                    document.body.appendChild(notificationContainer);
+                // Send the application to the server
+                const response = await fetch('/submit_application', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
                 
-                // Create notification
-                const notification = document.createElement('div');
-                notification.className = `notification \${type}`;
-                notification.style.backgroundColor = type === 'success' ? 'var(--primary-color)' : 
-                                                 type === 'error' ? 'var(--tertiary-color)' : 
-                                                 'var(--realsecondary-color)';
-                notification.style.color = 'white';
-                notification.style.padding = '1rem';
-                notification.style.borderRadius = '4px';
-                notification.style.marginTop = '0.5rem';
-                notification.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-                notification.style.transition = 'opacity 0.3s, transform 0.3s';
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Close modal and show success message
+                    modal.style.display = 'none';
+                    showNotification(data.message || 'Votre candidature a été envoyée avec succès.', 'success');
+                    
+                    // Refresh the page after a short delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Une erreur est survenue lors de l\\'envoi de votre candidature.');
+                }
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                showNotification('Une erreur est survenue: ' + error.message, 'error');
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+            }
+        });
+        
+        // Add ESC key support for closing modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    }
+    
+    // -------------------- WISHLIST FUNCTIONALITY --------------------
+    
+    // Set up wishlist button functionality if it exists
+    if (wishlistButton) {
+        wishlistButton.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            // Add loading and clicked states for visual feedback
+            wishlistButton.classList.add('loading');
+            wishlistButton.classList.add('clicked');
+            
+            // Get the offer ID from the button's data attribute
+            const offerId = this.dataset.id;
+            
+            try {
+                // Send API request to toggle wishlist status
+                const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update button appearance based on new wishlist state
+                    if (data.wishlisted) {
+                        wishlistButton.classList.add('active');
+                        wishlistButton.setAttribute('aria-label', 'Retirer de la wishlist');
+                        wishlistButton.textContent = 'Retirer de la wishlist';
+                        
+                        // Add wishlist badge if it doesn't exist
+                        if (!document.querySelector('.wishlist-badge')) {
+                            const badge = document.createElement('p');
+                            badge.className = 'wishlist-badge';
+                            badge.textContent = 'Dans votre wishlist';
+                            document.querySelector('.offer-tags').appendChild(badge);
+                        }
+                    } else {
+                        wishlistButton.classList.remove('active');
+                        wishlistButton.setAttribute('aria-label', 'Ajouter à la wishlist');
+                        wishlistButton.textContent = 'Ajouter à la wishlist';
+                        
+                        // Remove wishlist badge if it exists
+                        const badge = document.querySelector('.wishlist-badge');
+                        if (badge) {
+                            badge.remove();
+                        }
+                    }
+                    
+                    // Show success notification
+                    showNotification(data.message || (data.wishlisted ? 
+                        'Ajouté à votre wishlist' : 
+                        'Retiré de votre wishlist'), 'success');
+                } else {
+                    // Show error notification
+                    showNotification(data.message || 'Une erreur est survenue', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling wishlist:', error);
+                showNotification('Une erreur s\\'est produite lors de la mise à jour de votre wishlist.', 'error');
+            } finally {
+                // Remove loading state
+                wishlistButton.classList.remove('loading');
+                
+                // Remove clicked class after animation completes
+                setTimeout(() => {
+                    wishlistButton.classList.remove('clicked');
+                }, 400);
+            }
+        });
+    }
+    
+    // -------------------- UTILITY FUNCTIONS --------------------
+    
+    /**
+     * Displays a notification to the user
+     * @param {string} message - Message to display
+     * @param {string} type - Notification type: 'success', 'error', 'info'
+     */
+    function showNotification(message, type = 'info') {
+        // Create notification container if it doesn't already exist
+        let notificationContainer = document.querySelector('.notification-container');
+        
+        if (!notificationContainer) {
+            notificationContainer = document.createElement('div');
+            notificationContainer.className = 'notification-container';
+            notificationContainer.style.position = 'fixed';
+            notificationContainer.style.bottom = '20px';
+            notificationContainer.style.right = '20px';
+            notificationContainer.style.zIndex = '1200';
+            document.body.appendChild(notificationContainer);
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification \${type}`;
+        notification.style.backgroundColor = type === 'success' ? 'var(--primary-color)' : 
+                                         type === 'error' ? 'var(--tertiary-color)' : 
+                                         'var(--realsecondary-color)';
+        notification.style.color = 'white';
+        notification.style.padding = '1rem';
+        notification.style.borderRadius = '4px';
+        notification.style.marginTop = '0.5rem';
+        notification.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        notification.style.transition = 'opacity 0.3s, transform 0.3s';
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        notification.style.maxWidth = '300px';
+        notification.style.position = 'relative';
+        
+        // Add message text
+        notification.textContent = message;
+        
+        // Add close button
+        const closeButton = document.createElement('button');
+        closeButton.textContent = '×';
+        closeButton.style.border = 'none';
+        closeButton.style.background = 'none';
+        closeButton.style.color = 'white';
+        closeButton.style.fontSize = '1.2rem';
+        closeButton.style.fontWeight = 'bold';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '0.5rem';
+        closeButton.style.right = '0.5rem';
+        
+        // Close button event handler
+        closeButton.addEventListener('click', () => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notificationContainer.removeChild(notification);
+                }
+            }, 300);
+        });
+        
+        // Add close button to notification
+        notification.appendChild(closeButton);
+        
+        // Add notification to container
+        notificationContainer.appendChild(notification);
+        
+        // Show with animation after a brief delay
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
                 notification.style.opacity = '0';
                 notification.style.transform = 'translateY(20px)';
-                notification.style.maxWidth = '300px';
-                
-                // Add message
-                notification.textContent = message;
-                
-                // Add close button
-                const closeButton = document.createElement('button');
-                closeButton.textContent = '×';
-                closeButton.style.border = 'none';
-                closeButton.style.background = 'none';
-                closeButton.style.color = 'white';
-                closeButton.style.fontSize = '1.2rem';
-                closeButton.style.fontWeight = 'bold';
-                closeButton.style.cursor = 'pointer';
-                closeButton.style.position = 'absolute';
-                closeButton.style.top = '0.5rem';
-                closeButton.style.right = '0.5rem';
-                
-                closeButton.addEventListener('click', () => {
-                    notification.style.opacity = '0';
-                    notification.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
-                        notificationContainer.removeChild(notification);
-                    }, 300);
-                });
-                
-                // Position the button correctly
-                notification.style.position = 'relative';
-                notification.appendChild(closeButton);
-                
-                // Add to container
-                notificationContainer.appendChild(notification);
-                
-                // Show with animation
-                setTimeout(() => {
-                    notification.style.opacity = '1';
-                    notification.style.transform = 'translateY(0)';
-                }, 10);
-                
-                // Auto-dismiss after 5 seconds
                 setTimeout(() => {
                     if (notification.parentNode) {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            if (notification.parentNode) {
-                                notificationContainer.removeChild(notification);
-                            }
-                        }, 300);
+                        notificationContainer.removeChild(notification);
                     }
-                }, 5000);
+                }, 300);
             }
-            
-            // Add ESC key support for closing modal
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    modal.style.display = 'none';
-                }
-            });
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const wishlistButton = document.getElementById('wishlist-button');
-            
-            if (wishlistButton) {
-                wishlistButton.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    
-                    // Add loading and clicked states for visual feedback
-                    wishlistButton.classList.add('loading');
-                    wishlistButton.classList.add('clicked');
-                    
-                    // Get the offer ID from the button's data attribute
-                    const offerId = this.dataset.id;
-                    
-                    try {
-                        // Send API request to toggle wishlist status
-                        const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Update button appearance based on new wishlist state
-                            if (data.wishlisted) {
-                                wishlistButton.classList.add('active');
-                                wishlistButton.setAttribute('aria-label', 'Retirer de la wishlist');
-                                wishlistButton.textContent = 'Retirer de la wishlist';
-                                
-                                // Add wishlist badge if it doesn't exist
-                                if (!document.querySelector('.wishlist-badge')) {
-                                    const badge = document.createElement('p');
-                                    badge.className = 'wishlist-badge';
-                                    badge.textContent = 'Dans votre wishlist';
-                                    document.querySelector('.offer-tags').appendChild(badge);
-                                }
-                            } else {
-                                wishlistButton.classList.remove('active');
-                                wishlistButton.setAttribute('aria-label', 'Ajouter à la wishlist');
-                                wishlistButton.textContent = 'Ajouter à la wishlist';
-                                
-                                // Remove wishlist badge if it exists
-                                const badge = document.querySelector('.wishlist-badge');
-                                if (badge) {
-                                    badge.remove();
-                                }
-                            }
-                            
-                            // Show success notification
-                            addNotification(data.message, 'success');
-                        } else {
-                            // Show error notification
-                            addNotification(data.message, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error toggling wishlist:', error);
-                        addNotification('Une erreur s\\'est produite lors de la mise à jour de votre wishlist.', 'error');
-                    } finally {
-                        // Remove loading state
-                        wishlistButton.classList.remove('loading');
-                        
-                        // Remove clicked class after animation completes
-                        setTimeout(() => {
-                            wishlistButton.classList.remove('clicked');
-                        }, 400);
-                    }
-                });
-            }
-            
-            // Helper function to add notifications
-            function addNotification(message, type = 'success') {
-                // Check if notifications.js is available and provides the function
-                if (typeof window.addNotification === 'function') {
-                    window.addNotification(message, type);
-                } else {
-                    // Simple fallback if the notification system isn't available
-                    alert(message);
-                }
-            }
-        });
+        }, 5000);
+    }
+    
+    // -------------------- GLOBAL EXPORTS --------------------
+    
+    // Make showNotification available globally for use by other scripts
+    window.addNotification = showNotification;
+});
     </script>
 ";
         yield from [];
@@ -1052,7 +1060,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  737 => 520,  730 => 519,  362 => 156,  355 => 155,  318 => 122,  310 => 117,  300 => 109,  294 => 105,  288 => 103,  286 => 102,  278 => 96,  276 => 95,  273 => 94,  271 => 93,  268 => 92,  266 => 91,  257 => 85,  253 => 84,  249 => 83,  245 => 82,  237 => 76,  229 => 74,  227 => 73,  223 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
+        return array (  739 => 520,  732 => 519,  364 => 156,  357 => 155,  320 => 122,  312 => 117,  302 => 109,  296 => 105,  290 => 103,  288 => 102,  280 => 96,  278 => 95,  273 => 94,  271 => 93,  268 => 92,  266 => 91,  257 => 85,  253 => 84,  249 => 83,  245 => 82,  237 => 76,  229 => 74,  227 => 73,  223 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1150,7 +1158,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                 {% if not request.isAuthenticated() %}
                     <a href=\"/login\" class=\"btn-primary login-to-apply\">Se connecter pour postuler</a>
                 {% elseif request.hasPermission('perm_offer_apply') and not offer.hasApplied %}
-                    <button id=\"apply-button\" class=\"btn-primary login-to-apply\">Postuler à cette offre</button>
+                    <a href=\"/form?offerId={{ offer.id }}\" class=\"btn-primary login-to-apply\">Postuler à cette offre</a>
                 {% elseif offer.hasApplied %}
                     <div class=\"already-applied\">
                         <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\">
@@ -1578,294 +1586,300 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
 {% block javascripts %}
     {{ parent() }}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM Elements
-            const applyButton = document.getElementById('apply-button');
-            const modal = document.getElementById('application-modal');
-            const closeModalButton = document.querySelector('.close-modal');
-            const cancelButton = document.querySelector('.cancel-application');
-            const applicationForm = document.getElementById('application-form');
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const fileInput = document.getElementById('cv');
-            const fileName = document.querySelector('.file-name');
-            const wishlistButton = document.getElementById('wishlist-button');
+document.addEventListener('DOMContentLoaded', function() {
+    // -------------------- APPLICATION MODAL FUNCTIONALITY --------------------
+    
+    // DOM Elements
+    const applyButton = document.getElementById('apply-button');
+    const modal = document.getElementById('application-modal');
+    const closeModalButton = document.querySelector('.close-modal');
+    const cancelButton = document.querySelector('.cancel-application');
+    const applicationForm = document.getElementById('application-form');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const fileInput = document.getElementById('cv');
+    const fileName = document.querySelector('.file-name');
+    const wishlistButton = document.getElementById('wishlist-button');
+    
+    // Set up application modal functionality if apply button exists
+    if (applyButton) {
+        // Open the modal when apply button is clicked
+        applyButton.addEventListener('click', function() {
+            modal.style.display = 'block';
+        });
+        
+        // Close the modal with X button
+        closeModalButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close the modal with Cancel button
+        cancelButton.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close the modal when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Update file name when file is selected
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                fileName.textContent = this.files[0].name;
+            } else {
+                fileName.textContent = 'Aucun fichier choisi';
+            }
+        });
+        
+        // Handle form submission
+        applicationForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
             
-            
-            // Set up application modal functionality
-            if (applyButton) {
-                // Open the modal when apply button is clicked
-                applyButton.addEventListener('click', function() {
-                    modal.style.display = 'block';
-                });
-                
-                // Close the modal with X button
-                closeModalButton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-                
-                // Close the modal with Cancel button
-                cancelButton.addEventListener('click', function() {
-                    modal.style.display = 'none';
-                });
-                
-                // Close the modal when clicking outside
-                window.addEventListener('click', function(event) {
-                    if (event.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                });
-                
-                // Update file name when file is selected
-                fileInput.addEventListener('change', function() {
-                    if (this.files.length > 0) {
-                        fileName.textContent = this.files[0].name;
-                    } else {
-                        fileName.textContent = 'Aucun fichier choisi';
-                    }
-                });
-                
-                // Handle form submission
-                applicationForm.addEventListener('submit', async function(event) {
-                    event.preventDefault();
-                    
-                    // Validate form
-                    const motivation = document.getElementById('motivation').value.trim();
-                    if (!motivation) {
-                        showNotification('Veuillez rédiger une lettre de motivation.', 'error');
-                        return;
-                    }
-                    
-                    if (!fileInput.files.length) {
-                        showNotification('Veuillez sélectionner un CV.', 'error');
-                        return;
-                    }
-                    
-                    // Check file type and size
-                    const file = fileInput.files[0];
-                    if (file.type !== 'application/pdf') {
-                        showNotification('Veuillez sélectionner un fichier PDF.', 'error');
-                        return;
-                    }
-                    
-                    if (file.size > 5 * 1024 * 1024) { // 5MB max
-                        showNotification('Le fichier est trop volumineux. Maximum 5 Mo.', 'error');
-                        return;
-                    }
-                    
-                    // Show loading overlay
-                    loadingOverlay.style.display = 'flex';
-                    
-                    try {
-                        // Create FormData for file upload
-                        const formData = new FormData(applicationForm);
-                        
-                        // Send the application to the server
-                        const response = await fetch('/apply', {
-                            method: 'POST',
-                            body: formData
-                        });
-                        
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Close modal and show success message
-                            modal.style.display = 'none';
-                            showNotification(data.message || 'Votre candidature a été envoyée avec succès.', 'success');
-                            
-                            // Refresh the page after a short delay
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 2000);
-                        } else {
-                            throw new Error(data.message || 'Something went wrong');
-                        }
-                    } catch (error) {
-                        console.error('Error submitting application:', error);
-                        showNotification('Une erreur est survenue lors de l\\'envoi de votre candidature. Veuillez réessayer.', 'error');
-                    } finally {
-                        // Hide loading overlay
-                        loadingOverlay.style.display = 'none';
-                    }
-                });
+            // Validate form
+            const motivation = document.getElementById('motivation').value.trim();
+            if (!motivation) {
+                showNotification('Veuillez rédiger une lettre de motivation.', 'error');
+                return;
             }
             
-            // Utility function to create and show notifications
-            function showNotification(message, type = 'info') {
-                // Create notification element if it doesn't already exist
-                let notificationContainer = document.querySelector('.notification-container');
+            if (!fileInput.files.length) {
+                showNotification('Veuillez sélectionner un CV.', 'error');
+                return;
+            }
+            
+            // Check file type and size
+            const file = fileInput.files[0];
+            if (file.type !== 'application/pdf') {
+                showNotification('Veuillez sélectionner un fichier PDF.', 'error');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) { // 2MB max
+                showNotification('Le fichier est trop volumineux. Maximum 2 Mo.', 'error');
+                return;
+            }
+            
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                // Create FormData for file upload
+                const formData = new FormData(applicationForm);
                 
-                if (!notificationContainer) {
-                    notificationContainer = document.createElement('div');
-                    notificationContainer.className = 'notification-container';
-                    notificationContainer.style.position = 'fixed';
-                    notificationContainer.style.bottom = '20px';
-                    notificationContainer.style.right = '20px';
-                    notificationContainer.style.zIndex = '1200';
-                    document.body.appendChild(notificationContainer);
+                // Send the application to the server
+                const response = await fetch('/submit_application', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
                 }
                 
-                // Create notification
-                const notification = document.createElement('div');
-                notification.className = `notification \${type}`;
-                notification.style.backgroundColor = type === 'success' ? 'var(--primary-color)' : 
-                                                 type === 'error' ? 'var(--tertiary-color)' : 
-                                                 'var(--realsecondary-color)';
-                notification.style.color = 'white';
-                notification.style.padding = '1rem';
-                notification.style.borderRadius = '4px';
-                notification.style.marginTop = '0.5rem';
-                notification.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
-                notification.style.transition = 'opacity 0.3s, transform 0.3s';
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Close modal and show success message
+                    modal.style.display = 'none';
+                    showNotification(data.message || 'Votre candidature a été envoyée avec succès.', 'success');
+                    
+                    // Refresh the page after a short delay
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    throw new Error(data.message || 'Une erreur est survenue lors de l\\'envoi de votre candidature.');
+                }
+            } catch (error) {
+                console.error('Error submitting application:', error);
+                showNotification('Une erreur est survenue: ' + error.message, 'error');
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+            }
+        });
+        
+        // Add ESC key support for closing modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape' && modal.style.display === 'block') {
+                modal.style.display = 'none';
+            }
+        });
+    }
+    
+    // -------------------- WISHLIST FUNCTIONALITY --------------------
+    
+    // Set up wishlist button functionality if it exists
+    if (wishlistButton) {
+        wishlistButton.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            // Add loading and clicked states for visual feedback
+            wishlistButton.classList.add('loading');
+            wishlistButton.classList.add('clicked');
+            
+            // Get the offer ID from the button's data attribute
+            const offerId = this.dataset.id;
+            
+            try {
+                // Send API request to toggle wishlist status
+                const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Update button appearance based on new wishlist state
+                    if (data.wishlisted) {
+                        wishlistButton.classList.add('active');
+                        wishlistButton.setAttribute('aria-label', 'Retirer de la wishlist');
+                        wishlistButton.textContent = 'Retirer de la wishlist';
+                        
+                        // Add wishlist badge if it doesn't exist
+                        if (!document.querySelector('.wishlist-badge')) {
+                            const badge = document.createElement('p');
+                            badge.className = 'wishlist-badge';
+                            badge.textContent = 'Dans votre wishlist';
+                            document.querySelector('.offer-tags').appendChild(badge);
+                        }
+                    } else {
+                        wishlistButton.classList.remove('active');
+                        wishlistButton.setAttribute('aria-label', 'Ajouter à la wishlist');
+                        wishlistButton.textContent = 'Ajouter à la wishlist';
+                        
+                        // Remove wishlist badge if it exists
+                        const badge = document.querySelector('.wishlist-badge');
+                        if (badge) {
+                            badge.remove();
+                        }
+                    }
+                    
+                    // Show success notification
+                    showNotification(data.message || (data.wishlisted ? 
+                        'Ajouté à votre wishlist' : 
+                        'Retiré de votre wishlist'), 'success');
+                } else {
+                    // Show error notification
+                    showNotification(data.message || 'Une erreur est survenue', 'error');
+                }
+            } catch (error) {
+                console.error('Error toggling wishlist:', error);
+                showNotification('Une erreur s\\'est produite lors de la mise à jour de votre wishlist.', 'error');
+            } finally {
+                // Remove loading state
+                wishlistButton.classList.remove('loading');
+                
+                // Remove clicked class after animation completes
+                setTimeout(() => {
+                    wishlistButton.classList.remove('clicked');
+                }, 400);
+            }
+        });
+    }
+    
+    // -------------------- UTILITY FUNCTIONS --------------------
+    
+    /**
+     * Displays a notification to the user
+     * @param {string} message - Message to display
+     * @param {string} type - Notification type: 'success', 'error', 'info'
+     */
+    function showNotification(message, type = 'info') {
+        // Create notification container if it doesn't already exist
+        let notificationContainer = document.querySelector('.notification-container');
+        
+        if (!notificationContainer) {
+            notificationContainer = document.createElement('div');
+            notificationContainer.className = 'notification-container';
+            notificationContainer.style.position = 'fixed';
+            notificationContainer.style.bottom = '20px';
+            notificationContainer.style.right = '20px';
+            notificationContainer.style.zIndex = '1200';
+            document.body.appendChild(notificationContainer);
+        }
+        
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification \${type}`;
+        notification.style.backgroundColor = type === 'success' ? 'var(--primary-color)' : 
+                                         type === 'error' ? 'var(--tertiary-color)' : 
+                                         'var(--realsecondary-color)';
+        notification.style.color = 'white';
+        notification.style.padding = '1rem';
+        notification.style.borderRadius = '4px';
+        notification.style.marginTop = '0.5rem';
+        notification.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+        notification.style.transition = 'opacity 0.3s, transform 0.3s';
+        notification.style.opacity = '0';
+        notification.style.transform = 'translateY(20px)';
+        notification.style.maxWidth = '300px';
+        notification.style.position = 'relative';
+        
+        // Add message text
+        notification.textContent = message;
+        
+        // Add close button
+        const closeButton = document.createElement('button');
+        closeButton.textContent = '×';
+        closeButton.style.border = 'none';
+        closeButton.style.background = 'none';
+        closeButton.style.color = 'white';
+        closeButton.style.fontSize = '1.2rem';
+        closeButton.style.fontWeight = 'bold';
+        closeButton.style.cursor = 'pointer';
+        closeButton.style.position = 'absolute';
+        closeButton.style.top = '0.5rem';
+        closeButton.style.right = '0.5rem';
+        
+        // Close button event handler
+        closeButton.addEventListener('click', () => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notificationContainer.removeChild(notification);
+                }
+            }, 300);
+        });
+        
+        // Add close button to notification
+        notification.appendChild(closeButton);
+        
+        // Add notification to container
+        notificationContainer.appendChild(notification);
+        
+        // Show with animation after a brief delay
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateY(0)';
+        }, 10);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            if (notification.parentNode) {
                 notification.style.opacity = '0';
                 notification.style.transform = 'translateY(20px)';
-                notification.style.maxWidth = '300px';
-                
-                // Add message
-                notification.textContent = message;
-                
-                // Add close button
-                const closeButton = document.createElement('button');
-                closeButton.textContent = '×';
-                closeButton.style.border = 'none';
-                closeButton.style.background = 'none';
-                closeButton.style.color = 'white';
-                closeButton.style.fontSize = '1.2rem';
-                closeButton.style.fontWeight = 'bold';
-                closeButton.style.cursor = 'pointer';
-                closeButton.style.position = 'absolute';
-                closeButton.style.top = '0.5rem';
-                closeButton.style.right = '0.5rem';
-                
-                closeButton.addEventListener('click', () => {
-                    notification.style.opacity = '0';
-                    notification.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
-                        notificationContainer.removeChild(notification);
-                    }, 300);
-                });
-                
-                // Position the button correctly
-                notification.style.position = 'relative';
-                notification.appendChild(closeButton);
-                
-                // Add to container
-                notificationContainer.appendChild(notification);
-                
-                // Show with animation
-                setTimeout(() => {
-                    notification.style.opacity = '1';
-                    notification.style.transform = 'translateY(0)';
-                }, 10);
-                
-                // Auto-dismiss after 5 seconds
                 setTimeout(() => {
                     if (notification.parentNode) {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateY(20px)';
-                        setTimeout(() => {
-                            if (notification.parentNode) {
-                                notificationContainer.removeChild(notification);
-                            }
-                        }, 300);
+                        notificationContainer.removeChild(notification);
                     }
-                }, 5000);
+                }, 300);
             }
-            
-            // Add ESC key support for closing modal
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape' && modal.style.display === 'block') {
-                    modal.style.display = 'none';
-                }
-            });
-        });
-        document.addEventListener('DOMContentLoaded', () => {
-            const wishlistButton = document.getElementById('wishlist-button');
-            
-            if (wishlistButton) {
-                wishlistButton.addEventListener('click', async function(e) {
-                    e.preventDefault();
-                    
-                    // Add loading and clicked states for visual feedback
-                    wishlistButton.classList.add('loading');
-                    wishlistButton.classList.add('clicked');
-                    
-                    // Get the offer ID from the button's data attribute
-                    const offerId = this.dataset.id;
-                    
-                    try {
-                        // Send API request to toggle wishlist status
-                        const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-Requested-With': 'XMLHttpRequest'
-                            }
-                        });
-                        
-                        const data = await response.json();
-                        
-                        if (data.success) {
-                            // Update button appearance based on new wishlist state
-                            if (data.wishlisted) {
-                                wishlistButton.classList.add('active');
-                                wishlistButton.setAttribute('aria-label', 'Retirer de la wishlist');
-                                wishlistButton.textContent = 'Retirer de la wishlist';
-                                
-                                // Add wishlist badge if it doesn't exist
-                                if (!document.querySelector('.wishlist-badge')) {
-                                    const badge = document.createElement('p');
-                                    badge.className = 'wishlist-badge';
-                                    badge.textContent = 'Dans votre wishlist';
-                                    document.querySelector('.offer-tags').appendChild(badge);
-                                }
-                            } else {
-                                wishlistButton.classList.remove('active');
-                                wishlistButton.setAttribute('aria-label', 'Ajouter à la wishlist');
-                                wishlistButton.textContent = 'Ajouter à la wishlist';
-                                
-                                // Remove wishlist badge if it exists
-                                const badge = document.querySelector('.wishlist-badge');
-                                if (badge) {
-                                    badge.remove();
-                                }
-                            }
-                            
-                            // Show success notification
-                            addNotification(data.message, 'success');
-                        } else {
-                            // Show error notification
-                            addNotification(data.message, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error toggling wishlist:', error);
-                        addNotification('Une erreur s\\'est produite lors de la mise à jour de votre wishlist.', 'error');
-                    } finally {
-                        // Remove loading state
-                        wishlistButton.classList.remove('loading');
-                        
-                        // Remove clicked class after animation completes
-                        setTimeout(() => {
-                            wishlistButton.classList.remove('clicked');
-                        }, 400);
-                    }
-                });
-            }
-            
-            // Helper function to add notifications
-            function addNotification(message, type = 'success') {
-                // Check if notifications.js is available and provides the function
-                if (typeof window.addNotification === 'function') {
-                    window.addNotification(message, type);
-                } else {
-                    // Simple fallback if the notification system isn't available
-                    alert(message);
-                }
-            }
-        });
+        }, 5000);
+    }
+    
+    // -------------------- GLOBAL EXPORTS --------------------
+    
+    // Make showNotification available globally for use by other scripts
+    window.addNotification = showNotification;
+});
     </script>
 {% endblock %}", "offers/show.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\offers\\show.html.twig");
     }

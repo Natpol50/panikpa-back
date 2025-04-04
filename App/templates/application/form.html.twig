@@ -1,0 +1,317 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Postuler - {{ parent() }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <span><a href="/">Accueil</a></span>
+        <span><a href="/offres">Offres</a></span>
+        <span>Postuler</span>
+    </nav>
+
+    <div class="application-container">
+        <h1>Postuler à une offre</h1>
+
+        {% if error is defined and error %}
+            <div class="error-message">
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        <!-- Display Offer Information -->
+        <div class="offer-details">
+            <h2>Détails de l'offre</h2>
+            <p><strong>Nom de l'offre:</strong> {{ offerName }}</p>
+            <p><strong>Entreprise:</strong> {{ enterpriseId }}</p>
+            <p><strong>Durée:</strong> {{ offerDuration }}</p>
+            <div class="offer-tags">
+                <span class="tag">{{ offerDuration }}</span>
+                {% for tag in offerTags %}
+                    <span class="{{ tag.optional ? 'tag_optional' : 'tag' }}">{{ tag.tag_name }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <form id="application-form" method="POST" action="/submit_application" enctype="multipart/form-data">
+            <input type="hidden" name="offerId" value="{{ offerId|default('') }}">
+
+            <div class="form-group">
+                <label for="motivation">Lettre de motivation</label>
+                <textarea id="motivation" name="motivation" rows="10" required>{{ formData.motivation|default('') }}</textarea>
+                <div class="form-hint">Expliquez pourquoi vous êtes intéressé par cette offre et ce que vous pouvez apporter.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="cv">CV (PDF, max 2MB)</label>
+                <div class="file-upload">
+                    <input type="file" id="cv" name="cv" accept=".pdf" required>
+                    <label for="cv" class="file-label">Choisir un fichier</label>
+                    <span class="file-name">Aucun fichier choisi</span>
+                </div>
+                <div class="form-hint">Seuls les fichiers PDF de moins de 2Mo sont acceptés.</div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Envoyer ma candidature</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .application-container {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .application-container h1 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            border-left: 4px solid var(--tertiary-color);
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: var(--tertiary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            resize: vertical;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--real-grey);
+            margin-top: 0.5rem;
+        }
+
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .file-upload input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            max-width: 200px;
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            color: var(--real-grey);
+        }
+
+        .form-actions {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .offer-details {
+            margin-bottom: 2rem;
+        }
+
+        .offer-details h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .offer-details p {
+            margin-bottom: 0.5rem;
+        }
+
+        .offer-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .offer-tags .tag {
+            background-color: var(--tag-background);
+            color: var(--tag-text);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .offer-tags .tag_optional {
+            background-color: var(--tag-optional-background);
+            color: var(--tag-optional-text);
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('cv');
+            const fileName = document.querySelector('.file-name');
+            const form = document.getElementById('application-form');
+
+            // Update file name when file is selected
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    fileName.textContent = this.files[0].name;
+
+                    // Validate file type and size
+                    validateFile(this.files[0]);
+                } else {
+                    fileName.textContent = 'Aucun fichier choisi';
+                }
+            });
+
+            // Validate file type and size
+            function validateFile(file) {
+                // Check file type
+                if (file.type !== 'application/pdf') {
+                    alert('Seuls les fichiers PDF sont acceptés.');
+                    fileInput.value = '';
+                    fileName.textContent = 'Aucun fichier choisi';
+                    return false;
+                }
+
+                // Check file size (2MB max)
+                const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+                if (file.size > maxSize) {
+                    alert('La taille du fichier dépasse la limite de 2Mo.');
+                    fileInput.value = '';
+                    fileName.textContent = 'Aucun fichier choisi';
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Form submit validation
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const motivation = document.getElementById('motivation').value.trim();
+
+                if (!motivation) {
+                    showNotification('Veuillez rédiger une lettre de motivation.', 'error');
+                    return;
+                }
+
+                if (!fileInput.files.length) {
+                    showNotification('Veuillez sélectionner un CV.', 'error');
+                    return;
+                }
+
+                // Validate file again
+                if (!validateFile(fileInput.files[0])) {
+                    return;
+                }
+
+                // Create FormData for file upload
+                const formData = new FormData(form);
+
+                try {
+                    // Send the application to the server
+                    const response = await fetch('/submit_application', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Show success notification
+                        showNotification('Votre candidature a été envoyée avec succès.', 'success');
+
+                        // Redirect after 2 seconds
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 2000);
+                    } else {
+                        // Show error notification
+                        showNotification('Une erreur est survenue lors de l\'envoi de votre candidature.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error submitting application:', error);
+                    showNotification('Une erreur est survenue lors de l\'envoi de votre candidature.', 'error');
+                }
+            });
+
+            // Function to display notifications
+            function showNotification(message, type = 'info') {
+                const notificationContainer = document.createElement('div');
+                notificationContainer.className = `notification ${type}`;
+                notificationContainer.textContent = message;
+                document.body.appendChild(notificationContainer);
+
+                // Remove notification after 5 seconds
+                setTimeout(() => {
+                    notificationContainer.remove();
+                }, 5000);
+            }
+        });
+    </script>
+    <style>
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 1rem;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 1200;
+            max-width: 300px;
+            color: white;
+        }
+
+        .notification.success {
+            background-color: var(--primary-color);
+        }
+
+        .notification.error {
+            background-color: var(--tertiary-color);
+        }
+    </style>
+{% endblock %}
+
