@@ -102,7 +102,11 @@
     height: 24px;
 }
 
-.slider {
+.switch input {
+    display: none;
+}
+
+.switch .slider {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -130,6 +134,78 @@ input:checked + .slider {
     background-color: var(--primary-color);
 }
 
+.cookie-settings-modal .modal-body {
+    padding: 1.5rem;
+}
+
+.cookie-category {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--background-light);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px var(--shadow-color);
+}
+
+.category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--onyx);
+}
+
+.category-header p {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: var(--onyx);
+}
+
+.modal-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--real-grey);
+    text-align: right;
+}
+
+.cookie-btn.save {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: filter 0.3s ease;
+}
+
+.cookie-btn.save:hover {
+    filter: brightness(0.9);
+}
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(26px); /* Adjust this value based on the width of the slider */
+}
+.cookie-btn.save:hover {
+    filter: brightness(0.9);
+}
+.modal-header .close-modal {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.modal-header .close-modal:hover {
+    background-color: var(--primary-color);
+    transform: scale(1.1);
 }

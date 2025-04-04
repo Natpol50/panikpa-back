@@ -112,10 +112,11 @@ array_key_exists("current_path", $context)) ? (Twig\Extension\CoreExtension::def
         yield "
     <script src=\"/assets/js/notifications.js\" defer></script>
     <script src=\"/assets/js/navbar.js\" defer></script>
+    <script src=\"/assets/js/cookies.js\" defer></script>
     ";
-        // line 44
+        // line 45
         yield from $this->unwrap()->yieldBlock('javascripts', $context, $blocks);
-        // line 47
+        // line 48
         yield "</body>
 </html>";
         yield from [];
@@ -162,14 +163,14 @@ array_key_exists("current_path", $context)) ? (Twig\Extension\CoreExtension::def
         yield from [];
     }
 
-    // line 44
+    // line 45
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 45
+        // line 46
         yield "    
     ";
         yield from [];
@@ -196,7 +197,7 @@ array_key_exists("current_path", $context)) ? (Twig\Extension\CoreExtension::def
      */
     public function getDebugInfo(): array
     {
-        return array (  173 => 45,  166 => 44,  156 => 22,  146 => 18,  136 => 9,  125 => 6,  119 => 47,  117 => 44,  112 => 41,  110 => 39,  109 => 38,  108 => 37,  106 => 36,  99 => 31,  94 => 28,  91 => 27,  89 => 26,  84 => 23,  82 => 22,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
+        return array (  174 => 46,  167 => 45,  157 => 22,  147 => 18,  137 => 9,  126 => 6,  120 => 48,  118 => 45,  112 => 41,  110 => 39,  109 => 38,  108 => 37,  106 => 36,  99 => 31,  94 => 28,  91 => 27,  89 => 26,  84 => 23,  82 => 22,  77 => 19,  75 => 18,  69 => 14,  67 => 13,  62 => 10,  60 => 9,  54 => 6,  47 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -244,6 +245,7 @@ array_key_exists("current_path", $context)) ? (Twig\Extension\CoreExtension::def
 
     <script src=\"/assets/js/notifications.js\" defer></script>
     <script src=\"/assets/js/navbar.js\" defer></script>
+    <script src=\"/assets/js/cookies.js\" defer></script>
     {% block javascripts %}
     
     {% endblock %}

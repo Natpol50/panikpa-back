@@ -201,4 +201,32 @@ class CacheModel
             throw new ModelException("Failed to fetch offer applicants count: " . $e->getMessage());
         }
     }
+    
+    /**
+     * Get total comment count for an enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @return int Number of comments
+     * @throws ModelException If count fails
+     */
+    public function getEnterpriseCommentCount(string $enterpriseId): int
+    {
+        try {
+            $query = "
+                SELECT COUNT(*) as comment_count
+                FROM Comment
+                WHERE id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
+            $stmt->execute();
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? (int)$result['comment_count'] : 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to count enterprise comments: " . $e->getMessage());
+        }
+    }
 }

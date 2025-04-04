@@ -87,13 +87,16 @@ $router->get('/logout', ['controller' => 'AuthController', 'action' => 'logout']
 
 // Enterprise routes
 $router->get('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'index']);
-$router->get('/entreprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true, 'priority' => 1]);
+$router->post('/entreprises/edit', ['controller' => 'EnterpriseController', 'action' => 'update', 'auth' => true]);
+$router->get('/entreprises/create', ['controller' => 'EnterpriseController', 'action' => 'create', 'auth' => true]);
 $router->get('/entreprises/{id:[A-Za-z0-9]}{td:[A-Za-z0-9]}{cd:[A-Za-z0-9]}/edit', ['controller' => 'EnterpriseController', 'action' => 'edit', 'auth' => true]);
-$router->get('/entreprises/{id:[A-Za-z0-9]+}', ['controller' => 'EnterpriseController', 'action' => 'show']);
+$router->get('/entreprises/{id:[A-Za-z0-9]+}', ['controller' => 'EnterpriseController', 'action' => 'show', 'auth' => true]);
 $router->post('/entreprises', ['controller' => 'EnterpriseController', 'action' => 'store', 'auth' => true]);
 $router->get('/API/entreprises', ['controller' => 'EnterpriseController', 'action' => 'ApiList']);
 $router->post('/api/evaluate-enterprise', ['controller' => 'EnterpriseController', 'action' => 'apiEvaluate', 'auth' => true]);
 $router->get('/api/delete-enterprise', ['controller' => 'EnterpriseController', 'action' => 'apiDelete', 'auth' => true]);
+$router->post('/API/entreprises/comments', ['controller' => 'EnterpriseController', 'action' => 'apiAddComment', 'auth' => true]);
+$router->get('/API/entreprises/{id:[A-Za-z0-9]}{td:[A-Za-z0-9]}{cd:[A-Za-z0-9]}/comments', ['controller' => 'EnterpriseController', 'action' => 'apiGetComments']);
 
 
 

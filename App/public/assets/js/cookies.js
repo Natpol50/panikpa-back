@@ -1,28 +1,3 @@
-// Fonction pour charger le contenu HTML
-async function loadCookieComponents() {
-    try {
-        // Charger les cookies modaux
-        const response = await fetch('Component/cookies.html');
-        const htmlContent = await response.text();
-        
-        const cookieContainer = document.createElement('div');
-        cookieContainer.id = 'cookie-components';
-        cookieContainer.innerHTML = htmlContent;
-        
-        document.querySelector('main').appendChild(cookieContainer);
-        
-        // Initialiser les gestionnaires d'événements après l'insertion
-        initializeCookieHandlers();
-        
-        // Vérifier les cookies après l'insertion du HTML
-        if (!getCookie('cookieConsent')) {
-            showCookieBanner();
-        }
-    } catch (error) {
-        console.error('Erreur lors du chargement des composants de cookies:', error);
-    }
-}
-
 // Initialisation des gestionnaires d'événements
 function initializeCookieHandlers() {
     // Gestionnaire pour la modal
@@ -121,5 +96,21 @@ function saveCookiePreferences() {
     hideCookieBanner();
 }
 
-// Charger les composants au chargement de la page
-document.addEventListener('DOMContentLoaded', loadCookieComponents);
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Check if the cookieConsent cookie exists
+    const cookieConsent = getCookie('cookieConsent');
+
+    if (!cookieConsent) {
+        // If no consent has been given, show the cookie banner
+        showCookieBanner();
+    } else {
+        // If consent exists, apply preferences
+        const analyticsCookies = getCookie('analyticsCookies') === 'true';
+        const marketingCookies = getCookie('marketingCookies') === 'true';
+        // Add actions to enable/disable analytics or marketing cookies here
+    }
+
+    // Initialize event handlers
+    initializeCookieHandlers();
+});

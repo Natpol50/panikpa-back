@@ -282,4 +282,50 @@ class CacheService
         // Update the cache
         $this->set($cacheKey, ['average_rating' => $newAverage, 'comment_count' => $newCount], 3600);
     }
+
+    /**
+     * Get the count of comments for a specific enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @return int Number of comments
+     */
+    public function getEnterpriseCommentCount(string $enterpriseId): int
+    {
+        $cacheKey = "enterprise_comment_count_$enterpriseId";
+
+        // Try to get from cache first
+        $commentCount = $this->get($cacheKey);
+
+        if ($commentCount === null) {
+            // Not in cache, fetch from database
+            $commentCount = $this->cacheModel->getEnterpriseCommentCount($enterpriseId);
+
+            // Store in cache for 1 hour (3600 seconds)
+            if ($commentCount !== null) {
+                $this->set($cacheKey, $commentCount, 3600);
+            }
+        }
+
+        return $commentCount ?: 0;
+    }
+
+    /**
+     * Update the comment count for an enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @param bool $increment True to increment, false to decrement
+     */
+    public function updateEnterpriseCommentCount(string $enterpriseId, bool $increment): void
+    {
+        $cacheKey = "enterprise_comment_count_$enterpriseId";
+
+        // Try to get the current count from cache
+        $commentCount = $this->get($cacheKey, 0);
+
+        // Update the count based on the increment flag
+        $commentCount = $increment ? $commentCount + 1 : max(0, $commentCount - 1);
+
+        // Store the updated count in the cache for 1 hour (3600 seconds)
+        $this->set($cacheKey, $commentCount, 3600);
+    }
 }

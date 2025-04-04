@@ -276,8 +276,8 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             // line 95
             yield "                    <a href=\"/login\" class=\"btn-primary login-to-apply\">Se connecter pour postuler</a>
                 ";
-        } elseif ((        // line 96
-($context["canApply"] ?? null) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 96))) {
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 96
+($context["request"] ?? null), "hasPermission", ["perm_offer_apply"], "method", false, false, false, 96) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 96))) {
             // line 97
             yield "                    <button id=\"apply-button\" class=\"btn-primary login-to-apply\">Postuler à cette offre</button>
                 ";
@@ -291,14 +291,21 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                         <span>Vous avez déjà postulé à cette offre</span>
                     </div>
                 ";
-        } else {
+        } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 105
+($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 105)) {
             // line 106
+            yield "                    <a href=\"/offres/edit/";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 106), "html", null, true);
+            yield "\" id=\"modify-button\" class=\"btn-secondary modify-offer\">Modifier cette offre</a>
+                ";
+        } else {
+            // line 108
             yield "                    <div class=\"cannot-apply\">
                         <p>Vous n'avez pas les permissions nécessaires pour postuler à cette offre.</p>
                     </div>
                 ";
         }
-        // line 110
+        // line 112
         yield "            </div>
         </div>
     </div>
@@ -308,16 +315,16 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         <div class=\"modal-content\">
             <div class=\"modal-header\">
                 <h2>Postuler à l'offre: ";
-        // line 118
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "title", [], "any", false, false, false, 118), "html", null, true);
+        // line 120
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "title", [], "any", false, false, false, 120), "html", null, true);
         yield "</h2>
                 <button class=\"close-modal\">&times;</button>
             </div>
             <div class=\"modal-body\">
                 <form id=\"application-form\" enctype=\"multipart/form-data\">
                     <input type=\"hidden\" name=\"offerId\" value=\"";
-        // line 123
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 123), "html", null, true);
+        // line 125
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 125), "html", null, true);
         yield "\">
                     
                     <div class=\"form-group\">
@@ -353,14 +360,14 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         yield from [];
     }
 
-    // line 156
+    // line 158
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_stylesheets(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 157
+        // line 159
         yield "    ";
         yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
         yield "
@@ -716,19 +723,25 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             height: 50px;
             animation: spin 1s linear infinite;
         }
+
+        #modify-button {
+            background-color: var(--secondary-color);
+            color: var(--secondary-text);
+            width: 100%;
+        }
 </style>
 ";
         yield from [];
     }
 
-    // line 513
+    // line 521
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 514
+        // line 522
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
@@ -1047,7 +1060,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  732 => 514,  725 => 513,  364 => 157,  357 => 156,  320 => 123,  312 => 118,  302 => 110,  296 => 106,  287 => 99,  285 => 98,  282 => 97,  280 => 96,  277 => 95,  275 => 94,  266 => 88,  262 => 87,  258 => 86,  254 => 85,  246 => 79,  238 => 77,  236 => 76,  232 => 75,  227 => 74,  221 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
+        return array (  745 => 522,  738 => 521,  371 => 159,  364 => 158,  327 => 125,  319 => 120,  309 => 112,  303 => 108,  297 => 106,  295 => 105,  287 => 99,  285 => 98,  282 => 97,  280 => 96,  277 => 95,  275 => 94,  266 => 88,  262 => 87,  258 => 86,  254 => 85,  246 => 79,  238 => 77,  236 => 76,  232 => 75,  227 => 74,  221 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1147,7 +1160,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             <div class=\"offer-actions\">
                 {% if not request.isAuthenticated() %}
                     <a href=\"/login\" class=\"btn-primary login-to-apply\">Se connecter pour postuler</a>
-                {% elseif canApply and not offer.hasApplied %}
+                {% elseif request.hasPermission('perm_offer_apply') and not offer.hasApplied %}
                     <button id=\"apply-button\" class=\"btn-primary login-to-apply\">Postuler à cette offre</button>
                 {% elseif offer.hasApplied %}
                     <div class=\"already-applied\">
@@ -1156,6 +1169,8 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                         </svg>
                         <span>Vous avez déjà postulé à cette offre</span>
                     </div>
+                {% elseif request.hasPermission('perm_admin') %}
+                    <a href=\"/offres/edit/{{ offer.id }}\" id=\"modify-button\" class=\"btn-secondary modify-offer\">Modifier cette offre</a>
                 {% else %}
                     <div class=\"cannot-apply\">
                         <p>Vous n'avez pas les permissions nécessaires pour postuler à cette offre.</p>
@@ -1560,6 +1575,12 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             width: 50px;
             height: 50px;
             animation: spin 1s linear infinite;
+        }
+
+        #modify-button {
+            background-color: var(--secondary-color);
+            color: var(--secondary-text);
+            width: 100%;
         }
 </style>
 {% endblock %}

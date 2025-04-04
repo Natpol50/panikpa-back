@@ -70,32 +70,87 @@ class EnterpriseController extends BaseController
         ]);
     }
     
-    /**
-     * Show the form for editing an enterprise
-     * 
-     * @param RequestObject $request Current request information
-     * @return void
-     */
-    public function edit(RequestObject $request): void
+    public function update(RequestObject $request): void
     {
-        // Check if user is authenticated and has permission
+        // Check if user is authenticated and has permission to modify enterprise info
         if (!$request->isAuthenticated()) {
             header('Location: /login');
             exit;
         }
         
-        // Check if user has permission to edit enterprises
         if (!$request->hasPermission('perm_modify_comp_info')) {
-            throw new AuthorizationException("You don't have permission to edit enterprises");
+            throw new AuthorizationException("You don't have permission to modify enterprise information");
+        }
+        
+        try {
+            // Get enterprise ID from the form POST data
+            $enterpriseId = $_POST['enterpriseId'] ?? null;
+            
+            if (!$enterpriseId || strlen($enterpriseId) !== 3) {
+                throw new NotFoundException("Invalid enterprise ID");
+            }
+            
+            // Check if enterprise exists
+            $enterprise = $this->enterpriseModel->getEnterpriseById($enterpriseId);
+            
+            if (!$enterprise) {
+                throw new NotFoundException("Enterprise not found");
+            }
+            
+            // Validate input data
+            $validatedData = $this->validateEnterpriseInput($_POST);
+            
+            // Update the enterprise
+            $this->enterpriseModel->updateEnterprise($enterpriseId, $validatedData);
+            
+            // Redirect to the enterprise details page
+            header("Location: /entreprises/{$enterpriseId}");
+            exit;
+        } catch (ValidationException $e) {
+            // Re-render the form with validation errors
+            echo $this->render('enterprises/edit', [
+                'request' => $request,
+                'enterprise' => $enterprise ?? [],
+                'error' => $e->getErrors(),
+                'formData' => $_POST
+            ]);
+        } catch (\Exception $e) {
+            // Log unexpected errors
+            error_log("Enterprise update error: " . $e->getMessage());
+            
+            // Render form with a generic error message
+            echo $this->render('enterprises/edit', [
+                'request' => $request,
+                'enterprise' => $enterprise ?? [],
+                'error' => [
+                    'Une erreur inattendue est survenue lors de la modification de l\'entreprise.',
+                    'Veuillez réessayer ou contacter le support technique.'
+                ],
+                'formData' => $_POST
+            ]);
+        }
+    }
+    
+    public function edit(RequestObject $request): void
+    {
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            header('Location: /login');
+            exit;
+        }
+        
+        // Check if user has permission to modify enterprise info
+        if (!$request->hasPermission('perm_modify_comp_info')) {
+            throw new AuthorizationException("You don't have permission to modify enterprise information");
         }
         
         // Extract enterprise ID from URL
         $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
         $segments = explode('/', trim($urlPath, '/'));
         $enterpriseId = $segments[count($segments) - 2]; // Get the segment before "edit"
-
+    
         if (strlen($enterpriseId) !== 3) {
-            throw new NotFoundException("Invalid enterprise ID (enterprise ID: $enterpriseId, length: " . strlen($enterpriseId) . ")");
+            throw new NotFoundException("Invalid enterprise ID");
         }
         
         // Get enterprise details
@@ -105,55 +160,11 @@ class EnterpriseController extends BaseController
             throw new NotFoundException("Enterprise not found");
         }
         
-        // Load the view with the data
+        // Render the edit view
         echo $this->render('enterprises/edit', [
-            'enterprise' => $enterprise,
-            'request' => $request
+            'request' => $request,
+            'enterprise' => $enterprise
         ]);
-    }
-    
-    /**
-     * Update the specified enterprise
-     * 
-     * @param RequestObject $request Current request information
-     * @return void
-     */
-    public function update(RequestObject $request): void
-    {
-        // Check if user is authenticated and has permission
-        if (!$request->isAuthenticated()) {
-            header('Location: /login');
-            exit;
-        }
-        
-        // Check if user has permission to edit enterprises
-        if (!$request->hasPermission('perm_modify_comp_info')) {
-            throw new AuthorizationException("You don't have permission to edit enterprises");
-        }
-        
-        // Get enterprise ID from route parameters
-        $enterpriseId = (int)($_GET['id'] ?? 0);
-        
-        if ($enterpriseId <= 0) {
-            throw new NotFoundException("Enterprise not found");
-        }
-        
-        // Check if enterprise exists
-        $enterprise = $this->enterpriseModel->getEnterpriseById($enterpriseId);
-        
-        if (!$enterprise) {
-            throw new NotFoundException("Enterprise not found");
-        }
-        
-        // Validate input
-        $data = $this->validateEnterpriseInput($_POST);
-        
-        // Update the enterprise
-        $this->enterpriseModel->updateEnterprise($enterpriseId, $data);
-        
-        // Redirect to the enterprise page
-        header("Location: /enterprises/{$enterpriseId}");
-        exit;
     }
     
     /**
@@ -346,13 +357,13 @@ class EnterpriseController extends BaseController
         $enterpriseId = end($segments);
 
         if (strlen($enterpriseId) !== 3) {
-            throw new NotFoundException("Invalid enterprise ID (enterprise ID: $enterpriseId, length: " . strlen($enterpriseId).")");
+            throw new NotFoundException("Invalid enterprise ID (enterprise ID: $enterpriseId, length: " . strlen($enterpriseId) . ")");
         }
 
         try {
             // Get enterprise details
             $enterprise = $this->enterpriseModel->getEnterpriseById($enterpriseId);
-
+            $usercomment = $this->enterpriseModel->getUserComment($enterpriseId, $request->userId);
             if (!$enterprise) {
                 throw new NotFoundException("Enterprise not found");
             }
@@ -410,16 +421,10 @@ class EnterpriseController extends BaseController
             $applicationCount = $this->enterpriseModel->countApplications($enterpriseId);
 
             // Check if user has permission to edit
-            $canEdit = false;
-            if ($request->isAuthenticated()) {
-                $canEdit = $request->hasPermission('perm_modify_comp_info');
-            }
+            $canEdit = $request->isAuthenticated() && $request->hasPermission('perm_modify_comp_info');
 
             // Check if user has permission to evaluate
-            $canEvaluate = false;
-            if ($request->isAuthenticated()) {
-                $canEvaluate = $request->hasPermission('perm_rate_enterprise');
-            }
+            $canEvaluate = $request->isAuthenticated() && $request->hasPermission('perm_rate_enterprise');
 
             // Render the enterprise details view
             $this->renderView('enterprises/show', [
@@ -429,7 +434,8 @@ class EnterpriseController extends BaseController
                 'ratings' => $ratings,
                 'applicationCount' => $applicationCount,
                 'canEdit' => $canEdit,
-                'canEvaluate' => $canEvaluate
+                'canEvaluate' => $canEvaluate,
+                'usercomment' => $usercomment
             ]);
         } catch (\Exception $e) {
             throw new \Exception("An error occurred while loading enterprise information: " . $e->getMessage());
@@ -713,6 +719,168 @@ class EnterpriseController extends BaseController
                     'Veuillez réessayer ou contacter le support technique.'
                 ],
                 'formData' => $_POST
+            ]);
+        }
+    }
+
+    /**
+     * API endpoint to add a comment to an enterprise
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function apiAddComment(RequestObject $request): void
+    {
+        // Set response headers
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vous devez être connecté pour commenter',
+                'redirect' => '/login'
+            ]);
+            return;
+        }
+        
+        // Check if user has permission to grade company
+        if (!$request->hasPermission('perm_grade_company')) {
+            http_response_code(403);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vous n\'avez pas la permission de commenter cette entreprise'
+            ]);
+            return;
+        }
+        
+        // Extract user ID from the request object
+        $userId = $request->userId;
+
+        // Get enterprise ID and comment text from POST data or JSON body
+        $inputData = json_decode(file_get_contents('php://input'), true) ?? $_POST;
+        $enterpriseId = trim($inputData['enterpriseId'] ?? '');
+        $commentText = trim($inputData['commentText'] ?? '');
+        $rating = isset($inputData['rating']) ? (float)$inputData['rating'] : 0;
+        
+
+        // Validate enterprise ID
+        if (strlen($enterpriseId) !== 3) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID d\'entreprise invalide )'
+            ]);
+            return;
+        }
+
+        // Validate comment text
+        if (empty($commentText)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Le commentaire ne peut pas être vide'
+            ]);
+            return;
+        }
+
+        // Validate rating
+        if ($rating < 1 || $rating > 5) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'La note doit être comprise entre 1 et 5'
+            ]);
+            return;
+        }
+
+        try {
+            // Add comment using the model
+            $success = $this->enterpriseModel->addComment(
+                $enterpriseId, 
+                $userId, 
+                $commentText,
+                $rating
+            );
+            
+            if ($success) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Votre commentaire a été ajouté avec succès'
+                ]);
+            } else {
+                throw new \Exception('Échec de l\'ajout du commentaire');
+            }
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * API endpoint to fetch comments for an enterprise
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function apiGetComments(RequestObject $request): void
+    {
+        // Set response headers
+        header('Content-Type: application/json');
+        
+        // Get enterprise ID from route
+        $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $segments = explode('/', trim($urlPath, '/'));
+        $enterpriseId = $segments[count($segments) - 2]; // Get the segment before the last one
+        
+        // Validate enterprise ID
+        if (strlen($enterpriseId) !== 3) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'ID d\'entreprise invalide (id: ' . $enterpriseId . ', length: ' . strlen($enterpriseId) . ')'
+            ]);
+            return;
+        }
+        
+        // Get pagination parameters
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+        
+        try {
+            // Fetch comments and metadata
+            $result = $this->enterpriseModel->getComments($enterpriseId, $limit, $offset);
+            $comments = $result['comments'];
+            $totalComments = $result['total_count'];
+            $totalPages = $result['total_pages'];
+            
+            // Format comments
+            $formattedComments = array_map(function($comment) {
+                return [
+                    'author' => $comment['user_fname'] . ' ' . $comment['user_name'],
+                    'authorPhoto' => $comment['user_photo_url'] ?? '/assets/pp/default.png',
+                    'grade' => $comment['grade_UE'] ?? 0,
+                    'text' => $comment['grade_comment'] ?? '',
+                ];
+            }, $comments);
+            
+            echo json_encode([
+                'success' => true,
+                'comments' => $formattedComments,
+                'totalComments' => $totalComments,
+                'totalPages' => $totalPages,
+                'currentPage' => $page
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Une erreur est survenue: ' . $e->getMessage()
             ]);
         }
     }

@@ -240,12 +240,12 @@ class EnterpriseModel
             $stmt = $this->database->prepare($query);
             
             $stmt->execute([
-                ":enterpriseName" => $updatedData["enterprise_name"],
-                ":enterprisePhone" => $updatedData["enterprise_phone"],
-                ":enterpriseDescriptionUrl" => $updatedData["enterprise_description_url"],
-                ":enterpriseSite" => $updatedData["enterprise_site"],
-                ":enterpriseEmail" => $updatedData["enterprise_email"],
-                ":enterprisePhotoUrl" => $updatedData["enterprise_photo_url"],
+                ":enterpriseName" => $updatedData["enterpriseName"],
+                ":enterprisePhone" => $updatedData["enterprisePhone"],
+                ":enterpriseDescriptionUrl" => $updatedData["enterpriseDescriptionUrl"],
+                ":enterpriseSite" => $updatedData["enterpriseSite"],
+                ":enterpriseEmail" => $updatedData["enterpriseEmail"],
+                ":enterprisePhotoUrl" => $updatedData["enterprisePhotoUrl"],
                 ":enterpriseId" => $enterpriseId
             ]);
             
@@ -566,6 +566,250 @@ class EnterpriseModel
         } catch (PDOException $e) {
             $this->database->rollBack();
             throw new ModelException("Failed to delete enterprise: " . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Add a comment to an enterprise with a rating
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @param int $userId User ID
+     * @param string $commentText Comment text
+     * @param float $rating Rating value (0-5)
+     * @return bool Success status
+     * @throws ModelException If comment addition or modification fails
+     */
+    public function addComment(string $enterpriseId, int $userId, string $commentText, float $rating): bool
+    {
+        // Validate enterprise ID
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        // Validate comment text
+        if (empty(trim($commentText))) {
+            throw new ModelException("Comment text cannot be empty");
+        }
+
+        // Validate rating
+        if ($rating < 0 || $rating > 5) {
+            throw new ModelException("Invalid rating value. Must be between 0 and 5");
+        }
+
+        try {
+            // Check if enterprise exists
+            $enterprise = $this->getEnterpriseById($enterpriseId);
+            
+            if (!$enterprise) {
+                throw new ModelException("Enterprise not found");
+            }
+            
+            // Check if the comment already exists
+            $existingComment = $this->getUserRating($enterpriseId, $userId);
+            
+            if ($existingComment !== null) {
+                // Modify the existing comment
+                return $this->modifyComment($enterpriseId, $userId, $commentText, $rating);
+            }
+
+            // Insert new comment with rating
+            $query = "
+                INSERT INTO Comment (
+                    id_user, 
+                    id_enterprise, 
+                    grade_comment, 
+                    grade_UE
+                ) VALUES (
+                    :userId, 
+                    :enterpriseId, 
+                    :commentText, 
+                    :rating
+                )
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+                ':userId' => $userId,
+                ':enterpriseId' => $enterpriseId,
+                ':commentText' => $commentText,
+                ':rating' => $rating
+            ]);
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to add or modify comment: " . $e->getMessage());
+        }
+    }
+
+        /**
+     * Modify an existing comment for an enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @param int $userId User ID
+     * @param string $commentText New comment text
+     * @param float $rating New rating value (0-5)
+     * @return bool Success status
+     * @throws ModelException If comment modification fails
+     */
+    public function modifyComment(string $enterpriseId, int $userId, string $commentText, float $rating): bool
+    {
+        // Validate enterprise ID
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        // Validate comment text
+        if (empty(trim($commentText))) {
+            throw new ModelException("Comment text cannot be empty");
+        }
+
+        // Validate rating
+        if ($rating < 0 || $rating > 5) {
+            throw new ModelException("Invalid rating value. Must be between 0 and 5");
+        }
+
+        try {
+            // Check if the comment exists
+            $query = "
+                SELECT 1
+                FROM Comment
+                WHERE id_user = :userId AND id_enterprise = :enterpriseId
+                LIMIT 1
+            ";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+                ':userId' => $userId,
+                ':enterpriseId' => $enterpriseId
+            ]);
+
+            if (!$stmt->fetch(PDO::FETCH_ASSOC)) {
+                throw new ModelException("Comment not found for the specified user and enterprise");
+            }
+
+            // Update the comment with the new text and rating
+            $query = "
+                UPDATE Comment
+                SET 
+                    grade_comment = :commentText, 
+                    grade_UE = :rating
+                WHERE 
+                    id_user = :userId AND id_enterprise = :enterpriseId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+                ':userId' => $userId,
+                ':enterpriseId' => $enterpriseId,
+                ':commentText' => $commentText,
+                ':rating' => $rating
+            ]);
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to modify comment: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get comments for an enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @param int $limit Maximum number of comments to retrieve
+     * @param int $offset Starting position for pagination
+     * @return array Comments, associated user data, and total pages
+     * @throws ModelException If retrieval fails
+     */
+    public function getComments(string $enterpriseId, int $limit = 10, int $offset = 0): array
+    {
+        // Validate enterprise ID
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        try {
+            // Fetch comments
+            $query = "
+                SELECT 
+                    c.grade_comment, 
+                    c.grade_UE,
+                    u.user_fname, 
+                    u.user_name, 
+                    u.user_photo_url
+                FROM 
+                    Comment c
+                JOIN 
+                    User u ON c.id_user = u.id_user
+                WHERE 
+                    c.id_enterprise = :enterpriseId
+                ORDER BY 
+                    c.grade_UE ASC
+                LIMIT :limit OFFSET :offset
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            $comments = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Fetch total number of comments
+            $countQuery = "
+                SELECT COUNT(*) as total_count
+                FROM Comment
+                WHERE id_enterprise = :enterpriseId
+            ";
+            
+            $countStmt = $this->database->prepare($countQuery);
+            $countStmt->execute([':enterpriseId' => $enterpriseId]);
+            $totalCount = $countStmt->fetch(PDO::FETCH_ASSOC)['total_count'];
+
+            // Calculate total pages
+            $totalPages = $limit > 0 ? ceil($totalCount / $limit) : 1;
+
+            return [
+                'comments' => $comments,
+                'total_pages' => $totalPages,
+                'total_count' => (int)$totalCount
+            ];
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch comments: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get a user's comment for an enterprise
+     * 
+     * @param string $enterpriseId Enterprise ID
+     * @param int $userId User ID
+     * @return string|null Comment text or null if not found
+     * @throws ModelException If retrieval fails
+     */
+    public function getUserComment(string $enterpriseId, int $userId): ?string
+    {
+        if (strlen($enterpriseId) !== 3) {
+            throw new ModelException("Invalid enterprise ID. Must be a 3-character string.");
+        }
+
+        try {
+            $query = "
+                SELECT grade_comment
+                FROM Comment
+                WHERE id_enterprise = :enterpriseId AND id_user = :userId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->execute([
+                ':enterpriseId' => $enterpriseId,
+                ':userId' => $userId
+            ]);
+            
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            return $result ? $result['grade_comment'] : null;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to get user comment: " . $e->getMessage());
         }
     }
 }

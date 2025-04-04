@@ -1,0 +1,2346 @@
+<?php
+
+use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Extension\CoreExtension;
+use Twig\Extension\SandboxExtension;
+use Twig\Markup;
+use Twig\Sandbox\SecurityError;
+use Twig\Sandbox\SecurityNotAllowedTagError;
+use Twig\Sandbox\SecurityNotAllowedFilterError;
+use Twig\Sandbox\SecurityNotAllowedFunctionError;
+use Twig\Source;
+use Twig\Template;
+use Twig\TemplateWrapper;
+
+/* user/profile.html.twig */
+class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
+{
+    private Source $source;
+    /**
+     * @var array<string, Template>
+     */
+    private array $macros = [];
+
+    public function __construct(Environment $env)
+    {
+        parent::__construct($env);
+
+        $this->source = $this->getSourceContext();
+
+        $this->blocks = [
+            'title' => [$this, 'block_title'],
+            'stylesheets' => [$this, 'block_stylesheets'],
+            'content' => [$this, 'block_content'],
+            'javascripts' => [$this, 'block_javascripts'],
+        ];
+    }
+
+    protected function doGetParent(array $context): bool|string|Template|TemplateWrapper
+    {
+        // line 1
+        return "base.html.twig";
+    }
+
+    protected function doDisplay(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        $this->parent = $this->loadTemplate("base.html.twig", "user/profile.html.twig", 1);
+        yield from $this->parent->unwrap()->yield($context, array_merge($this->blocks, $blocks));
+    }
+
+    // line 3
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_title(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        yield "Mon Profil - ";
+        yield from $this->yieldParentBlock("title", $context, $blocks);
+        yield from [];
+    }
+
+    // line 5
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_stylesheets(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 6
+        yield "    ";
+        yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
+        yield "
+    <style>
+
+            /* Responsive adjustments */
+        @media screen and (max-width: 1024px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .profile-sidebar {
+                margin-bottom: 2rem;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .tab-button {
+                flex: 1 1 auto;
+                text-align: center;
+                padding: 0.8rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 5% auto;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                margin-bottom: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tab-button {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .danger-zone-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .profile-info h2 {
+                font-size: 1.2rem;
+            }
+
+            .profile-info p {
+                font-size: 0.9rem;
+            }
+
+            .btn-save,
+            .btn-danger,
+            .btn-cancel,
+            .btn-crop {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .tab-button {
+                font-size: 0.8rem;
+                padding: 0.4rem;
+            }
+
+            .danger-message h4 {
+                font-size: 1rem;
+            }
+
+            .danger-message p {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Profile page styles */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+        
+        /* Profile sidebar */
+        .profile-sidebar {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            padding: 2rem;
+        }
+        
+        .profile-picture-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: var(--tag-background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-picture {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-picture-placeholder {
+            font-size: 5rem;
+            color: var(--primary-color);
+        }
+        
+        .upload-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .profile-picture-container:hover .upload-overlay {
+            opacity: 1;
+        }
+        
+        .profile-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-info h2 {
+            margin: 0 0 0.5rem 0;
+            color: var(--onyx);
+        }
+        
+        .profile-info p {
+            margin: 0;
+            color: var(--real-grey);
+        }
+        
+        .profile-actions a {
+            display: block;
+            text-align: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem;
+            transition: background-color 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .profile-actions a:hover {
+            background-color: var(--tag-background);
+        }
+        
+        /* Main content (form sections) */
+        .profile-main {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            padding: 2rem;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            border-bottom: 1px solid var(--tag-background);
+            margin-bottom: 2rem;
+        }
+        
+        .tab-button {
+            padding: 1rem;
+            border: none;
+            background: none;
+            font-weight: bold;
+            color: var(--real-grey);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab-button.active {
+            color: var(--primary-color);
+        }
+        
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--onyx);
+            border-bottom: 1px solid var(--tag-background);
+            padding-bottom: 0.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--onyx);
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--focus-shadow);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: filter 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            filter: brightness(0.9);
+        }
+        
+        /* Picture upload modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--background-nav);
+            margin: 10% auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--tag-background);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--onyx);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--real-grey);
+            cursor: pointer;
+        }
+        
+        .cropper-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .btn-cancel {
+            background-color: var(--real-lgrey);
+            border: 1px solid var(--real-grey);
+            color: var(--onyx);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-crop {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: block;
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--tag-background);
+            color: var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+        
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            border: 5px solid var(--background-grey);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-sidebar {
+                margin-bottom: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+            .danger-zone-content {
+                display:flex;
+                align-items:center;
+            }
+        }
+        /* Danger Zone Styles */
+        .danger-zone-content {
+            padding: 1.5rem;
+            background-color: rgba(220, 53, 69, 0.05);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .danger-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .danger-icon {
+            flex-shrink: 0;
+            color: var(--tertiary-color);
+            margin-top: 0.25rem;
+        }
+
+        .danger-message {
+            margin-top: 3px;
+        }
+        .danger-message h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--tertiary-color);
+        }
+
+        .danger-message p {
+            margin: 0;
+            color: var(--real-grey);
+        }
+
+        .btn-danger {
+            background-color: var(--tertiary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: filter 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            filter: brightness(0.9);
+        }
+
+        /* Confirmation modal */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+
+        .confirm-modal-content {
+            background-color: var(--background-nav);
+            margin: 15% auto;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-modal-header h3 {
+            margin: 0;
+            color: var(--tertiary-color);
+        }
+
+        .confirm-modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-cancel-delete {
+            background-color: var(--real-lgrey);
+            border: 1px solid var(--real-grey);
+            color: var(--onyx);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-confirm-delete {
+            background-color: var(--tertiary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+";
+        yield from [];
+    }
+
+    // line 572
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_content(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 573
+        yield "<div class=\"container\">
+    <nav class=\"breadcrumb\">
+        <span><a href=\"/\">Accueil</a></span>
+        <span>Mon Profil</span>
+    </nav>
+
+    <div class=\"profile-container\">
+        <!-- Profile Sidebar -->
+        <div class=\"profile-sidebar\">
+            <div class=\"profile-picture-container\">
+                ";
+        // line 583
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "profilePictureUrl", [], "any", false, false, false, 583)) {
+            // line 584
+            yield "                    <img src=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "profilePictureUrl", [], "any", false, false, false, 584), "html", null, true);
+            yield "\" alt=\"";
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 584), "html", null, true);
+            yield "\" class=\"profile-picture\" id=\"profileImage\">
+                ";
+        } else {
+            // line 586
+            yield "
+                ";
+        }
+        // line 588
+        yield "                <div class=\"upload-overlay\" id=\"uploadOverlay\">
+                    Changer la photo
+                </div>
+            </div>
+            
+            <div class=\"profile-info\">
+                <h2>";
+        // line 594
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 594), "html", null, true);
+        yield " ";
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 594), "html", null, true);
+        yield "</h2>
+                <p>";
+        // line 595
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 595), "html", null, true);
+        yield "</p>
+                <p>Type de recherche: 
+                    ";
+        // line 597
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 597) == "none")) {
+            // line 598
+            yield "                        Non spécifié
+                    ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 599
+($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 599) == "1")) {
+            // line 600
+            yield "                        Alternance
+                    ";
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 601
+($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 601) == "0")) {
+            // line 602
+            yield "                        Stage
+                    ";
+        } else {
+            // line 604
+            yield "                        Non spécifié
+                    ";
+        }
+        // line 606
+        yield "                </p>
+            </div>
+            
+            <div class=\"profile-actions\">
+                <a href=\"/wishlist\">Ma Wishlist</a>
+                <a href=\"/interactions\">Mes Candidatures</a>
+                <a href=\"/logout\">Se déconnecter</a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class=\"profile-main\">
+            <div class=\"tab-navigation\">
+                <button class=\"tab-button active\" data-tab=\"profile-info\">Informations Personnelles</button>
+                <button class=\"tab-button\" data-tab=\"password\">Mot de Passe</button>
+                <button class=\"tab-button\" data-tab=\"danger-zone\">Zone de danger</button>
+            </div>
+            
+            <!-- Profile Info Tab -->
+            <div class=\"tab-content active\" id=\"profile-info\">
+                <form action=\"/update-profile\" method=\"POST\">
+                    <div class=\"form-section\">
+                        <h3>Informations Personnelles</h3>
+                        
+                        <div class=\"form-row\">
+                            <div class=\"form-group\">
+                                <label for=\"firstName\">Prénom</label>
+                                <input type=\"text\" id=\"firstName\" name=\"firstName\" value=\"";
+        // line 633
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", true, true, false, 633)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", false, false, false, 633), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 633))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 633))), "html", null, true);
+        yield "\" required>
+                            </div>
+                            
+                            <div class=\"form-group\">
+                                <label for=\"lastName\">Nom</label>
+                                <input type=\"text\" id=\"lastName\" name=\"lastName\" value=\"";
+        // line 638
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", true, true, false, 638)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", false, false, false, 638), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 638))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 638))), "html", null, true);
+        yield "\" required>
+                            </div>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"email\">Email</label>
+                            <input type=\"email\" id=\"email\" name=\"email\" value=\"";
+        // line 644
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", true, true, false, 644)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", false, false, false, 644), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 644))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 644))), "html", null, true);
+        yield "\" required>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"phone\">Téléphone</label>
+                            <input type=\"tel\" id=\"phone\" name=\"phone\" value=\"";
+        // line 649
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", true, true, false, 649)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", false, false, false, 649), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userPhone", [], "any", false, false, false, 649))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userPhone", [], "any", false, false, false, 649))), "html", null, true);
+        yield "\" required>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"searchType\">Type de recherche</label>
+                            <select id=\"searchType\" name=\"searchType\">
+                                <option value=\"none\" ";
+        // line 655
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 655) == "none")) {
+            yield "selected";
+        }
+        yield ">Non spécifié</option>
+                                <option value=\"0\" ";
+        // line 656
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 656) == "0")) {
+            yield "selected";
+        }
+        yield ">Stage</option>
+                                <option value=\"1\" ";
+        // line 657
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 657) == "1")) {
+            yield "selected";
+        }
+        yield ">Alternance</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class=\"form-actions\">
+                        <button type=\"submit\" class=\"btn-save\">Enregistrer les modifications</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Password Tab -->
+            <div class=\"tab-content\" id=\"password\">
+                <form action=\"/change-password\" method=\"POST\">
+                    <div class=\"form-section\">
+                        <h3>Changer le mot de passe</h3>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"currentPassword\">Mot de passe actuel</label>
+                            <input type=\"password\" id=\"currentPassword\" name=\"currentPassword\" required>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"newPassword\">Nouveau mot de passe</label>
+                            <input type=\"password\" id=\"newPassword\" name=\"newPassword\" required minlength=\"8\">
+                            <small>Le mot de passe doit contenir au moins 8 caractères</small>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"confirmPassword\">Confirmer le nouveau mot de passe</label>
+                            <input type=\"password\" id=\"confirmPassword\" name=\"confirmPassword\" required minlength=\"8\">
+                        </div>
+                    </div>
+                    
+                    <div class=\"form-actions\">
+                        <button type=\"submit\" class=\"btn-save\">Changer le mot de passe</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Danger Zone Tab -->
+            <div class=\"tab-content\" id=\"danger-zone\">
+                <div class=\"form-section\">
+                    <h3>Zone de danger</h3>
+                    
+                    <div class=\"danger-zone-content\">
+                        <div class=\"danger-alert\">
+
+                            <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"danger-icon\" width=\"24\" height=\"24\" viewBox=\"-2 -3 24 24\"><path fill=\"currentColor\" d=\"m12.8 1.613l6.701 11.161c.963 1.603.49 3.712-1.057 4.71a3.2 3.2 0 0 1-1.743.516H3.298C1.477 18 0 16.47 0 14.581c0-.639.173-1.264.498-1.807L7.2 1.613C8.162.01 10.196-.481 11.743.517c.428.276.79.651 1.057 1.096M10 14a1 1 0 1 0 0-2a1 1 0 0 0 0 2m0-9a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V6a1 1 0 0 0-1-1\"/></svg>
+                            <div class=\"danger-message\">
+                                <h4>Supprimer mon compte</h4>
+                                <p>La suppression de votre compte est définitive et ne peut pas être annulée. Toutes vos données personnelles, candidatures et wishlist seront supprimées.</p>
+                            </div>
+                        </div>
+                        
+                        <button type=\"button\" id=\"delete-account-btn\" class=\"btn-danger\" data-userid=\"";
+        // line 712
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userId", [], "any", false, false, false, 712), "html", null, true);
+        yield "\">
+                            Supprimer mon compte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Picture Upload Modal -->
+<div class=\"modal\" id=\"uploadModal\">
+    <div class=\"modal-content\">
+        <div class=\"modal-header\">
+            <h2>Modifier votre photo de profil</h2>
+            <button class=\"close-modal\">&times;</button>
+        </div>
+        <div class=\"modal-body\">
+            <label for=\"profilePictureInput\" class=\"file-label\">Sélectionner une image</label>
+            <input type=\"file\" id=\"profilePictureInput\" class=\"file-input\" accept=\"image/*\">
+            
+            <div class=\"cropper-container\">
+                <img id=\"cropperImage\" style=\"display: none; max-width: 100%;\">
+            </div>
+            
+            <div class=\"modal-actions\">
+                <button class=\"btn-cancel\" id=\"cancelUpload\">Annuler</button>
+                <button class=\"btn-crop\" id=\"cropImage\" disabled>Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class=\"loading-overlay\" id=\"loadingOverlay\">
+    <div class=\"spinner\"></div>
+    <p>Traitement en cours...</p>
+</div>
+
+<!-- Confirmation Modal for Account Deletion -->
+<div class=\"confirm-modal\" id=\"confirmDeleteModal\">
+    <div class=\"confirm-modal-content\">
+        <div class=\"confirm-modal-header\">
+            <h3>Confirmer la suppression</h3>
+        </div>
+        <div class=\"confirm-modal-body\">
+            <p>Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.</p>
+            <p>Toutes vos données personnelles, candidatures et wishlist seront supprimées définitivement.</p>
+        </div>
+        <div class=\"confirm-modal-actions\">
+            <button class=\"btn-cancel-delete\" id=\"cancelDeleteBtn\">Annuler</button>
+            <button class=\"btn-confirm-delete\" id=\"confirmDeleteBtn\">Supprimer définitivement</button>
+        </div>
+    </div>
+</div>
+";
+        yield from [];
+    }
+
+    // line 769
+    /**
+     * @return iterable<null|scalar|\Stringable>
+     */
+    public function block_javascripts(array $context, array $blocks = []): iterable
+    {
+        $macros = $this->macros;
+        // line 770
+        yield "    ";
+        yield from $this->yieldParentBlock("javascripts", $context, $blocks);
+        yield "
+    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js\"></script>
+    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css\">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Profile picture upload functionality
+            const uploadOverlay = document.getElementById('uploadOverlay');
+            const uploadModal = document.getElementById('uploadModal');
+            const closeModalButton = document.querySelector('.close-modal');
+            const cancelUploadButton = document.getElementById('cancelUpload');
+            const profilePictureInput = document.getElementById('profilePictureInput');
+            const cropperImage = document.getElementById('cropperImage');
+            const cropButton = document.getElementById('cropImage');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            let cropper;
+            
+            // Open modal when clicking the upload overlay
+            uploadOverlay.addEventListener('click', function() {
+                uploadModal.style.display = 'block';
+            });
+            
+            // Close modal functions
+            function closeModal() {
+                uploadModal.style.display = 'none';
+                
+                // Destroy cropper if it exists
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                
+                // Reset file input
+                profilePictureInput.value = '';
+                cropperImage.style.display = 'none';
+                cropButton.disabled = true;
+            }
+            
+            closeModalButton.addEventListener('click', closeModal);
+            cancelUploadButton.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside content
+            window.addEventListener('click', function(event) {
+                if (event.target === uploadModal) {
+                    closeModal();
+                }
+            });
+            
+            // Handle file selection
+            profilePictureInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    
+                    // Check file type
+                    if (!file.type.match('image.*')) {
+                        alert('Veuillez sélectionner une image');
+                        return;
+                    }
+                    
+                    // Check file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('L\\'image est trop volumineuse. Maximum 5 Mo.');
+                        return;
+                    }
+                    
+                    // Create object URL for the file
+                    const URL = window.URL || window.webkitURL;
+                    const imageUrl = URL.createObjectURL(file);
+                    
+                    // Display the image and initialize cropper
+                    cropperImage.src = imageUrl;
+                    cropperImage.style.display = 'block';
+                    cropButton.disabled = false;
+                    
+                    // Destroy previous cropper if it exists
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    // Initialize Cropper.js with a 1:1 aspect ratio
+                    cropper = new Cropper(cropperImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 0.8,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false
+                    });
+                }
+            });
+            
+            // Handle crop and upload
+            cropButton.addEventListener('click', async function() {
+                if (!cropper) {
+                    return;
+                }
+                
+                // Show loading overlay
+                loadingOverlay.style.display = 'flex';
+                
+                try {
+                    // Get cropped canvas
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 300,
+                        height: 300,
+                        fillColor: '#fff',
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    });
+                    
+                    if (!canvas) {
+                        throw new Error('Failed to crop image');
+                    }
+                    
+                    // Get crop data for server
+                    const cropData = cropper.getData(true); // true = rounded values
+                    
+                    // Convert canvas to blob
+                    const blob = await new Promise(resolve => {
+                        canvas.toBlob(resolve, 'image/png');
+                    });
+                    
+                    if (!blob) {
+                        throw new Error('Failed to convert canvas to blob');
+                    }
+                    
+                    // Create FormData
+                    const formData = new FormData();
+                    formData.append('profilePicture', blob, 'profile.png');
+                    formData.append('cropX', cropData.x);
+                    formData.append('cropY', cropData.y);
+                    formData.append('cropWidth', cropData.width);
+                    formData.append('cropHeight', cropData.height);
+                    
+                    // Send to server
+                    const response = await fetch('/upload-profile-picture', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Update profile picture
+                        const profileImage = document.getElementById('profileImage');
+                        const profilePlaceholder = document.getElementById('profilePlaceholder');
+                        
+                        if (profileImage) {
+                            profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
+                        } else {
+                            // Create new image if placeholder is showing
+                            const newImage = document.createElement('img');
+                            newImage.src = data.url + '?t=' + new Date().getTime();
+                            newImage.alt = 'Profile Picture';
+                            newImage.className = 'profile-picture';
+                            newImage.id = 'profileImage';
+                            
+                            const container = document.querySelector('.profile-picture-container');
+                            container.innerHTML = '';
+                            container.appendChild(newImage);
+                            container.appendChild(uploadOverlay);
+                        }
+                        
+                        // Show success notification
+                        if (typeof addNotification === 'function') {
+                            addNotification(data.message, 'success');
+                        } else {
+                            alert(data.message);
+                        }
+                        
+                        // Close modal
+                        closeModal();
+                    } else {
+                        throw new Error(data.message || 'Failed to upload profile picture');
+                    }
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    
+                    // Show error notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                    } else {
+                        alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                    }
+                } finally {
+                    // Hide loading overlay
+                    loadingOverlay.style.display = 'none';
+                }
+            });
+            
+            // Password validation
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            
+            confirmPasswordInput?.addEventListener('input', function() {
+                if (newPasswordInput.value !== this.value) {
+                    this.setCustomValidity('Les mots de passe ne correspondent pas');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            
+            newPasswordInput?.addEventListener('input', function() {
+                if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
+                    confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+                } else {
+                    confirmPasswordInput.setCustomValidity('');
+                }
+            });
+        });
+
+        // Delete account functionality
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        // Open confirmation modal when delete button is clicked
+        deleteAccountBtn?.addEventListener('click', function() {
+            confirmDeleteModal.style.display = 'block';
+        });
+
+        // Close modal when cancel button is clicked
+        cancelDeleteBtn?.addEventListener('click', function() {
+            confirmDeleteModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside content
+        window.addEventListener('click', function(event) {
+            if (event.target === confirmDeleteModal) {
+                confirmDeleteModal.style.display = 'none';
+            }
+        });
+
+        // Handle account deletion confirmation
+        confirmDeleteBtn?.addEventListener('click', async function() {
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                const userId = deleteAccountBtn.getAttribute('data-userid');
+                
+                // Send delete request to server
+                const response = await fetch(`/delete-user/\${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    } else {
+                        alert(data.message);
+                    }
+                    
+                    // Redirect if needed
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 2000); // Give time to see the success message
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to delete account');
+                }
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                
+                // Show error notification
+                if (typeof addNotification === 'function') {
+                    addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                } else {
+                    alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                }
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+                
+                // Close modal
+                confirmDeleteModal.style.display = 'none';
+            }
+        });
+    </script>
+";
+        yield from [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getTemplateName(): string
+    {
+        return "user/profile.html.twig";
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function isTraitable(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    public function getDebugInfo(): array
+    {
+        return array (  919 => 770,  912 => 769,  851 => 712,  791 => 657,  785 => 656,  779 => 655,  770 => 649,  762 => 644,  753 => 638,  745 => 633,  716 => 606,  712 => 604,  708 => 602,  706 => 601,  703 => 600,  701 => 599,  698 => 598,  696 => 597,  691 => 595,  685 => 594,  677 => 588,  673 => 586,  665 => 584,  663 => 583,  651 => 573,  644 => 572,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
+    }
+
+    public function getSourceContext(): Source
+    {
+        return new Source("{% extends 'base.html.twig' %}
+
+{% block title %}Mon Profil - {{ parent() }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+
+            /* Responsive adjustments */
+        @media screen and (max-width: 1024px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .profile-sidebar {
+                margin-bottom: 2rem;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .tab-button {
+                flex: 1 1 auto;
+                text-align: center;
+                padding: 0.8rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .modal-content {
+                width: 90%;
+                margin: 5% auto;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                margin-bottom: 2rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tab-button {
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .danger-zone-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .profile-info h2 {
+                font-size: 1.2rem;
+            }
+
+            .profile-info p {
+                font-size: 0.9rem;
+            }
+
+            .btn-save,
+            .btn-danger,
+            .btn-cancel,
+            .btn-crop {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .tab-button {
+                font-size: 0.8rem;
+                padding: 0.4rem;
+            }
+
+            .danger-message h4 {
+                font-size: 1rem;
+            }
+
+            .danger-message p {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Profile page styles */
+        .profile-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+        
+        /* Profile sidebar */
+        .profile-sidebar {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            padding: 2rem;
+        }
+        
+        .profile-picture-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: var(--tag-background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .profile-picture {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .profile-picture-placeholder {
+            font-size: 5rem;
+            color: var(--primary-color);
+        }
+        
+        .upload-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .profile-picture-container:hover .upload-overlay {
+            opacity: 1;
+        }
+        
+        .profile-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .profile-info h2 {
+            margin: 0 0 0.5rem 0;
+            color: var(--onyx);
+        }
+        
+        .profile-info p {
+            margin: 0;
+            color: var(--real-grey);
+        }
+        
+        .profile-actions a {
+            display: block;
+            text-align: center;
+            color: var(--primary-color);
+            text-decoration: none;
+            padding: 0.5rem;
+            transition: background-color 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        .profile-actions a:hover {
+            background-color: var(--tag-background);
+        }
+        
+        /* Main content (form sections) */
+        .profile-main {
+            background-color: var(--background-nav);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            padding: 2rem;
+        }
+        
+        .tab-navigation {
+            display: flex;
+            border-bottom: 1px solid var(--tag-background);
+            margin-bottom: 2rem;
+        }
+        
+        .tab-button {
+            padding: 1rem;
+            border: none;
+            background: none;
+            font-weight: bold;
+            color: var(--real-grey);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab-button.active {
+            color: var(--primary-color);
+        }
+        
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+        }
+        
+        .form-section h3 {
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: var(--onyx);
+            border-bottom: 1px solid var(--tag-background);
+            padding-bottom: 0.5rem;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: var(--onyx);
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            background-color: white;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--focus-shadow);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .btn-save {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: filter 0.3s ease;
+        }
+        
+        .btn-save:hover {
+            filter: brightness(0.9);
+        }
+        
+        /* Picture upload modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--background-nav);
+            margin: 10% auto;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--tag-background);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: var(--onyx);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--real-grey);
+            cursor: pointer;
+        }
+        
+        .cropper-container {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+        
+        .btn-cancel {
+            background-color: var(--real-lgrey);
+            border: 1px solid var(--real-grey);
+            color: var(--onyx);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-crop {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: block;
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--tag-background);
+            color: var(--primary-color);
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            font-weight: bold;
+        }
+        
+        /* Loading overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .spinner {
+            border: 5px solid var(--background-grey);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive adjustments */
+        @media screen and (max-width: 768px) {
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-sidebar {
+                margin-bottom: 2rem;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+            .danger-zone-content {
+                display:flex;
+                align-items:center;
+            }
+        }
+        /* Danger Zone Styles */
+        .danger-zone-content {
+            padding: 1.5rem;
+            background-color: rgba(220, 53, 69, 0.05);
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .danger-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .danger-icon {
+            flex-shrink: 0;
+            color: var(--tertiary-color);
+            margin-top: 0.25rem;
+        }
+
+        .danger-message {
+            margin-top: 3px;
+        }
+        .danger-message h4 {
+            margin: 0 0 0.5rem 0;
+            color: var(--tertiary-color);
+        }
+
+        .danger-message p {
+            margin: 0;
+            color: var(--real-grey);
+        }
+
+        .btn-danger {
+            background-color: var(--tertiary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: filter 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            filter: brightness(0.9);
+        }
+
+        /* Confirmation modal */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
+        }
+
+        .confirm-modal-content {
+            background-color: var(--background-nav);
+            margin: 15% auto;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .confirm-modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-modal-header h3 {
+            margin: 0;
+            color: var(--tertiary-color);
+        }
+
+        .confirm-modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-cancel-delete {
+            background-color: var(--real-lgrey);
+            border: 1px solid var(--real-grey);
+            color: var(--onyx);
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-confirm-delete {
+            background-color: var(--tertiary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class=\"container\">
+    <nav class=\"breadcrumb\">
+        <span><a href=\"/\">Accueil</a></span>
+        <span>Mon Profil</span>
+    </nav>
+
+    <div class=\"profile-container\">
+        <!-- Profile Sidebar -->
+        <div class=\"profile-sidebar\">
+            <div class=\"profile-picture-container\">
+                {% if user.profilePictureUrl %}
+                    <img src=\"{{ user.profilePictureUrl }}\" alt=\"{{ user.userFirstName }}\" class=\"profile-picture\" id=\"profileImage\">
+                {% else %}
+
+                {% endif %}
+                <div class=\"upload-overlay\" id=\"uploadOverlay\">
+                    Changer la photo
+                </div>
+            </div>
+            
+            <div class=\"profile-info\">
+                <h2>{{ user.userFirstName }} {{ user.userName }}</h2>
+                <p>{{ user.userEmail }}</p>
+                <p>Type de recherche: 
+                    {% if user.userSearchType == 'none' %}
+                        Non spécifié
+                    {% elseif user.userSearchType == '1' %}
+                        Alternance
+                    {% elseif user.userSearchType == '0' %}
+                        Stage
+                    {% else %}
+                        Non spécifié
+                    {% endif %}
+                </p>
+            </div>
+            
+            <div class=\"profile-actions\">
+                <a href=\"/wishlist\">Ma Wishlist</a>
+                <a href=\"/interactions\">Mes Candidatures</a>
+                <a href=\"/logout\">Se déconnecter</a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class=\"profile-main\">
+            <div class=\"tab-navigation\">
+                <button class=\"tab-button active\" data-tab=\"profile-info\">Informations Personnelles</button>
+                <button class=\"tab-button\" data-tab=\"password\">Mot de Passe</button>
+                <button class=\"tab-button\" data-tab=\"danger-zone\">Zone de danger</button>
+            </div>
+            
+            <!-- Profile Info Tab -->
+            <div class=\"tab-content active\" id=\"profile-info\">
+                <form action=\"/update-profile\" method=\"POST\">
+                    <div class=\"form-section\">
+                        <h3>Informations Personnelles</h3>
+                        
+                        <div class=\"form-row\">
+                            <div class=\"form-group\">
+                                <label for=\"firstName\">Prénom</label>
+                                <input type=\"text\" id=\"firstName\" name=\"firstName\" value=\"{{ formData.firstName|default(user.userFirstName) }}\" required>
+                            </div>
+                            
+                            <div class=\"form-group\">
+                                <label for=\"lastName\">Nom</label>
+                                <input type=\"text\" id=\"lastName\" name=\"lastName\" value=\"{{ formData.lastName|default(user.userName) }}\" required>
+                            </div>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"email\">Email</label>
+                            <input type=\"email\" id=\"email\" name=\"email\" value=\"{{ formData.email|default(user.userEmail) }}\" required>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"phone\">Téléphone</label>
+                            <input type=\"tel\" id=\"phone\" name=\"phone\" value=\"{{ formData.phone|default(user.userPhone) }}\" required>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"searchType\">Type de recherche</label>
+                            <select id=\"searchType\" name=\"searchType\">
+                                <option value=\"none\" {% if user.userSearchType == 'none' %}selected{% endif %}>Non spécifié</option>
+                                <option value=\"0\" {% if user.userSearchType == '0' %}selected{% endif %}>Stage</option>
+                                <option value=\"1\" {% if user.userSearchType == '1' %}selected{% endif %}>Alternance</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class=\"form-actions\">
+                        <button type=\"submit\" class=\"btn-save\">Enregistrer les modifications</button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Password Tab -->
+            <div class=\"tab-content\" id=\"password\">
+                <form action=\"/change-password\" method=\"POST\">
+                    <div class=\"form-section\">
+                        <h3>Changer le mot de passe</h3>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"currentPassword\">Mot de passe actuel</label>
+                            <input type=\"password\" id=\"currentPassword\" name=\"currentPassword\" required>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"newPassword\">Nouveau mot de passe</label>
+                            <input type=\"password\" id=\"newPassword\" name=\"newPassword\" required minlength=\"8\">
+                            <small>Le mot de passe doit contenir au moins 8 caractères</small>
+                        </div>
+                        
+                        <div class=\"form-group\">
+                            <label for=\"confirmPassword\">Confirmer le nouveau mot de passe</label>
+                            <input type=\"password\" id=\"confirmPassword\" name=\"confirmPassword\" required minlength=\"8\">
+                        </div>
+                    </div>
+                    
+                    <div class=\"form-actions\">
+                        <button type=\"submit\" class=\"btn-save\">Changer le mot de passe</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Danger Zone Tab -->
+            <div class=\"tab-content\" id=\"danger-zone\">
+                <div class=\"form-section\">
+                    <h3>Zone de danger</h3>
+                    
+                    <div class=\"danger-zone-content\">
+                        <div class=\"danger-alert\">
+
+                            <svg xmlns=\"http://www.w3.org/2000/svg\" class=\"danger-icon\" width=\"24\" height=\"24\" viewBox=\"-2 -3 24 24\"><path fill=\"currentColor\" d=\"m12.8 1.613l6.701 11.161c.963 1.603.49 3.712-1.057 4.71a3.2 3.2 0 0 1-1.743.516H3.298C1.477 18 0 16.47 0 14.581c0-.639.173-1.264.498-1.807L7.2 1.613C8.162.01 10.196-.481 11.743.517c.428.276.79.651 1.057 1.096M10 14a1 1 0 1 0 0-2a1 1 0 0 0 0 2m0-9a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V6a1 1 0 0 0-1-1\"/></svg>
+                            <div class=\"danger-message\">
+                                <h4>Supprimer mon compte</h4>
+                                <p>La suppression de votre compte est définitive et ne peut pas être annulée. Toutes vos données personnelles, candidatures et wishlist seront supprimées.</p>
+                            </div>
+                        </div>
+                        
+                        <button type=\"button\" id=\"delete-account-btn\" class=\"btn-danger\" data-userid=\"{{ user.userId }}\">
+                            Supprimer mon compte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Picture Upload Modal -->
+<div class=\"modal\" id=\"uploadModal\">
+    <div class=\"modal-content\">
+        <div class=\"modal-header\">
+            <h2>Modifier votre photo de profil</h2>
+            <button class=\"close-modal\">&times;</button>
+        </div>
+        <div class=\"modal-body\">
+            <label for=\"profilePictureInput\" class=\"file-label\">Sélectionner une image</label>
+            <input type=\"file\" id=\"profilePictureInput\" class=\"file-input\" accept=\"image/*\">
+            
+            <div class=\"cropper-container\">
+                <img id=\"cropperImage\" style=\"display: none; max-width: 100%;\">
+            </div>
+            
+            <div class=\"modal-actions\">
+                <button class=\"btn-cancel\" id=\"cancelUpload\">Annuler</button>
+                <button class=\"btn-crop\" id=\"cropImage\" disabled>Enregistrer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class=\"loading-overlay\" id=\"loadingOverlay\">
+    <div class=\"spinner\"></div>
+    <p>Traitement en cours...</p>
+</div>
+
+<!-- Confirmation Modal for Account Deletion -->
+<div class=\"confirm-modal\" id=\"confirmDeleteModal\">
+    <div class=\"confirm-modal-content\">
+        <div class=\"confirm-modal-header\">
+            <h3>Confirmer la suppression</h3>
+        </div>
+        <div class=\"confirm-modal-body\">
+            <p>Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.</p>
+            <p>Toutes vos données personnelles, candidatures et wishlist seront supprimées définitivement.</p>
+        </div>
+        <div class=\"confirm-modal-actions\">
+            <button class=\"btn-cancel-delete\" id=\"cancelDeleteBtn\">Annuler</button>
+            <button class=\"btn-confirm-delete\" id=\"confirmDeleteBtn\">Supprimer définitivement</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js\"></script>
+    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css\">
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+            
+            // Profile picture upload functionality
+            const uploadOverlay = document.getElementById('uploadOverlay');
+            const uploadModal = document.getElementById('uploadModal');
+            const closeModalButton = document.querySelector('.close-modal');
+            const cancelUploadButton = document.getElementById('cancelUpload');
+            const profilePictureInput = document.getElementById('profilePictureInput');
+            const cropperImage = document.getElementById('cropperImage');
+            const cropButton = document.getElementById('cropImage');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
+            let cropper;
+            
+            // Open modal when clicking the upload overlay
+            uploadOverlay.addEventListener('click', function() {
+                uploadModal.style.display = 'block';
+            });
+            
+            // Close modal functions
+            function closeModal() {
+                uploadModal.style.display = 'none';
+                
+                // Destroy cropper if it exists
+                if (cropper) {
+                    cropper.destroy();
+                    cropper = null;
+                }
+                
+                // Reset file input
+                profilePictureInput.value = '';
+                cropperImage.style.display = 'none';
+                cropButton.disabled = true;
+            }
+            
+            closeModalButton.addEventListener('click', closeModal);
+            cancelUploadButton.addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside content
+            window.addEventListener('click', function(event) {
+                if (event.target === uploadModal) {
+                    closeModal();
+                }
+            });
+            
+            // Handle file selection
+            profilePictureInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const file = this.files[0];
+                    
+                    // Check file type
+                    if (!file.type.match('image.*')) {
+                        alert('Veuillez sélectionner une image');
+                        return;
+                    }
+                    
+                    // Check file size (5MB max)
+                    if (file.size > 5 * 1024 * 1024) {
+                        alert('L\\'image est trop volumineuse. Maximum 5 Mo.');
+                        return;
+                    }
+                    
+                    // Create object URL for the file
+                    const URL = window.URL || window.webkitURL;
+                    const imageUrl = URL.createObjectURL(file);
+                    
+                    // Display the image and initialize cropper
+                    cropperImage.src = imageUrl;
+                    cropperImage.style.display = 'block';
+                    cropButton.disabled = false;
+                    
+                    // Destroy previous cropper if it exists
+                    if (cropper) {
+                        cropper.destroy();
+                    }
+                    
+                    // Initialize Cropper.js with a 1:1 aspect ratio
+                    cropper = new Cropper(cropperImage, {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 0.8,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false
+                    });
+                }
+            });
+            
+            // Handle crop and upload
+            cropButton.addEventListener('click', async function() {
+                if (!cropper) {
+                    return;
+                }
+                
+                // Show loading overlay
+                loadingOverlay.style.display = 'flex';
+                
+                try {
+                    // Get cropped canvas
+                    const canvas = cropper.getCroppedCanvas({
+                        width: 300,
+                        height: 300,
+                        fillColor: '#fff',
+                        imageSmoothingEnabled: true,
+                        imageSmoothingQuality: 'high'
+                    });
+                    
+                    if (!canvas) {
+                        throw new Error('Failed to crop image');
+                    }
+                    
+                    // Get crop data for server
+                    const cropData = cropper.getData(true); // true = rounded values
+                    
+                    // Convert canvas to blob
+                    const blob = await new Promise(resolve => {
+                        canvas.toBlob(resolve, 'image/png');
+                    });
+                    
+                    if (!blob) {
+                        throw new Error('Failed to convert canvas to blob');
+                    }
+                    
+                    // Create FormData
+                    const formData = new FormData();
+                    formData.append('profilePicture', blob, 'profile.png');
+                    formData.append('cropX', cropData.x);
+                    formData.append('cropY', cropData.y);
+                    formData.append('cropWidth', cropData.width);
+                    formData.append('cropHeight', cropData.height);
+                    
+                    // Send to server
+                    const response = await fetch('/upload-profile-picture', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Update profile picture
+                        const profileImage = document.getElementById('profileImage');
+                        const profilePlaceholder = document.getElementById('profilePlaceholder');
+                        
+                        if (profileImage) {
+                            profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
+                        } else {
+                            // Create new image if placeholder is showing
+                            const newImage = document.createElement('img');
+                            newImage.src = data.url + '?t=' + new Date().getTime();
+                            newImage.alt = 'Profile Picture';
+                            newImage.className = 'profile-picture';
+                            newImage.id = 'profileImage';
+                            
+                            const container = document.querySelector('.profile-picture-container');
+                            container.innerHTML = '';
+                            container.appendChild(newImage);
+                            container.appendChild(uploadOverlay);
+                        }
+                        
+                        // Show success notification
+                        if (typeof addNotification === 'function') {
+                            addNotification(data.message, 'success');
+                        } else {
+                            alert(data.message);
+                        }
+                        
+                        // Close modal
+                        closeModal();
+                    } else {
+                        throw new Error(data.message || 'Failed to upload profile picture');
+                    }
+                } catch (error) {
+                    console.error('Error uploading profile picture:', error);
+                    
+                    // Show error notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                    } else {
+                        alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                    }
+                } finally {
+                    // Hide loading overlay
+                    loadingOverlay.style.display = 'none';
+                }
+            });
+            
+            // Password validation
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            
+            confirmPasswordInput?.addEventListener('input', function() {
+                if (newPasswordInput.value !== this.value) {
+                    this.setCustomValidity('Les mots de passe ne correspondent pas');
+                } else {
+                    this.setCustomValidity('');
+                }
+            });
+            
+            newPasswordInput?.addEventListener('input', function() {
+                if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
+                    confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+                } else {
+                    confirmPasswordInput.setCustomValidity('');
+                }
+            });
+        });
+
+        // Delete account functionality
+        const deleteAccountBtn = document.getElementById('delete-account-btn');
+        const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+        const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+
+        // Open confirmation modal when delete button is clicked
+        deleteAccountBtn?.addEventListener('click', function() {
+            confirmDeleteModal.style.display = 'block';
+        });
+
+        // Close modal when cancel button is clicked
+        cancelDeleteBtn?.addEventListener('click', function() {
+            confirmDeleteModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside content
+        window.addEventListener('click', function(event) {
+            if (event.target === confirmDeleteModal) {
+                confirmDeleteModal.style.display = 'none';
+            }
+        });
+
+        // Handle account deletion confirmation
+        confirmDeleteBtn?.addEventListener('click', async function() {
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+            
+            try {
+                const userId = deleteAccountBtn.getAttribute('data-userid');
+                
+                // Send delete request to server
+                const response = await fetch(`/delete-user/\${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    } else {
+                        alert(data.message);
+                    }
+                    
+                    // Redirect if needed
+                    if (data.redirect) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 2000); // Give time to see the success message
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to delete account');
+                }
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                
+                // Show error notification
+                if (typeof addNotification === 'function') {
+                    addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                } else {
+                    alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                }
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+                
+                // Close modal
+                confirmDeleteModal.style.display = 'none';
+            }
+        });
+    </script>
+{% endblock %}", "user/profile.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\user\\profile.html.twig");
+    }
+}

@@ -54,7 +54,6 @@ class __TwigTemplate_c54867f5c97344844b843614fdad9ef7 extends Template
             <ul>
                 <li><a href=\"/CGU\">CGU</a></li>
                 <li><a href=\"/RGPD\">Politique de confidentialité</a></li>
-                <li><a href=\"/cookies\">Préférences des cookies</a></li>
             </ul>
         </div>
 
@@ -63,7 +62,6 @@ class __TwigTemplate_c54867f5c97344844b843614fdad9ef7 extends Template
             <ul>
                 <li><a href=\"mailto:contact@panikpa.com\">contact@panikpa.com</a></li>
                 <li><a href=\"tel:+33xxxxxxxxx\">+33 x xx xx xx xx</a></li>
-                <li><a href=\"/contact\">Formulaire de contact</a></li>
             </ul>
         </div>
 
@@ -91,7 +89,7 @@ class __TwigTemplate_c54867f5c97344844b843614fdad9ef7 extends Template
 
     <div class=\"footer-bottom\">
         <p>&copy; ";
-        // line 52
+        // line 50
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["current_year"] ?? null), "html", null, true);
         yield " PANIKPA. Tous droits réservés.</p>
     </div>
@@ -120,7 +118,7 @@ class __TwigTemplate_c54867f5c97344844b843614fdad9ef7 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  95 => 52,  42 => 1,);
+        return array (  93 => 50,  42 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -140,7 +138,6 @@ class __TwigTemplate_c54867f5c97344844b843614fdad9ef7 extends Template
             <ul>
                 <li><a href=\"/CGU\">CGU</a></li>
                 <li><a href=\"/RGPD\">Politique de confidentialité</a></li>
-                <li><a href=\"/cookies\">Préférences des cookies</a></li>
             </ul>
         </div>
 
@@ -149,7 +146,6 @@ class __TwigTemplate_c54867f5c97344844b843614fdad9ef7 extends Template
             <ul>
                 <li><a href=\"mailto:contact@panikpa.com\">contact@panikpa.com</a></li>
                 <li><a href=\"tel:+33xxxxxxxxx\">+33 x xx xx xx xx</a></li>
-                <li><a href=\"/contact\">Formulaire de contact</a></li>
             </ul>
         </div>
 
