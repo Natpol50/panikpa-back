@@ -186,44 +186,35 @@ class OfferModel {
         }
     }
 
-    // Update an offer
-    public function updateOffer(array $data, $offerId) {
-        $existingData = $this->getOfferByOfferId($offerId);
-        if (!$existingData) {
-            throw new ModelException("Offer not found.");
-        }
-
-        $updatedData = array_merge($existingData, $data);
-
+    // Delete an offer by its ID and related entries in other tables
+    public function deleteOfferById($offerId) {
         try {
-            $query = "UPDATE Offer SET offer_title = :offer_title, offer_remuneration = :offer_remuneration, 
-                      offer_level = :offer_level, offer_duration = :offer_duration, offer_start = :offer_start, 
-                      offer_content = :offer_content
-                      WHERE id_offer = :id_offer";
+            $this->database->beginTransaction();
 
-            $stmt = $this->database->prepare($query);
-            $stmt->execute([
-                ':offer_title'        => $updatedData['offer_title'],
-                ':offer_remuneration' => $updatedData['offer_remuneration'],
-                ':offer_level'        => $updatedData['offer_level'],
-                ':offer_duration'     => $updatedData['offer_duration'],
-                ':offer_start'        => $updatedData['offer_start'],
-                ':offer_content'  => $updatedData['offer_content'],
-                ':id_offer'           => $offerId
-            ]);
-        } catch (PDOException $e) {
-            throw new ModelException("Unable to update the offer: " . $e->getMessage());
-        }
-    }
+            // Delete from Interaction table
+            $queryInteraction = "DELETE FROM Interaction WHERE id_offer = :id_offer";
+            $stmtInteraction = $this->database->prepare($queryInteraction);
+            $stmtInteraction->execute([':id_offer' => $offerId]);
 
-    // Delete an offer
-    public function deleteOffer($offerId) {
-        try {
-            $query = "DELETE FROM Offer WHERE id_offer = :id_offer";
-            $stmt = $this->database->prepare($query);
-            $stmt->execute([':id_offer' => $offerId]);
+            // Delete from Offer_tag table
+            $queryOfferTag = "DELETE FROM Offer_tag WHERE id_offer = :id_offer";
+            $stmtOfferTag = $this->database->prepare($queryOfferTag);
+            $stmtOfferTag->execute([':id_offer' => $offerId]);
+
+            // Delete from Wishlist table
+            $queryWishlist = "DELETE FROM Wishlist WHERE id_offer = :id_offer";
+            $stmtWishlist = $this->database->prepare($queryWishlist);
+            $stmtWishlist->execute([':id_offer' => $offerId]);
+
+            // Delete from Offer table
+            $queryOffer = "DELETE FROM Offer WHERE id_offer = :id_offer";
+            $stmtOffer = $this->database->prepare($queryOffer);
+            $stmtOffer->execute([':id_offer' => $offerId]);
+
+            $this->database->commit();
         } catch (PDOException $e) {
-            throw new ModelException("Unable to delete the offer: " . $e->getMessage());
+            $this->database->rollBack();
+            throw new ModelException("Unable to delete the offer and its related data: " . $e->getMessage());
         }
     }
 
@@ -332,6 +323,83 @@ class OfferModel {
             return $offers;
         } catch (PDOException $e) {
             throw new ModelException("Failed to fetch favorite offers: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update an existing offer
+     * 
+     * @param array $data New offer data
+     * @param int $offerId Offer ID to update
+     * @return bool Success status
+     * @throws ModelException If update fails
+     */
+    public function updateOffer(array $data, int $offerId): bool
+    {
+        try {
+            // Check if offer exists
+            $existingOffer = $this->getOfferByOfferId($offerId);
+            if (!$existingOffer) {
+                throw new ModelException("Offer with ID $offerId not found");
+            }
+            
+            // Build update query with only fields that are provided
+            $updateFields = [];
+            $params = [':offerId' => $offerId];
+            
+            if (isset($data['offer_title'])) {
+                $updateFields[] = 'offer_title = :offerTitle';
+                $params[':offerTitle'] = $data['offer_title'];
+            }
+            
+            if (isset($data['offer_remuneration'])) {
+                $updateFields[] = 'offer_remuneration = :offerRemuneration';
+                $params[':offerRemuneration'] = $data['offer_remuneration'];
+            }
+            
+            if (isset($data['offer_level'])) {
+                $updateFields[] = 'offer_level = :offerLevel';
+                $params[':offerLevel'] = $data['offer_level'];
+            }
+            
+            if (isset($data['offer_duration'])) {
+                $updateFields[] = 'offer_duration = :offerDuration';
+                $params[':offerDuration'] = $data['offer_duration'];
+            }
+            
+            if (isset($data['offer_start'])) {
+                $updateFields[] = 'offer_start = :offerStart';
+                $params[':offerStart'] = $data['offer_start'];
+            }
+            
+            if (isset($data['offer_content'])) {
+                $updateFields[] = 'offer_content = :offerContent';
+                $params[':offerContent'] = $data['offer_content'];
+            }
+            
+            if (isset($data['id_enterprise'])) {
+                $updateFields[] = 'id_enterprise = :enterpriseId';
+                $params[':enterpriseId'] = $data['id_enterprise'];
+            }
+            
+            if (isset($data['id_city'])) {
+                $updateFields[] = 'id_city = :cityId';
+                $params[':cityId'] = $data['id_city'];
+            }
+            
+            // If no fields to update, return true (no changes needed)
+            if (empty($updateFields)) {
+                return true;
+            }
+            
+            // Construct and execute the update query
+            $query = "UPDATE Offer SET " . implode(', ', $updateFields) . " WHERE id_offer = :offerId";
+            $stmt = $this->database->prepare($query);
+            $stmt->execute($params);
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to update offer: " . $e->getMessage());
         }
     }
 }

@@ -12,6 +12,9 @@ use App\Models\OfferModel;
 use App\Models\UserModel;
 use App\Models\WishlistModel;
 use App\Services\CacheService;
+use App\Exceptions\AuthorizationException;
+use App\Exceptions\NotFoundException;
+use App\Exceptions\ValidationException;
 use PDO;
 
 /**
@@ -541,12 +544,21 @@ public function apiGetOffers(RequestObject $request): void
         ];
         
         // Render the offer detail view
+        $canEdit = false;
+        if ($request->isAuthenticated()) {
+            $canEdit = $this->cacheService->checkRolePermission(
+            $request->userRole,
+            "perm_modify_offer"
+            ) && $this->userModel->isUserAffiliatedToEnterprise($request->userId, $offer['id_enterprise']);
+        }
+
         echo $this->render('offers/show', [
             'request' => $request,
             'offer' => $formattedOffer,
             'enterprise' => $enterprise,
             'city' => $city,
-            'canApply' => $canApply
+            'canApply' => $canApply,
+            'canEdit' => $canEdit,
         ]);
     }
 
@@ -569,8 +581,15 @@ public function apiGetOffers(RequestObject $request): void
         }
 
         try {
-            // Get all tags from the database
-            $tags = $this->tagModel->getAllTags();
+            // Get the query parameter for filtering tags
+            $query = isset($_GET['query']) ? trim($_GET['query']) : '';
+
+            // Get all tags or filter by query
+            if (!empty($query)) {
+                $tags = $this->tagModel->getTagsByQuery($query);
+            } else {
+                $tags = $this->tagModel->getAllTags();
+            }
             
             // Format data for the autocomplete (just tag names)
             $formattedTags = array_map(function($tag) {
@@ -611,8 +630,15 @@ public function apiGetOffers(RequestObject $request): void
         }
 
         try {
+            // Get the query parameter for filtering cities
+            $query = isset($_GET['query']) ? trim($_GET['query']) : '';
+
             // Get cities from database using CityModel
-            $cities = $this->cityModel->getAllCities();
+            if (!empty($query)) {
+                $cities = $this->cityModel->getCitiesByQuery($query);
+            } else {
+                $cities = $this->cityModel->getAllCities();
+            }
             
             // Format city data for easier use in frontend
             $formattedCities = array_map(function($city) {
@@ -635,6 +661,286 @@ public function apiGetOffers(RequestObject $request): void
             echo json_encode([
                 'success' => false,
                 'message' => 'Failed to fetch cities list: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * API endpoint to delete an offer
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiDelete(RequestObject $request): void
+    {
+        // Set response header to JSON
+        header('Content-Type: application/json');
+
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Unauthorized']);
+            return;
+        }
+
+        // Verify permission to delete offers
+        $canDeleteOffer = $this->cacheService->checkRolePermission(
+            $request->userRole,
+            "perm_delete_offer"
+        );
+
+        if (!$canDeleteOffer) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Forbidden']);
+            return;
+        }
+
+        // Get the offer ID from the query parameter
+        $offerId = isset($_GET['offerid']) ? (int)$_GET['offerid'] : 0;
+
+        if ($offerId <= 0) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid offer ID']);
+            return;
+        }
+
+        try {
+            // Check if the offer exists
+            $offer = $this->offerModel->getOfferByOfferId($offerId);
+
+            if (!$offer) {
+                http_response_code(404);
+                echo json_encode(['error' => 'Offer not found']);
+                return;
+            }
+
+            // Delete the offer
+            $this->offerModel->deleteOfferById($offerId);
+
+            // Return success response
+            echo json_encode(['success' => true, 'message' => 'Offer deleted successfully']);
+        } catch (\Exception $e) {
+            // Handle errors
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to delete offer: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Display the form to edit an offer
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function edit(RequestObject $request): void
+    {
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            header('Location: /login');
+            exit;
+        }
+        
+        // Verify permission to modify offers
+        $canModifyOffer = $this->cacheService->checkRolePermission(
+            $request->userRole,
+            "perm_modify_offer"
+        );
+        
+        if (!$canModifyOffer) {
+            throw new AuthorizationException("You don't have permission to modify offers");
+        }
+        
+        // Extract offer ID from URL
+        $urlPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+        $segments = explode('/', trim($urlPath, '/'));
+        $offerId = end($segments);
+        
+        if (!is_numeric($offerId) || $offerId <= 0) {
+            throw new NotFoundException("Invalid offer ID");
+        }
+        
+        // Get offer details
+        $offer = $this->offerModel->getOfferByOfferId($offerId);
+        
+        if (!$offer) {
+            throw new NotFoundException("Offer not found");
+        }
+        
+        // Get enterprise details
+        $enterprise = $this->enterpriseModel->getEnterpriseById($offer['id_enterprise']);
+        
+        // Get city details
+        $city = $this->cityModel->getCityById($offer['id_city']);
+        
+        // Get tags for this offer
+        $tags = $this->tagModel->getTagsByOfferId($offerId);
+        
+        // Render the edit form
+        echo $this->render('offers/edit', [
+            'request' => $request,
+            'offer' => $offer,
+            'enterprise' => $enterprise,
+            'city' => $city,
+            'tags' => $tags
+        ]);
+    }
+
+    /**
+     * Process update of an offer
+     * 
+     * @param RequestObject $request Current request information
+     * @return void
+     */
+    public function update(RequestObject $request): void
+    {
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            header('Location: /login');
+            exit;
+        }
+        
+        // Verify permission to modify offers
+        $canModifyOffer = $this->cacheService->checkRolePermission(
+            $request->userRole,
+            "perm_modify_offer"
+        );
+        
+        if (!$canModifyOffer) {
+            throw new AuthorizationException("You don't have permission to modify offers");
+        }
+        
+        // Get offer ID from form data
+        $offerId = isset($_POST['offerId']) ? (int)$_POST['offerId'] : 0;
+        
+        if ($offerId <= 0) {
+            throw new ValidationException("Invalid offer ID");
+        }
+        
+        // Check if offer exists
+        $existingOffer = $this->offerModel->getOfferByOfferId($offerId);
+        if (!$existingOffer) {
+            throw new NotFoundException("Offer not found");
+        }
+        
+        // Validate input data
+        $title = $_POST['title'] ?? '';
+        $remuneration = isset($_POST['remuneration']) ? (float)$_POST['remuneration'] : 0;
+        $level = $_POST['level'] ?? '';
+        $duration = $_POST['duration'] ?? '';
+        $startDate = $_POST['startDate'] ?? '';
+        $content = $_POST['content'] ?? '';
+        $enterpriseId = $_POST['enterpriseId'] ?? '';
+        $cityId = isset($_POST['cityId']) ? (int)$_POST['cityId'] : 0;
+        
+        // Validation for required fields
+        $errors = [];
+        
+        if (empty($title)) {
+            $errors[] = 'Le titre est requis';
+        }
+        
+        if (empty($level)) {
+            $errors[] = 'Le niveau d\'études est requis';
+        }
+        
+        if (empty($duration)) {
+            $errors[] = 'La durée est requise';
+        }
+        
+        if (empty($startDate)) {
+            $errors[] = 'La date de début est requise';
+        }
+        
+        if (empty($content)) {
+            $errors[] = 'La description est requise';
+        }
+        
+        if (empty($enterpriseId)) {
+            $errors[] = 'L\'entreprise est requise';
+        }
+        
+        if ($cityId <= 0) {
+            $errors[] = 'La ville est requise';
+        }
+        
+        // If there are validation errors, re-display the form
+        if (!empty($errors)) {
+            $offer = $this->offerModel->getOfferByOfferId($offerId);
+            $enterprise = $this->enterpriseModel->getEnterpriseById($offer['id_enterprise']);
+            $city = $this->cityModel->getCityById($offer['id_city']);
+            $tags = $this->tagModel->getTagsByOfferId($offerId);
+            
+            echo $this->render('offers/edit', [
+                'request' => $request,
+                'offer' => $offer,
+                'enterprise' => $enterprise,
+                'city' => $city,
+                'tags' => $tags,
+                'error' => $errors,
+                'formData' => $_POST
+            ]);
+            return;
+        }
+        
+        try {
+            // Prepare the offer data for update
+            $offerData = [
+                'offer_title' => $title,
+                'offer_remuneration' => $remuneration,
+                'offer_level' => $level,
+                'offer_duration' => $duration,
+                'offer_start' => date('Y-m-d', strtotime($startDate)),
+                'offer_content' => $content,
+                'id_enterprise' => $enterpriseId,
+                'id_city' => $cityId
+            ];
+            
+            // Update the offer
+            $this->offerModel->updateOffer($offerData, $offerId);
+            
+            // Process tags if any
+            if (isset($_POST['tags']) && is_array($_POST['tags'])) {
+                // First, remove all existing tags for this offer
+                $this->tagModel->removeAllTagsFromOffer($offerId);
+                
+                // Then add the new tags
+                foreach ($_POST['tags'] as $index => $tagName) {
+                    if (empty($tagName)) continue;
+                    
+                    // Add tag
+                    $tagId = $this->tagModel->addTag($tagName);
+                    
+                    // Check if tag is optional
+                    $isOptional = isset($_POST['optional_tags'][$index]) && $_POST['optional_tags'][$index] == '1';
+                    
+                    // Link tag to offer
+                    $this->tagModel->addTagToOffer($offerId, $tagId, $isOptional);
+                }
+            }
+            
+            // Redirect to the offer details page with success message
+            $_SESSION['success'] = ['Offre mise à jour avec succès'];
+            header('Location: /offres/' . $offerId);
+            exit;
+            
+        } catch (\Exception $e) {
+            // If there's an error, re-display the form with error message
+            $offer = $this->offerModel->getOfferByOfferId($offerId);
+            $enterprise = $this->enterpriseModel->getEnterpriseById($offer['id_enterprise']);
+            $city = $this->cityModel->getCityById($offer['id_city']);
+            $tags = $this->tagModel->getTagsByOfferId($offerId);
+            
+            echo $this->render('offers/edit', [
+                'request' => $request,
+                'offer' => $offer,
+                'enterprise' => $enterprise,
+                'city' => $city,
+                'tags' => $tags,
+                'error' => ['Une erreur est survenue: ' . $e->getMessage()],
+                'formData' => $_POST
             ]);
         }
     }

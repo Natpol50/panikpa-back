@@ -138,4 +138,21 @@ class CityModel {
             throw new ModelException("Unable to delete the city: " . $e->getMessage());
         }
     }
+
+    /**
+     * Retrieve cities by a partial or full city name.
+     */
+    public function getCitiesByQuery($query) {
+        try {
+            $query = "%" . $query . "%";
+            $sql = "SELECT * FROM City WHERE city_name LIKE :query";
+            $stmt = $this->database->prepare($sql);
+            $stmt->execute([":query" => $query]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            return $result;
+        } catch (PDOException $e) {
+            throw new ModelException("Unable to fetch cities by query: " . $e->getMessage());
+        }
+    }
 }

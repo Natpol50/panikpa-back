@@ -1,0 +1,658 @@
+{% extends 'base.html.twig' %}
+{% block title %}Modifier l'offre - {{ parent() }}{% endblock %}
+{% block breadcrumb %}
+<nav class="breadcrumb">
+    <span><a href="/">Accueil</a></span>
+    <span><a href="/offres">Offres</a></span>
+    <span><a href="/offres/{{ offer.id_offer }}">{{ offer.offer_title }}</a></span>
+    <span>Modification</span>
+</nav>
+{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="offer-edit-container">
+        <h1>Modifier l'offre : {{ offer.offer_title }}</h1>
+        {% if error is defined and error|length > 0 %}
+        <div class="error-container">
+            <ul>
+                {% for message in error %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form id="edit-offer-form" action="/offres/update" method="POST" class="offer-form">
+        <input type="hidden" name="offerId" value="{{ offer.id_offer }}">
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="title">Titre de l'offre *</label>
+                <input 
+                    type="text" 
+                    id="title" 
+                    name="title" 
+                    placeholder="Titre de l'offre" 
+                    value="{{ formData.title|default(offer.offer_title) }}" 
+                    required 
+                    maxlength="100"
+                >
+                <small class="form-hint">Requis, maximum 100 caractères</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="remuneration">Rémunération (€)</label>
+                <input 
+                    type="number" 
+                    id="remuneration" 
+                    name="remuneration" 
+                    placeholder="Montant de la rémunération" 
+                    value="{{ formData.remuneration|default(offer.offer_remuneration) }}" 
+                    min="0"
+                    step="0.01"
+                >
+                <small class="form-hint">Optionnel, montant en euros</small>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="level">Niveau d'études requis *</label>
+                <select id="level" name="level" required>
+                    <option value="">Sélectionnez un niveau</option>
+                    <option value="Bac+1" {% if formData.level|default(offer.offer_level) == 'Bac+1' %}selected{% endif %}>Bac+1</option>
+                    <option value="Bac+2" {% if formData.level|default(offer.offer_level) == 'Bac+2' %}selected{% endif %}>Bac+2</option>
+                    <option value="Bac+3" {% if formData.level|default(offer.offer_level) == 'Bac+3' %}selected{% endif %}>Bac+3</option>
+                    <option value="Bac+4" {% if formData.level|default(offer.offer_level) == 'Bac+4' %}selected{% endif %}>Bac+4</option>
+                    <option value="Bac+5" {% if formData.level|default(offer.offer_level) == 'Bac+5' %}selected{% endif %}>Bac+5</option>
+                    <option value="Bac+3, Bac+5" {% if formData.level|default(offer.offer_level) == 'Bac+3, Bac+5' %}selected{% endif %}>Bac+3, Bac+5</option>
+                </select>
+                <small class="form-hint">Requis</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="duration">Durée du stage *</label>
+                <select id="duration" name="duration" required>
+                    <option value="">Sélectionnez une durée</option>
+                    <option value="1 mois" {% if formData.duration|default(offer.offer_duration) == '1 mois' %}selected{% endif %}>1 mois</option>
+                    <option value="2 mois" {% if formData.duration|default(offer.offer_duration) == '2 mois' %}selected{% endif %}>2 mois</option>
+                    <option value="3 mois" {% if formData.duration|default(offer.offer_duration) == '3 mois' %}selected{% endif %}>3 mois</option>
+                    <option value="4 mois" {% if formData.duration|default(offer.offer_duration) == '4 mois' %}selected{% endif %}>4 mois</option>
+                    <option value="5 mois" {% if formData.duration|default(offer.offer_duration) == '5 mois' %}selected{% endif %}>5 mois</option>
+                    <option value="6 mois" {% if formData.duration|default(offer.offer_duration) == '6 mois' %}selected{% endif %}>6 mois</option>
+                    <option value="Plus de 6 mois" {% if formData.duration|default(offer.offer_duration) == 'Plus de 6 mois' %}selected{% endif %}>Plus de 6 mois</option>
+                </select>
+                <small class="form-hint">Requis</small>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="startDate">Date de début *</label>
+                <input 
+                    type="date" 
+                    id="startDate" 
+                    name="startDate" 
+                    value="{{ formData.startDate|default(offer.offer_start) }}" 
+                    required
+                >
+                <small class="form-hint">Requis</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="enterpriseId">Entreprise *</label>
+                <select id="enterpriseId" name="enterpriseId" required>
+                    <option value="">Sélectionnez une entreprise</option>
+                    <!-- This will be populated with AJAX -->
+                </select>
+                <small class="form-hint">Requis</small>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="cityId">Ville *</label>
+                <select id="cityId" name="cityId" required>
+                    <option value="">Sélectionnez une ville</option>
+                    <!-- This will be populated with AJAX -->
+                </select>
+                <small class="form-hint">Requis</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Description *</label>
+            <textarea 
+                id="content" 
+                name="content" 
+                placeholder="Description détaillée de l'offre" 
+                rows="10"
+                required
+            >{{ formData.content|default(offer.offer_content) }}</textarea>
+            <small class="form-hint">Requis, description détaillée de l'offre</small>
+        </div>
+
+        <div class="tags-section">
+            <h3>Compétences requises</h3>
+            <div id="tags-container">
+                {% if tags|length > 0 %}
+                    {% for tag in tags %}
+                        <div class="tag-item">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <input 
+                                        type="text" 
+                                        name="tags[]" 
+                                        placeholder="Compétence" 
+                                        value="{{ tag.tag_name }}" 
+                                        class="tag-input"
+                                    >
+                                </div>
+                                <div class="form-group tag-optional">
+                                    <label class="checkbox-container">
+                                        Optionnel
+                                        <input 
+                                            type="checkbox" 
+                                            name="optional_tags[]" 
+                                            value="1" 
+                                            {% if tag.optional %}checked{% endif %}
+                                        >
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                                <button type="button" class="btn-remove-tag">Supprimer</button>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="tag-item">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input 
+                                    type="text" 
+                                    name="tags[]" 
+                                    placeholder="Compétence" 
+                                    class="tag-input"
+                                >
+                            </div>
+                            <div class="form-group tag-optional">
+                                <label class="checkbox-container">
+                                    Optionnel
+                                    <input 
+                                        type="checkbox" 
+                                        name="optional_tags[]" 
+                                        value="1"
+                                    >
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
+                            <button type="button" class="btn-remove-tag">Supprimer</button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <button type="button" id="add-tag" class="btn-add-tag">+ Ajouter une compétence</button>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-primary">Enregistrer les modifications</button>
+            <a href="/offres/{{ offer.id_offer }}" class="btn-secondary">Annuler</a>
+        </div>
+    </form>
+
+    <div class="danger-zone">
+        <h3>Zone de danger</h3>
+        <div class="danger-content">
+            <p>La suppression de cette offre est irréversible et supprimera toutes les candidatures associées.</p>
+            <button id="delete-offer-btn" class="btn-danger" data-offer-id="{{ offer.id_offer }}">
+                Supprimer l'offre
+            </button>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+{% block stylesheets %}
+{{ parent() }}
+<style>
+.offer-edit-container {
+max-width: 800px;
+margin: 0 auto;
+background-color: var(--background-nav);
+padding: 2rem;
+border-radius: 8px;
+box-shadow: 0 2px 4px var(--shadow-color);
+}
+.error-container {
+        background-color: rgba(220, 53, 69, 0.1);
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+    }
+
+    .error-container ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        color: var(--tertiary-color);
+    }
+
+    .offer-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: bold;
+        color: var(--onyx);
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        padding: 0.8rem;
+        border: 1px solid var(--real-grey);
+        border-radius: 4px;
+        background-color: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px var(--focus-shadow);
+    }
+
+    .form-hint {
+        font-size: 0.8rem;
+        color: var(--real-grey);
+    }
+
+    .tags-section {
+        margin-top: 1rem;
+    }
+
+    .tags-section h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        color: var(--onyx);
+    }
+
+    .tag-item {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--tag-background);
+    }
+
+    .tag-optional {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: normal;
+        cursor: pointer;
+    }
+
+    .checkmark {
+        position: relative;
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border: 1px solid var(--real-grey);
+        border-radius: 3px;
+    }
+
+    .checkbox-container input:checked ~ .checkmark:after {
+        content: "";
+        position: absolute;
+        left: 6px;
+        top: 2px;
+        width: 4px;
+        height: 8px;
+        border: solid var(--primary-color);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+    }
+
+    .checkbox-container input {
+        position: absolute;
+        opacity: 0;
+        height: 0;
+        width: 0;
+    }
+
+    .btn-remove-tag {
+        background-color: var(--tag-background);
+        color: var(--tertiary-color);
+        border: none;
+        padding: 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        align-self: flex-end;
+    }
+
+    .btn-add-tag {
+        background-color: var(--tag-background);
+        color: var(--primary-color);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 2rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: bold;
+        transition: filter 0.3s ease;
+    }
+
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+    }
+
+    .btn-secondary {
+        background-color: var(--tag-background);
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+    }
+
+    .danger-zone {
+        margin-top: 3rem;
+        padding: 1.5rem;
+        background-color: rgba(220, 53, 69, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(220, 53, 69, 0.2);
+    }
+
+    .danger-zone h3 {
+        color: var(--tertiary-color);
+        margin-top: 0;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .danger-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .danger-content p {
+        margin: 0;
+        color: var(--real-grey);
+    }
+
+    .btn-danger {
+        background-color: var(--tertiary-color);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .danger-content {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .btn-danger {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+{% block javascripts %}
+{{ parent() }}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+// Get DOM elements
+const addTagBtn = document.getElementById('add-tag');
+const tagsContainer = document.getElementById('tags-container');
+const enterpriseSelect = document.getElementById('enterpriseId');
+const citySelect = document.getElementById('cityId');
+const deleteOfferBtn = document.getElementById('delete-offer-btn');
+
+// Set current enterprise and city
+        const currentEnterpriseId = '{{ offer.id_enterprise }}';
+        const currentCityId = '{{ offer.id_city }}';
+
+        // Function to add a new tag input
+        function addTagInput() {
+            const tagItem = document.createElement('div');
+            tagItem.className = 'tag-item';
+            tagItem.innerHTML = `
+                <div class="form-row">
+                    <div class="form-group">
+                        <input 
+                            type="text" 
+                            name="tags[]" 
+                            placeholder="Compétence" 
+                            class="tag-input"
+                        >
+                    </div>
+                    <div class="form-group tag-optional">
+                        <label class="checkbox-container">
+                            Optionnel
+                            <input 
+                                type="checkbox" 
+                                name="optional_tags[]" 
+                                value="1"
+                            >
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <button type="button" class="btn-remove-tag">Supprimer</button>
+                </div>
+            `;
+            tagsContainer.appendChild(tagItem);
+            
+            // Add event listener to the remove button
+            const removeBtn = tagItem.querySelector('.btn-remove-tag');
+            removeBtn.addEventListener('click', function() {
+                tagItem.remove();
+            });
+            
+            // Add autocomplete to the new tag input
+            const tagInput = tagItem.querySelector('.tag-input');
+            initTagAutocomplete(tagInput);
+        }
+        
+        // Add event listener to the "Add Tag" button
+        addTagBtn.addEventListener('click', addTagInput);
+        
+        // Add event listeners to existing remove buttons
+        document.querySelectorAll('.btn-remove-tag').forEach(button => {
+            button.addEventListener('click', function() {
+                this.closest('.tag-item').remove();
+            });
+        });
+        
+        // Initialize tag autocomplete
+        function initTagAutocomplete(input) {
+            // This is a placeholder for tag autocomplete functionality
+            // You can implement it using a library like jQuery UI Autocomplete
+            // Or with a custom implementation using the API endpoint for tags
+        }
+        
+        // Initialize existing tag inputs with autocomplete
+        document.querySelectorAll('.tag-input').forEach(input => {
+            initTagAutocomplete(input);
+        });
+        
+        // Fetch enterprises for the select dropdown
+        async function fetchEnterprises() {
+            try {
+                const response = await fetch('/API/enterpriseList');
+                const enterprises = await response.json();
+                
+                // Clear the select options
+                enterpriseSelect.innerHTML = '<option value="">Sélectionnez une entreprise</option>';
+                
+                // Add the enterprises to the select
+                enterprises.forEach(enterprise => {
+                    const option = document.createElement('option');
+                    option.value = enterprise.enterprise_id;
+                    option.textContent = enterprise.enterprise_name;
+                    option.selected = enterprise.enterprise_id === currentEnterpriseId;
+                    enterpriseSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching enterprises:', error);
+            }
+        }
+        
+        // Fetch cities for the select dropdown
+        async function fetchCities() {
+            try {
+                const response = await fetch('/API/citiesList');
+                const cities = await response.json();
+                
+                // Clear the select options
+                citySelect.innerHTML = '<option value="">Sélectionnez une ville</option>';
+                
+                // Add the cities to the select
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city.id_city;
+                    option.textContent = `${city.city_name} - ${city.city_postal}`;
+                    option.selected = city.id_city === currentCityId;
+                    citySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching cities:', error);
+            }
+        }
+        
+        // Fetch the enterprises and cities
+        fetchEnterprises();
+        fetchCities();
+        
+        // Handle offer deletion
+        if (deleteOfferBtn) {
+            deleteOfferBtn.addEventListener('click', async () => {
+                const offerId = deleteOfferBtn.getAttribute('data-offer-id');
+                
+                // Confirm deletion
+                const confirmDelete = confirm('Êtes-vous sûr de vouloir supprimer cette offre ? Cette action est irréversible.');
+                
+                if (confirmDelete) {
+                    try {
+                        const response = await fetch(`/api/delete-offer?offerid=${offerId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            // Show success notification
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            
+                            // Redirect to home page
+                            setTimeout(() => {
+                                window.location.href = '/';
+                            }, 1500);
+                        } else {
+                            // Show error notification
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message || 'Une erreur est survenue lors de la suppression', 'error');
+                            } else {
+                                alert(data.message || 'Une erreur est survenue lors de la suppression');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error deleting offer:', error);
+                        
+                        // Show error notification
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de la suppression de l\'offre', 'error');
+                        } else {
+                            alert('Une erreur est survenue lors de la suppression de l\'offre');
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Form validation
+        const form = document.getElementById('edit-offer-form');
+        form.addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate required fields
+            const requiredFields = form.querySelectorAll('[required]');
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('invalid');
+                } else {
+                    field.classList.remove('invalid');
+                }
+            });
+            
+            if (!isValid) {
+                e.preventDefault();
+                
+                // Show error notification
+                if (typeof addNotification === 'function') {
+                    addNotification('Veuillez remplir tous les champs obligatoires', 'error');
+                } else {
+                    alert('Veuillez remplir tous les champs obligatoires');
+                }
+                
+                // Scroll to the first invalid field
+                const firstInvalid = form.querySelector('.invalid');
+                if (firstInvalid) {
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -576,217 +576,232 @@ class __TwigTemplate_312ad8a652d7e59b64af5cf5bfb356ff extends Template
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get DOM elements
-            const addTagButton = document.getElementById('add-tag');
-            const tagsContainer = document.getElementById('tags-container');
-            
-            // Initial tag count
-            let tagCount = 1;
-            
-            // Store available tags for autocomplete
-            let availableTags = [];
-            
-            // Store available cities for autocomplete
-            let availableCities = [];
-            
-            // Fetch tags for autocomplete
-            fetch('/api/tagsList')
-                .then(response => response.json())
-                .then(tagsData => {
-                    // Store tags data for autocomplete
-                    availableTags = tagsData.map(tag => tag.name);
-                    
-                    // Initialize autocomplete on existing tag inputs
-                    document.querySelectorAll('[id^=\"tags[\"]').forEach(input => {
-                        initializeTagAutocomplete(input);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching tags for autocomplete:', error);
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get DOM elements
+        const addTagButton = document.getElementById('add-tag');
+        const tagsContainer = document.getElementById('tags-container');
+        const cityInput = document.getElementById('city');
+        const postalCodeInput = document.getElementById('postalCode');
+
+        // Initial tag count
+        let tagCount = 1;
+
+        // Store available tags for autocomplete
+        let availableTags = [];
+
+        // Store available cities for autocomplete
+        let availableCities = [];
+
+        // Fetch tags for autocomplete
+        const fetchTags = async (query) => {
+            try {
+                const response = await fetch(`/api/tagsList?query=\${encodeURIComponent(query)}`);
+                const tagsData = await response.json();
+                availableTags = tagsData.map(tag => tag.name);
+
+                // Initialize autocomplete on existing tag inputs
+                document.querySelectorAll('[id^=\"tags[\"]').forEach(input => {
+                    initializeTagAutocomplete(input);
                 });
-            
-            // Fetch cities for autocomplete
-            fetch('/api/citiesList')
-                .then(response => response.json())
-                .then(citiesData => {
-                    availableCities = citiesData;
-                    
-                    // Initialize city autocomplete
-                    initializeCityAutocomplete();
-                })
-                .catch(error => {
-                    console.error('Error fetching cities for autocomplete:', error);
-                });
-            
-            // Add tag button click handler
-            addTagButton.addEventListener('click', () => {
-                // Create new tag input group
-                const tagInputGroup = document.createElement('div');
-                tagInputGroup.className = 'tag-input-group';
-                
-                // Create tag input with unique ID based on tagCount
-                tagInputGroup.innerHTML = `
-                    <div class=\"form-row\">
-                        <div class=\"form-group tag-input\">
-                            <label for=\"tags[\${tagCount}]\">Compétence</label>
-                            <input type=\"text\" id=\"tags[\${tagCount}]\" name=\"tags[]\" placeholder=\"Ex: PHP, JavaScript, Réseau...\">
-                        </div>
-                        
-                        <div class=\"form-group optional-checkbox\">
-                            <div class=\"checkbox-container\" style=\"display: flex; align-items: center; margin-top: 2rem;\">
-                                <input type=\"checkbox\" id=\"optional_tags[\${tagCount}]\" name=\"optional_tags[\${tagCount}]\" value=\"1\">
-                                <span class=\"checkbox-label\">Optionnelle</span>
-                                <button type=\"button\" class=\"remove-tag\" style=\"margin-left: auto; background: none; border: none; color: var(--tertiary-color); cursor: pointer;\">
-                                    &times;
-                                </button>
-                            </div>
+            } catch (error) {
+                console.error('Error fetching tags for autocomplete:', error);
+            }
+        };
+
+        // Fetch cities for autocomplete
+        const fetchCities = async (query) => {
+            try {
+                const response = await fetch(`/api/citiesList?query=\${encodeURIComponent(query)}`);
+                const citiesData = await response.json();
+                availableCities = citiesData;
+
+                // Initialize city autocomplete
+                initializeCityAutocomplete();
+            } catch (error) {
+                console.error('Error fetching cities for autocomplete:', error);
+            }
+        };
+
+        // Initial fetch for tags and cities
+        fetchTags('');
+        fetchCities('');
+
+        // Add tag button click handler
+        addTagButton.addEventListener('click', () => {
+            // Create new tag input group
+            const tagInputGroup = document.createElement('div');
+            tagInputGroup.className = 'tag-input-group';
+
+            // Create tag input with unique ID based on tagCount
+            tagInputGroup.innerHTML = `
+                <div class=\"form-row\">
+                    <div class=\"form-group tag-input\">
+                        <label for=\"tags[\${tagCount}]\">Compétence</label>
+                        <input type=\"text\" id=\"tags[\${tagCount}]\" name=\"tags[]\" placeholder=\"Ex: PHP, JavaScript, Réseau...\">
+                    </div>
+
+                    <div class=\"form-group optional-checkbox\">
+                        <div class=\"checkbox-container\" style=\"display: flex; align-items: center; margin-top: 2rem;\">
+                            <input type=\"checkbox\" id=\"optional_tags[\${tagCount}]\" name=\"optional_tags[\${tagCount}]\" value=\"1\">
+                            <span class=\"checkbox-label\">Optionnelle</span>
+                            <button type=\"button\" class=\"remove-tag\" style=\"margin-left: auto; background: none; border: none; color: var(--tertiary-color); cursor: pointer;\">
+                                &times;
+                            </button>
                         </div>
                     </div>
-                `;
-                
-                // Add to container
-                tagsContainer.appendChild(tagInputGroup);
-                
-                // Add remove button handler
-                const removeButton = tagInputGroup.querySelector('.remove-tag');
-                removeButton.addEventListener('click', () => {
-                    tagInputGroup.remove();
-                });
-                
-                // Initialize autocomplete on the new tag input
-                const newInput = tagInputGroup.querySelector(`input[id=\"tags[\${tagCount}]\"]`);
-                initializeTagAutocomplete(newInput);
-                
-                // Increment tag count
-                tagCount++;
+                </div>
+            `;
+
+            // Add to container
+            tagsContainer.appendChild(tagInputGroup);
+
+            // Add remove button handler
+            const removeButton = tagInputGroup.querySelector('.remove-tag');
+            removeButton.addEventListener('click', () => {
+                tagInputGroup.remove();
             });
-            
-            // Function to initialize tag autocomplete
-            function initializeTagAutocomplete(inputElement) {
-                if (!inputElement || !availableTags.length) return;
-                
-                // Create a datalist element for autocomplete
-                const datalistId = `autocomplete-tag-\${Math.random().toString(36).substr(2, 9)}`;
-                let datalist = document.createElement('datalist');
-                datalist.id = datalistId;
-                
-                // Populate datalist with available tags
-                availableTags.forEach(tag => {
-                    const option = document.createElement('option');
-                    option.value = tag;
-                    datalist.appendChild(option);
-                });
-                
-                // Add datalist to the DOM
-                document.body.appendChild(datalist);
-                
-                // Connect input to datalist
-                inputElement.setAttribute('list', datalistId);
-            }
-            
-            // Function to initialize city autocomplete
-            function initializeCityAutocomplete() {
-                const cityInput = document.getElementById('city');
-                const postalCodeInput = document.getElementById('postalCode');
-                
-                if (!cityInput || !postalCodeInput || !availableCities.length) return;
-                
-                // Create datalist for city autocomplete
-                const cityDatalistId = 'autocomplete-city';
-                let cityDatalist = document.getElementById(cityDatalistId);
-                
-                if (!cityDatalist) {
-                    cityDatalist = document.createElement('datalist');
-                    cityDatalist.id = cityDatalistId;
-                    document.body.appendChild(cityDatalist);
-                }
-                
-                // Populate city datalist
-                const uniqueCities = [...new Set(availableCities.map(city => city.city_name))];
-                uniqueCities.forEach(cityName => {
-                    const option = document.createElement('option');
-                    option.value = cityName;
-                    cityDatalist.appendChild(option);
-                });
-                
-                // Connect city input to datalist
-                cityInput.setAttribute('list', cityDatalistId);
-                
-                // Create datalist for postal code autocomplete
-                const postalDatalistId = 'autocomplete-postal';
-                let postalDatalist = document.getElementById(postalDatalistId);
-                
-                if (!postalDatalist) {
-                    postalDatalist = document.createElement('datalist');
-                    postalDatalist.id = postalDatalistId;
-                    document.body.appendChild(postalDatalist);
-                }
-                
-                // Populate postal code datalist
-                const uniquePostalCodes = [...new Set(availableCities.map(city => city.city_postal))];
-                uniquePostalCodes.forEach(postalCode => {
-                    const option = document.createElement('option');
-                    option.value = postalCode;
-                    postalDatalist.appendChild(option);
-                });
-                
-                // Connect postal code input to datalist
-                postalCodeInput.setAttribute('list', postalDatalistId);
-                
-                // City input event listener
-                cityInput.addEventListener('input', () => {
-                    const selectedCity = cityInput.value;
-                    const matchedCity = availableCities.find(city => city.city_name === selectedCity);
-                    
-                    if (matchedCity) {
-                        postalCodeInput.value = matchedCity.city_postal;
-                    }
-                });
-                
-                // Postal code input event listener
-                postalCodeInput.addEventListener('input', () => {
-                    const selectedPostal = postalCodeInput.value;
-                    const matchedCity = availableCities.find(city => city.city_postal === selectedPostal);
-                    
-                    if (matchedCity) {
-                        cityInput.value = matchedCity.city_name;
-                    }
-                });
-            }
-            
-            // Admin-only code for enterprise dropdown
-            ";
-        // line 575
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 575)) {
-            // line 576
-            yield "                const enterpriseDropdown = document.getElementById('enterprise');
 
-                // Fetch enterprise list
-                fetch('/api/enterpriseList')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Clear existing options
-                        enterpriseDropdown.innerHTML = '<option value=\"\" disabled selected>Sélectionnez une entreprise</option>';
+            // Initialize autocomplete on the new tag input
+            const newInput = tagInputGroup.querySelector(`input[id=\"tags[\${tagCount}]\"]`);
+            initializeTagAutocomplete(newInput);
 
-                        // Populate dropdown with enterprise data
-                        data.forEach(enterprise => {
-                            const option = document.createElement('option');
-                            option.value = enterprise.enterprise_id;
-                            option.textContent = `\${enterprise.enterprise_name} (\${enterprise.enterprise_id})`;
-                            enterpriseDropdown.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching enterprise list:', error);
-                        enterpriseDropdown.innerHTML = '<option value=\"\" disabled>Erreur lors du chargement des entreprises</option>';
-                    });
-            ";
+            // Increment tag count
+            tagCount++;
+        });
+
+        // Function to initialize tag autocomplete
+        function initializeTagAutocomplete(inputElement) {
+            if (!inputElement || !availableTags.length) return;
+
+            // Create a datalist element for autocomplete
+            const datalistId = `autocomplete-tag-\${Math.random().toString(36).substr(2, 9)}`;
+            let datalist = document.createElement('datalist');
+            datalist.id = datalistId;
+
+            // Populate datalist with available tags
+            availableTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                datalist.appendChild(option);
+            });
+
+            // Add datalist to the DOM
+            document.body.appendChild(datalist);
+
+            // Connect input to datalist
+            inputElement.setAttribute('list', datalistId);
+
+            // Add input event listener for dynamic fetching
+            inputElement.addEventListener('input', (event) => {
+                fetchTags(event.target.value);
+            });
         }
-        // line 598
-        yield "        });
-    </script>
+
+        // Function to initialize city autocomplete
+        function initializeCityAutocomplete() {
+            if (!cityInput || !postalCodeInput || !availableCities.length) return;
+
+            // Create datalist for city autocomplete
+            const cityDatalistId = 'autocomplete-city';
+            let cityDatalist = document.getElementById(cityDatalistId);
+
+            if (!cityDatalist) {
+                cityDatalist = document.createElement('datalist');
+                cityDatalist.id = cityDatalistId;
+                document.body.appendChild(cityDatalist);
+            }
+
+            // Populate city datalist
+            const uniqueCities = [...new Set(availableCities.map(city => city.city_name))];
+            uniqueCities.forEach(cityName => {
+                const option = document.createElement('option');
+                option.value = cityName;
+                cityDatalist.appendChild(option);
+            });
+
+            // Connect city input to datalist
+            cityInput.setAttribute('list', cityDatalistId);
+
+            // Create datalist for postal code autocomplete
+            const postalDatalistId = 'autocomplete-postal';
+            let postalDatalist = document.getElementById(postalDatalistId);
+
+            if (!postalDatalist) {
+                postalDatalist = document.createElement('datalist');
+                postalDatalist.id = postalDatalistId;
+                document.body.appendChild(postalDatalist);
+            }
+
+            // Populate postal code datalist
+            const uniquePostalCodes = [...new Set(availableCities.map(city => city.city_postal))];
+            uniquePostalCodes.forEach(postalCode => {
+                const option = document.createElement('option');
+                option.value = postalCode;
+                postalDatalist.appendChild(option);
+            });
+
+            // Connect postal code input to datalist
+            postalCodeInput.setAttribute('list', postalDatalistId);
+
+            // City input event listener
+            cityInput.addEventListener('input', () => {
+                const selectedCity = cityInput.value;
+                const matchedCity = availableCities.find(city => city.city_name === selectedCity);
+
+                if (matchedCity) {
+                    postalCodeInput.value = matchedCity.city_postal;
+                }
+            });
+
+            // Postal code input event listener
+            postalCodeInput.addEventListener('input', () => {
+                const selectedPostal = postalCodeInput.value;
+                const matchedCity = availableCities.find(city => city.city_postal === selectedPostal);
+
+                if (matchedCity) {
+                    cityInput.value = matchedCity.city_name;
+                }
+            });
+
+            // Add input event listener for dynamic fetching
+            cityInput.addEventListener('input', (event) => {
+                fetchCities(event.target.value);
+            });
+        }
+
+        // Admin-only code for enterprise dropdown
+        ";
+        // line 589
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 589)) {
+            // line 590
+            yield "            const enterpriseDropdown = document.getElementById('enterprise');
+
+            // Fetch enterprise list
+            fetch('/api/enterpriseList')
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing options
+                    enterpriseDropdown.innerHTML = '<option value=\"\" disabled selected>Sélectionnez une entreprise</option>';
+
+                    // Populate dropdown with enterprise data
+                    data.forEach(enterprise => {
+                        const option = document.createElement('option');
+                        option.value = enterprise.enterprise_id;
+                        option.textContent = `\${enterprise.enterprise_name} (\${enterprise.enterprise_id})`;
+                        enterpriseDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching enterprise list:', error);
+                    enterpriseDropdown.innerHTML = '<option value=\"\" disabled>Erreur lors du chargement des entreprises</option>';
+                });
+        ";
+        }
+        // line 612
+        yield "    });
+</script>
+
 ";
         yield from [];
     }
@@ -812,7 +827,7 @@ class __TwigTemplate_312ad8a652d7e59b64af5cf5bfb356ff extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  788 => 598,  764 => 576,  762 => 575,  576 => 393,  569 => 392,  315 => 143,  308 => 142,  290 => 128,  269 => 112,  261 => 107,  245 => 94,  237 => 89,  220 => 77,  214 => 76,  208 => 75,  199 => 69,  189 => 62,  178 => 56,  172 => 55,  166 => 54,  160 => 53,  154 => 52,  148 => 51,  142 => 50,  129 => 42,  123 => 41,  117 => 40,  108 => 34,  103 => 31,  94 => 24,  92 => 23,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
+        return array (  802 => 612,  778 => 590,  776 => 589,  576 => 393,  569 => 392,  315 => 143,  308 => 142,  290 => 128,  269 => 112,  261 => 107,  245 => 94,  237 => 89,  220 => 77,  214 => 76,  208 => 75,  199 => 69,  189 => 62,  178 => 56,  172 => 55,  166 => 54,  160 => 53,  154 => 52,  148 => 51,  142 => 50,  129 => 42,  123 => 41,  117 => 40,  108 => 34,  103 => 31,  94 => 24,  92 => 23,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1210,212 +1225,227 @@ class __TwigTemplate_312ad8a652d7e59b64af5cf5bfb356ff extends Template
 
 {% block javascripts %}
     {{ parent() }}
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get DOM elements
-            const addTagButton = document.getElementById('add-tag');
-            const tagsContainer = document.getElementById('tags-container');
-            
-            // Initial tag count
-            let tagCount = 1;
-            
-            // Store available tags for autocomplete
-            let availableTags = [];
-            
-            // Store available cities for autocomplete
-            let availableCities = [];
-            
-            // Fetch tags for autocomplete
-            fetch('/api/tagsList')
-                .then(response => response.json())
-                .then(tagsData => {
-                    // Store tags data for autocomplete
-                    availableTags = tagsData.map(tag => tag.name);
-                    
-                    // Initialize autocomplete on existing tag inputs
-                    document.querySelectorAll('[id^=\"tags[\"]').forEach(input => {
-                        initializeTagAutocomplete(input);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching tags for autocomplete:', error);
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get DOM elements
+        const addTagButton = document.getElementById('add-tag');
+        const tagsContainer = document.getElementById('tags-container');
+        const cityInput = document.getElementById('city');
+        const postalCodeInput = document.getElementById('postalCode');
+
+        // Initial tag count
+        let tagCount = 1;
+
+        // Store available tags for autocomplete
+        let availableTags = [];
+
+        // Store available cities for autocomplete
+        let availableCities = [];
+
+        // Fetch tags for autocomplete
+        const fetchTags = async (query) => {
+            try {
+                const response = await fetch(`/api/tagsList?query=\${encodeURIComponent(query)}`);
+                const tagsData = await response.json();
+                availableTags = tagsData.map(tag => tag.name);
+
+                // Initialize autocomplete on existing tag inputs
+                document.querySelectorAll('[id^=\"tags[\"]').forEach(input => {
+                    initializeTagAutocomplete(input);
                 });
-            
-            // Fetch cities for autocomplete
-            fetch('/api/citiesList')
-                .then(response => response.json())
-                .then(citiesData => {
-                    availableCities = citiesData;
-                    
-                    // Initialize city autocomplete
-                    initializeCityAutocomplete();
-                })
-                .catch(error => {
-                    console.error('Error fetching cities for autocomplete:', error);
-                });
-            
-            // Add tag button click handler
-            addTagButton.addEventListener('click', () => {
-                // Create new tag input group
-                const tagInputGroup = document.createElement('div');
-                tagInputGroup.className = 'tag-input-group';
-                
-                // Create tag input with unique ID based on tagCount
-                tagInputGroup.innerHTML = `
-                    <div class=\"form-row\">
-                        <div class=\"form-group tag-input\">
-                            <label for=\"tags[\${tagCount}]\">Compétence</label>
-                            <input type=\"text\" id=\"tags[\${tagCount}]\" name=\"tags[]\" placeholder=\"Ex: PHP, JavaScript, Réseau...\">
-                        </div>
-                        
-                        <div class=\"form-group optional-checkbox\">
-                            <div class=\"checkbox-container\" style=\"display: flex; align-items: center; margin-top: 2rem;\">
-                                <input type=\"checkbox\" id=\"optional_tags[\${tagCount}]\" name=\"optional_tags[\${tagCount}]\" value=\"1\">
-                                <span class=\"checkbox-label\">Optionnelle</span>
-                                <button type=\"button\" class=\"remove-tag\" style=\"margin-left: auto; background: none; border: none; color: var(--tertiary-color); cursor: pointer;\">
-                                    &times;
-                                </button>
-                            </div>
+            } catch (error) {
+                console.error('Error fetching tags for autocomplete:', error);
+            }
+        };
+
+        // Fetch cities for autocomplete
+        const fetchCities = async (query) => {
+            try {
+                const response = await fetch(`/api/citiesList?query=\${encodeURIComponent(query)}`);
+                const citiesData = await response.json();
+                availableCities = citiesData;
+
+                // Initialize city autocomplete
+                initializeCityAutocomplete();
+            } catch (error) {
+                console.error('Error fetching cities for autocomplete:', error);
+            }
+        };
+
+        // Initial fetch for tags and cities
+        fetchTags('');
+        fetchCities('');
+
+        // Add tag button click handler
+        addTagButton.addEventListener('click', () => {
+            // Create new tag input group
+            const tagInputGroup = document.createElement('div');
+            tagInputGroup.className = 'tag-input-group';
+
+            // Create tag input with unique ID based on tagCount
+            tagInputGroup.innerHTML = `
+                <div class=\"form-row\">
+                    <div class=\"form-group tag-input\">
+                        <label for=\"tags[\${tagCount}]\">Compétence</label>
+                        <input type=\"text\" id=\"tags[\${tagCount}]\" name=\"tags[]\" placeholder=\"Ex: PHP, JavaScript, Réseau...\">
+                    </div>
+
+                    <div class=\"form-group optional-checkbox\">
+                        <div class=\"checkbox-container\" style=\"display: flex; align-items: center; margin-top: 2rem;\">
+                            <input type=\"checkbox\" id=\"optional_tags[\${tagCount}]\" name=\"optional_tags[\${tagCount}]\" value=\"1\">
+                            <span class=\"checkbox-label\">Optionnelle</span>
+                            <button type=\"button\" class=\"remove-tag\" style=\"margin-left: auto; background: none; border: none; color: var(--tertiary-color); cursor: pointer;\">
+                                &times;
+                            </button>
                         </div>
                     </div>
-                `;
-                
-                // Add to container
-                tagsContainer.appendChild(tagInputGroup);
-                
-                // Add remove button handler
-                const removeButton = tagInputGroup.querySelector('.remove-tag');
-                removeButton.addEventListener('click', () => {
-                    tagInputGroup.remove();
-                });
-                
-                // Initialize autocomplete on the new tag input
-                const newInput = tagInputGroup.querySelector(`input[id=\"tags[\${tagCount}]\"]`);
-                initializeTagAutocomplete(newInput);
-                
-                // Increment tag count
-                tagCount++;
+                </div>
+            `;
+
+            // Add to container
+            tagsContainer.appendChild(tagInputGroup);
+
+            // Add remove button handler
+            const removeButton = tagInputGroup.querySelector('.remove-tag');
+            removeButton.addEventListener('click', () => {
+                tagInputGroup.remove();
             });
-            
-            // Function to initialize tag autocomplete
-            function initializeTagAutocomplete(inputElement) {
-                if (!inputElement || !availableTags.length) return;
-                
-                // Create a datalist element for autocomplete
-                const datalistId = `autocomplete-tag-\${Math.random().toString(36).substr(2, 9)}`;
-                let datalist = document.createElement('datalist');
-                datalist.id = datalistId;
-                
-                // Populate datalist with available tags
-                availableTags.forEach(tag => {
-                    const option = document.createElement('option');
-                    option.value = tag;
-                    datalist.appendChild(option);
-                });
-                
-                // Add datalist to the DOM
-                document.body.appendChild(datalist);
-                
-                // Connect input to datalist
-                inputElement.setAttribute('list', datalistId);
-            }
-            
-            // Function to initialize city autocomplete
-            function initializeCityAutocomplete() {
-                const cityInput = document.getElementById('city');
-                const postalCodeInput = document.getElementById('postalCode');
-                
-                if (!cityInput || !postalCodeInput || !availableCities.length) return;
-                
-                // Create datalist for city autocomplete
-                const cityDatalistId = 'autocomplete-city';
-                let cityDatalist = document.getElementById(cityDatalistId);
-                
-                if (!cityDatalist) {
-                    cityDatalist = document.createElement('datalist');
-                    cityDatalist.id = cityDatalistId;
-                    document.body.appendChild(cityDatalist);
-                }
-                
-                // Populate city datalist
-                const uniqueCities = [...new Set(availableCities.map(city => city.city_name))];
-                uniqueCities.forEach(cityName => {
-                    const option = document.createElement('option');
-                    option.value = cityName;
-                    cityDatalist.appendChild(option);
-                });
-                
-                // Connect city input to datalist
-                cityInput.setAttribute('list', cityDatalistId);
-                
-                // Create datalist for postal code autocomplete
-                const postalDatalistId = 'autocomplete-postal';
-                let postalDatalist = document.getElementById(postalDatalistId);
-                
-                if (!postalDatalist) {
-                    postalDatalist = document.createElement('datalist');
-                    postalDatalist.id = postalDatalistId;
-                    document.body.appendChild(postalDatalist);
-                }
-                
-                // Populate postal code datalist
-                const uniquePostalCodes = [...new Set(availableCities.map(city => city.city_postal))];
-                uniquePostalCodes.forEach(postalCode => {
-                    const option = document.createElement('option');
-                    option.value = postalCode;
-                    postalDatalist.appendChild(option);
-                });
-                
-                // Connect postal code input to datalist
-                postalCodeInput.setAttribute('list', postalDatalistId);
-                
-                // City input event listener
-                cityInput.addEventListener('input', () => {
-                    const selectedCity = cityInput.value;
-                    const matchedCity = availableCities.find(city => city.city_name === selectedCity);
-                    
-                    if (matchedCity) {
-                        postalCodeInput.value = matchedCity.city_postal;
-                    }
-                });
-                
-                // Postal code input event listener
-                postalCodeInput.addEventListener('input', () => {
-                    const selectedPostal = postalCodeInput.value;
-                    const matchedCity = availableCities.find(city => city.city_postal === selectedPostal);
-                    
-                    if (matchedCity) {
-                        cityInput.value = matchedCity.city_name;
-                    }
-                });
-            }
-            
-            // Admin-only code for enterprise dropdown
-            {% if request.hasPermission('perm_admin') %}
-                const enterpriseDropdown = document.getElementById('enterprise');
 
-                // Fetch enterprise list
-                fetch('/api/enterpriseList')
-                    .then(response => response.json())
-                    .then(data => {
-                        // Clear existing options
-                        enterpriseDropdown.innerHTML = '<option value=\"\" disabled selected>Sélectionnez une entreprise</option>';
+            // Initialize autocomplete on the new tag input
+            const newInput = tagInputGroup.querySelector(`input[id=\"tags[\${tagCount}]\"]`);
+            initializeTagAutocomplete(newInput);
 
-                        // Populate dropdown with enterprise data
-                        data.forEach(enterprise => {
-                            const option = document.createElement('option');
-                            option.value = enterprise.enterprise_id;
-                            option.textContent = `\${enterprise.enterprise_name} (\${enterprise.enterprise_id})`;
-                            enterpriseDropdown.appendChild(option);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching enterprise list:', error);
-                        enterpriseDropdown.innerHTML = '<option value=\"\" disabled>Erreur lors du chargement des entreprises</option>';
-                    });
-            {% endif %}
+            // Increment tag count
+            tagCount++;
         });
-    </script>
+
+        // Function to initialize tag autocomplete
+        function initializeTagAutocomplete(inputElement) {
+            if (!inputElement || !availableTags.length) return;
+
+            // Create a datalist element for autocomplete
+            const datalistId = `autocomplete-tag-\${Math.random().toString(36).substr(2, 9)}`;
+            let datalist = document.createElement('datalist');
+            datalist.id = datalistId;
+
+            // Populate datalist with available tags
+            availableTags.forEach(tag => {
+                const option = document.createElement('option');
+                option.value = tag;
+                datalist.appendChild(option);
+            });
+
+            // Add datalist to the DOM
+            document.body.appendChild(datalist);
+
+            // Connect input to datalist
+            inputElement.setAttribute('list', datalistId);
+
+            // Add input event listener for dynamic fetching
+            inputElement.addEventListener('input', (event) => {
+                fetchTags(event.target.value);
+            });
+        }
+
+        // Function to initialize city autocomplete
+        function initializeCityAutocomplete() {
+            if (!cityInput || !postalCodeInput || !availableCities.length) return;
+
+            // Create datalist for city autocomplete
+            const cityDatalistId = 'autocomplete-city';
+            let cityDatalist = document.getElementById(cityDatalistId);
+
+            if (!cityDatalist) {
+                cityDatalist = document.createElement('datalist');
+                cityDatalist.id = cityDatalistId;
+                document.body.appendChild(cityDatalist);
+            }
+
+            // Populate city datalist
+            const uniqueCities = [...new Set(availableCities.map(city => city.city_name))];
+            uniqueCities.forEach(cityName => {
+                const option = document.createElement('option');
+                option.value = cityName;
+                cityDatalist.appendChild(option);
+            });
+
+            // Connect city input to datalist
+            cityInput.setAttribute('list', cityDatalistId);
+
+            // Create datalist for postal code autocomplete
+            const postalDatalistId = 'autocomplete-postal';
+            let postalDatalist = document.getElementById(postalDatalistId);
+
+            if (!postalDatalist) {
+                postalDatalist = document.createElement('datalist');
+                postalDatalist.id = postalDatalistId;
+                document.body.appendChild(postalDatalist);
+            }
+
+            // Populate postal code datalist
+            const uniquePostalCodes = [...new Set(availableCities.map(city => city.city_postal))];
+            uniquePostalCodes.forEach(postalCode => {
+                const option = document.createElement('option');
+                option.value = postalCode;
+                postalDatalist.appendChild(option);
+            });
+
+            // Connect postal code input to datalist
+            postalCodeInput.setAttribute('list', postalDatalistId);
+
+            // City input event listener
+            cityInput.addEventListener('input', () => {
+                const selectedCity = cityInput.value;
+                const matchedCity = availableCities.find(city => city.city_name === selectedCity);
+
+                if (matchedCity) {
+                    postalCodeInput.value = matchedCity.city_postal;
+                }
+            });
+
+            // Postal code input event listener
+            postalCodeInput.addEventListener('input', () => {
+                const selectedPostal = postalCodeInput.value;
+                const matchedCity = availableCities.find(city => city.city_postal === selectedPostal);
+
+                if (matchedCity) {
+                    cityInput.value = matchedCity.city_name;
+                }
+            });
+
+            // Add input event listener for dynamic fetching
+            cityInput.addEventListener('input', (event) => {
+                fetchCities(event.target.value);
+            });
+        }
+
+        // Admin-only code for enterprise dropdown
+        {% if request.hasPermission('perm_admin') %}
+            const enterpriseDropdown = document.getElementById('enterprise');
+
+            // Fetch enterprise list
+            fetch('/api/enterpriseList')
+                .then(response => response.json())
+                .then(data => {
+                    // Clear existing options
+                    enterpriseDropdown.innerHTML = '<option value=\"\" disabled selected>Sélectionnez une entreprise</option>';
+
+                    // Populate dropdown with enterprise data
+                    data.forEach(enterprise => {
+                        const option = document.createElement('option');
+                        option.value = enterprise.enterprise_id;
+                        option.textContent = `\${enterprise.enterprise_name} (\${enterprise.enterprise_id})`;
+                        enterpriseDropdown.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching enterprise list:', error);
+                    enterpriseDropdown.innerHTML = '<option value=\"\" disabled>Erreur lors du chargement des entreprises</option>';
+                });
+        {% endif %}
+    });
+</script>
+
 {% endblock %}", "offers/create.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\offers\\create.html.twig");
     }
 }

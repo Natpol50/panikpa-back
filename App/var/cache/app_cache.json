@@ -1,8 +1,4 @@
 {
-    "offer_applicants_count_7": {
-        "value": 0,
-        "expires_at": 1743718847
-    },
     "offer_applicants_count_9": {
         "value": 0,
         "expires_at": 1743719147
@@ -48,6 +44,24 @@
         },
         "expires_at": 1743723274
     },
+    "enterprise_average_E01": {
+        "value": {
+            "average_rating": 4,
+            "comment_count": 1
+        },
+        "expires_at": 1743727867
+    },
+    "enterprise_average_E05": {
+        "value": {
+            "average_rating": null,
+            "comment_count": 0
+        },
+        "expires_at": 1743728275
+    },
+    "offer_applicants_count_7": {
+        "value": 0,
+        "expires_at": 1743728903
+    },
     "role_permissions_4": {
         "value": {
             "id_acctype": 4,
@@ -76,21 +90,7 @@
             "perm_delete_admin": 0,
             "perm_admin": 0
         },
-        "expires_at": 1743725653
-    },
-    "enterprise_average_E01": {
-        "value": {
-            "average_rating": 4,
-            "comment_count": 1
-        },
-        "expires_at": 1743727867
-    },
-    "enterprise_average_E05": {
-        "value": {
-            "average_rating": null,
-            "comment_count": 0
-        },
-        "expires_at": 1743728275
+        "expires_at": 1743731280
     },
     "role_permissions_2": {
         "value": {
@@ -120,6 +120,40 @@
             "perm_delete_admin": 0,
             "perm_admin": 1
         },
-        "expires_at": 1743728342
+        "expires_at": 1743731960
+    },
+    "role_permissions_5": {
+        "value": {
+            "id_acctype": 5,
+            "acctype_name": "Other",
+            "perm_company_creation": 0,
+            "perm_modify_comp_info": 1,
+            "perm_grade_company": 1,
+            "perm_create_offer": 1,
+            "perm_modify_offer": 1,
+            "perm_delete_offer": 1,
+            "perm_delete_tutor": 0,
+            "perm_search_tutor": 0,
+            "perm_modify_tutor": 0,
+            "perm_search_student": 0,
+            "perm_create_student": 0,
+            "perm_modify_student": 0,
+            "perm_delete_student": 0,
+            "perm_consult_students_stats": 0,
+            "perm_consult_students_applications": 0,
+            "perm_wishlist": 1,
+            "perm_offer_apply": 0,
+            "perm_consult_offer_applications": 1,
+            "perm_reply_offer_applications": 1,
+            "perm_create_admin": 0,
+            "perm_modify_admin": 0,
+            "perm_delete_admin": 0,
+            "perm_admin": 0
+        },
+        "expires_at": 1743733231
+    },
+    "offer_applicants_count_6": {
+        "value": 0,
+        "expires_at": 1743733256
     }
 }

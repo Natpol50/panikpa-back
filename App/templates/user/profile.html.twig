@@ -566,6 +566,107 @@
             cursor: pointer;
             font-weight: bold;
         }
+        /* Tags management styles */
+        .tags-container {
+            margin-top: 1rem;
+        }
+
+        .tags-input-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tags-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tags-input-wrapper input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            background-color: white;
+            font-size: 1rem;
+        }
+
+        .btn-add-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .tags-autocomplete {
+            position: absolute;
+            width: calc(100% - 120px);
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid var(--real-grey);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .autocomplete-item:hover, .autocomplete-item.selected {
+            background-color: var(--tag-background);
+        }
+
+        .user-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            min-height: 50px;
+        }
+
+        .user-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--tag-background);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            gap: 0.5rem;
+        }
+
+        .user-tag .remove-tag {
+            cursor: pointer;
+            color: var(--real-grey);
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .user-tag .remove-tag:hover {
+            background-color: var(--real-grey);
+            color: white;
+        }
+
+        .loading-tags {
+            color: var(--real-grey);
+            font-style: italic;
+        }
+
+        .empty-tags {
+            color: var(--real-grey);
+            font-style: italic;
+        }
     </style>
 {% endblock %}
 
@@ -663,6 +764,25 @@
                         <button type="submit" class="btn-save">Enregistrer les modifications</button>
                     </div>
                 </form>
+
+                <div class="form-section">
+                    <h3>Mes compétences et intérêts</h3>
+                    
+                    <div class="tags-container">
+                        <div class="tags-input-container">
+                            <label for="tagInput">Ajouter une compétence ou un centre d'intérêt</label>
+                            <div class="tags-input-wrapper">
+                                <input type="text" id="tagInput" placeholder="Exemple: PHP, JavaScript, UX Design...">
+                                <button type="button" id="addTagBtn" class="btn-add-tag">Ajouter</button>
+                            </div>
+                            <div id="tagsAutocomplete" class="tags-autocomplete"></div>
+                        </div>
+                        
+                        <div class="user-tags-list" id="userTagsList">
+                            <div class="loading-tags">Chargement des compétences...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Password Tab -->
@@ -770,236 +890,237 @@
     {{ parent() }}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching functionality
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    // Show corresponding content
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('Tab button clicked');
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
             });
-            
-            // Profile picture upload functionality
-            const uploadOverlay = document.getElementById('uploadOverlay');
-            const uploadModal = document.getElementById('uploadModal');
-            const closeModalButton = document.querySelector('.close-modal');
-            const cancelUploadButton = document.getElementById('cancelUpload');
-            const profilePictureInput = document.getElementById('profilePictureInput');
-            const cropperImage = document.getElementById('cropperImage');
-            const cropButton = document.getElementById('cropImage');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            let cropper;
-            
-            // Open modal when clicking the upload overlay
-            uploadOverlay.addEventListener('click', function() {
-                uploadModal.style.display = 'block';
-            });
-            
-            // Close modal functions
-            function closeModal() {
-                uploadModal.style.display = 'none';
-                
-                // Destroy cropper if it exists
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                }
-                
-                // Reset file input
-                profilePictureInput.value = '';
-                cropperImage.style.display = 'none';
-                cropButton.disabled = true;
+        });
+
+        // Profile picture upload functionality
+        const uploadOverlay = document.getElementById('uploadOverlay');
+        const uploadModal = document.getElementById('uploadModal');
+        const closeModalButton = document.querySelector('.close-modal');
+        const cancelUploadButton = document.getElementById('cancelUpload');
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const cropperImage = document.getElementById('cropperImage');
+        const cropButton = document.getElementById('cropImage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        let cropper;
+
+        // Open modal when clicking the upload overlay
+        uploadOverlay.addEventListener('click', function() {
+            console.log('Upload overlay clicked');
+            uploadModal.style.display = 'block';
+        });
+
+        // Close modal functions
+        function closeModal() {
+            uploadModal.style.display = 'none';
+
+            // Destroy cropper if it exists
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
             }
-            
-            closeModalButton.addEventListener('click', closeModal);
-            cancelUploadButton.addEventListener('click', closeModal);
-            
-            // Close modal when clicking outside content
-            window.addEventListener('click', function(event) {
-                if (event.target === uploadModal) {
-                    closeModal();
-                }
-            });
-            
-            // Handle file selection
-            profilePictureInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
-                    
-                    // Check file type
-                    if (!file.type.match('image.*')) {
-                        alert('Veuillez sélectionner une image');
-                        return;
-                    }
-                    
-                    // Check file size (5MB max)
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('L\'image est trop volumineuse. Maximum 5 Mo.');
-                        return;
-                    }
-                    
-                    // Create object URL for the file
-                    const URL = window.URL || window.webkitURL;
-                    const imageUrl = URL.createObjectURL(file);
-                    
-                    // Display the image and initialize cropper
-                    cropperImage.src = imageUrl;
-                    cropperImage.style.display = 'block';
-                    cropButton.disabled = false;
-                    
-                    // Destroy previous cropper if it exists
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    // Initialize Cropper.js with a 1:1 aspect ratio
-                    cropper = new Cropper(cropperImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.8,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false
-                    });
-                }
-            });
-            
-            // Handle crop and upload
-            cropButton.addEventListener('click', async function() {
-                if (!cropper) {
+
+            // Reset file input
+            profilePictureInput.value = '';
+            cropperImage.style.display = 'none';
+            cropButton.disabled = true;
+        }
+
+        closeModalButton.addEventListener('click', closeModal);
+        cancelUploadButton.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside content
+        window.addEventListener('click', function(event) {
+            if (event.target === uploadModal) {
+                closeModal();
+            }
+        });
+
+        // Handle file selection
+        profilePictureInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert('Veuillez sélectionner une image');
                     return;
                 }
-                
-                // Show loading overlay
-                loadingOverlay.style.display = 'flex';
-                
-                try {
-                    // Get cropped canvas
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 300,
-                        fillColor: '#fff',
-                        imageSmoothingEnabled: true,
-                        imageSmoothingQuality: 'high'
-                    });
-                    
-                    if (!canvas) {
-                        throw new Error('Failed to crop image');
-                    }
-                    
-                    // Get crop data for server
-                    const cropData = cropper.getData(true); // true = rounded values
-                    
-                    // Convert canvas to blob
-                    const blob = await new Promise(resolve => {
-                        canvas.toBlob(resolve, 'image/png');
-                    });
-                    
-                    if (!blob) {
-                        throw new Error('Failed to convert canvas to blob');
-                    }
-                    
-                    // Create FormData
-                    const formData = new FormData();
-                    formData.append('profilePicture', blob, 'profile.png');
-                    formData.append('cropX', cropData.x);
-                    formData.append('cropY', cropData.y);
-                    formData.append('cropWidth', cropData.width);
-                    formData.append('cropHeight', cropData.height);
-                    
-                    // Send to server
-                    const response = await fetch('/upload-profile-picture', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Update profile picture
-                        const profileImage = document.getElementById('profileImage');
-                        const profilePlaceholder = document.getElementById('profilePlaceholder');
-                        
-                        if (profileImage) {
-                            profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
-                        } else {
-                            // Create new image if placeholder is showing
-                            const newImage = document.createElement('img');
-                            newImage.src = data.url + '?t=' + new Date().getTime();
-                            newImage.alt = 'Profile Picture';
-                            newImage.className = 'profile-picture';
-                            newImage.id = 'profileImage';
-                            
-                            const container = document.querySelector('.profile-picture-container');
-                            container.innerHTML = '';
-                            container.appendChild(newImage);
-                            container.appendChild(uploadOverlay);
-                        }
-                        
-                        // Show success notification
-                        if (typeof addNotification === 'function') {
-                            addNotification(data.message, 'success');
-                        } else {
-                            alert(data.message);
-                        }
-                        
-                        // Close modal
-                        closeModal();
+
+                // Check file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('L\'image est trop volumineuse. Maximum 5 Mo.');
+                    return;
+                }
+
+                // Create object URL for the file
+                const URL = window.URL || window.webkitURL;
+                const imageUrl = URL.createObjectURL(file);
+
+                // Display the image and initialize cropper
+                cropperImage.src = imageUrl;
+                cropperImage.style.display = 'block';
+                cropButton.disabled = false;
+
+                // Destroy previous cropper if it exists
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                // Initialize Cropper.js with a 1:1 aspect ratio
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.8,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false
+                });
+            }
+        });
+
+        // Handle crop and upload
+        cropButton.addEventListener('click', async function() {
+            if (!cropper) {
+                return;
+            }
+
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+
+            try {
+                // Get cropped canvas
+                const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                if (!canvas) {
+                    throw new Error('Failed to crop image');
+                }
+
+                // Get crop data for server
+                const cropData = cropper.getData(true); // true = rounded values
+
+                // Convert canvas to blob
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+
+                if (!blob) {
+                    throw new Error('Failed to convert canvas to blob');
+                }
+
+                // Create FormData
+                const formData = new FormData();
+                formData.append('profilePicture', blob, 'profile.png');
+                formData.append('cropX', cropData.x);
+                formData.append('cropY', cropData.y);
+                formData.append('cropWidth', cropData.width);
+                formData.append('cropHeight', cropData.height);
+
+                // Send to server
+                const response = await fetch('/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update profile picture
+                    const profileImage = document.getElementById('profileImage');
+                    const profilePlaceholder = document.getElementById('profilePlaceholder');
+
+                    if (profileImage) {
+                        profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
                     } else {
-                        throw new Error(data.message || 'Failed to upload profile picture');
+                        // Create new image if placeholder is showing
+                        const newImage = document.createElement('img');
+                        newImage.src = data.url + '?t=' + new Date().getTime();
+                        newImage.alt = 'Profile Picture';
+                        newImage.className = 'profile-picture';
+                        newImage.id = 'profileImage';
+
+                        const container = document.querySelector('.profile-picture-container');
+                        container.innerHTML = '';
+                        container.appendChild(newImage);
+                        container.appendChild(uploadOverlay);
                     }
-                } catch (error) {
-                    console.error('Error uploading profile picture:', error);
-                    
-                    // Show error notification
+
+                    // Show success notification
                     if (typeof addNotification === 'function') {
-                        addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                        addNotification(data.message, 'success');
                     } else {
-                        alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                        alert(data.message);
                     }
-                } finally {
-                    // Hide loading overlay
-                    loadingOverlay.style.display = 'none';
-                }
-            });
-            
-            // Password validation
-            const newPasswordInput = document.getElementById('newPassword');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            
-            confirmPasswordInput?.addEventListener('input', function() {
-                if (newPasswordInput.value !== this.value) {
-                    this.setCustomValidity('Les mots de passe ne correspondent pas');
+
+                    // Close modal
+                    closeModal();
                 } else {
-                    this.setCustomValidity('');
+                    throw new Error(data.message || 'Failed to upload profile picture');
                 }
-            });
-            
-            newPasswordInput?.addEventListener('input', function() {
-                if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
-                    confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+            } catch (error) {
+                console.error('Error uploading profile picture:', error);
+
+                // Show error notification
+                if (typeof addNotification === 'function') {
+                    addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
                 } else {
-                    confirmPasswordInput.setCustomValidity('');
+                    alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
                 }
-            });
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // Password validation
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        confirmPasswordInput?.addEventListener('input', function() {
+            if (newPasswordInput.value !== this.value) {
+                this.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        newPasswordInput?.addEventListener('input', function() {
+            if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
+                confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                confirmPasswordInput.setCustomValidity('');
+            }
         });
 
         // Delete account functionality
@@ -1010,6 +1131,7 @@
 
         // Open confirmation modal when delete button is clicked
         deleteAccountBtn?.addEventListener('click', function() {
+            console.log('Delete button clicked');
             confirmDeleteModal.style.display = 'block';
         });
 
@@ -1029,10 +1151,10 @@
         confirmDeleteBtn?.addEventListener('click', async function() {
             // Show loading overlay
             loadingOverlay.style.display = 'flex';
-            
+
             try {
                 const userId = deleteAccountBtn.getAttribute('data-userid');
-                
+
                 // Send delete request to server
                 const response = await fetch(`/delete-user/${userId}`, {
                     method: 'POST',
@@ -1041,9 +1163,9 @@
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     // Show success notification
                     if (typeof addNotification === 'function') {
@@ -1051,7 +1173,7 @@
                     } else {
                         alert(data.message);
                     }
-                    
+
                     // Redirect if needed
                     if (data.redirect) {
                         setTimeout(() => {
@@ -1063,7 +1185,7 @@
                 }
             } catch (error) {
                 console.error('Error deleting account:', error);
-                
+
                 // Show error notification
                 if (typeof addNotification === 'function') {
                     addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
@@ -1073,10 +1195,241 @@
             } finally {
                 // Hide loading overlay
                 loadingOverlay.style.display = 'none';
-                
+
                 // Close modal
                 confirmDeleteModal.style.display = 'none';
             }
         });
-    </script>
+
+        // User tags management
+        const tagInput = document.getElementById('tagInput');
+        const addTagBtn = document.getElementById('addTagBtn');
+        const userTagsList = document.getElementById('userTagsList');
+        const tagsAutocomplete = document.getElementById('tagsAutocomplete');
+
+        let tags = [];
+        let autocompleteItems = [];
+        let selectedAutocompleteIndex = -1;
+
+        // Load user tags on page load
+        async function loadUserTags() {
+            try {
+                const response = await fetch('/API/user/tags');
+                const data = await response.json();
+
+                if (data.success) {
+                    tags = data.tags.map(tag => ({
+                        id: tag.id_tag,
+                        name: tag.tag_name
+                    }));
+                    renderUserTags();
+                } else {
+                    throw new Error(data.message || 'Failed to load tags');
+                }
+            } catch (error) {
+                console.error('Error loading user tags:', error);
+                userTagsList.innerHTML = '<div class="empty-tags">Erreur lors du chargement des compétences.</div>';
+            }
+        }
+
+        // Render user tags in the UI
+        function renderUserTags() {
+            if (tags.length === 0) {
+                userTagsList.innerHTML = '<div class="empty-tags">Aucune compétence ajoutée. Commencez à en ajouter !</div>';
+                return;
+            }
+
+            userTagsList.innerHTML = tags.map(tag => `
+                <div class="user-tag" data-id="${tag.id}">
+                    ${tag.name}
+                    <span class="remove-tag" title="Supprimer" onclick="removeTag(${tag.id})">×</span>
+                </div>
+            `).join('');
+        }
+
+        // Add a tag to the user
+        async function addTag(tagName) {
+            if (!tagName.trim()) return;
+
+            try {
+                const response = await fetch('/API/user/tags/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tagName: tagName.trim() })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.tag) {
+                    // Add to local tags array
+                    tags.push(data.tag);
+                    renderUserTags();
+
+                    // Clear input
+                    tagInput.value = '';
+
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to add tag');
+                }
+            } catch (error) {
+                console.error('Error adding tag:', error);
+                if (typeof addNotification === 'function') {
+                    addNotification('Erreur lors de l\'ajout de la compétence: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Remove a tag from the user
+        async function removeTag(tagId) {
+            try {
+                const response = await fetch('/API/user/tags/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tagId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Remove from local tags array
+                    tags = tags.filter(tag => tag.id !== tagId);
+                    renderUserTags();
+
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to remove tag');
+                }
+            } catch (error) {
+                console.error('Error removing tag:', error);
+                if (typeof addNotification === 'function') {
+                    addNotification('Erreur lors de la suppression de la compétence: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Load tag autocomplete options
+        async function loadTagAutocomplete(query) {
+            if (!query.trim() || query.length < 2) {
+                tagsAutocomplete.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/API/tagsList?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                // Filter out tags that user already has
+                const userTagIds = tags.map(tag => tag.id);
+                autocompleteItems = data.filter(tag => !userTagIds.includes(tag.id));
+
+                if (autocompleteItems.length > 0) {
+                    renderAutocomplete();
+                    tagsAutocomplete.style.display = 'block';
+                } else {
+                    tagsAutocomplete.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading tag autocomplete:', error);
+                tagsAutocomplete.style.display = 'none';
+            }
+        }
+
+        // Render autocomplete suggestions
+        function renderAutocomplete() {
+            tagsAutocomplete.innerHTML = autocompleteItems
+                .map((tag, index) => `
+                    <div class="autocomplete-item ${index === selectedAutocompleteIndex ? 'selected' : ''}"
+                        data-index="${index}"
+                        onclick="selectAutocompleteItem(${index})">
+                        ${tag.name}
+                    </div>
+                `)
+                .join('');
+        }
+
+        // Select an autocomplete item
+        function selectAutocompleteItem(index) {
+            if (index >= 0 && index < autocompleteItems.length) {
+                const selectedTag = autocompleteItems[index];
+                tagInput.value = selectedTag.name;
+                tagsAutocomplete.style.display = 'none';
+                addTag(selectedTag.name);
+            }
+        }
+
+        // Initialize tag management
+        if (tagInput && addTagBtn && userTagsList) {
+            // Load tags on page load
+            loadUserTags();
+
+            // Add tag button click handler
+            addTagBtn.addEventListener('click', () => {
+                addTag(tagInput.value);
+            });
+
+            // Input for autocomplete
+            tagInput.addEventListener('input', () => {
+                loadTagAutocomplete(tagInput.value);
+                selectedAutocompleteIndex = -1;
+            });
+
+            // Enter key to add tag
+            tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+
+                    if (selectedAutocompleteIndex >= 0) {
+                        selectAutocompleteItem(selectedAutocompleteIndex);
+                    } else {
+                        addTag(tagInput.value);
+                    }
+                }
+            });
+
+            // Keyboard navigation for autocomplete
+            tagInput.addEventListener('keydown', (e) => {
+                if (!tagsAutocomplete.style.display || tagsAutocomplete.style.display === 'none') {
+                    return;
+                }
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.min(selectedAutocompleteIndex + 1, autocompleteItems.length - 1);
+                    renderAutocomplete();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.max(selectedAutocompleteIndex - 1, -1);
+                    renderAutocomplete();
+                } else if (e.key === 'Escape') {
+                    tagsAutocomplete.style.display = 'none';
+                    selectedAutocompleteIndex = -1;
+                }
+            });
+
+            // Hide autocomplete on click outside
+            document.addEventListener('click', (e) => {
+                if (!tagInput.contains(e.target) && !tagsAutocomplete.contains(e.target)) {
+                    tagsAutocomplete.style.display = 'none';
+                    selectedAutocompleteIndex = -1;
+                }
+            });
+
+            // Expose removeTag function globally for the onclick handlers
+            window.removeTag = removeTag;
+            window.selectAutocompleteItem = selectAutocompleteItem;
+        }
+    });
+</script>
+
 {% endblock %}

@@ -107,7 +107,10 @@ $router->get('/offres/alternances', ['controller' => 'OfferController', 'action'
 $router->get('/offres/create', ['controller' => 'OfferController', 'action' => 'create', 'auth' => true]);
 $router->post('/offres', ['controller' => 'OfferController', 'action' => 'store', 'auth' => true]);
 $router->get('/offres/{id:[A-Za-z0-9]+}', ['controller' => 'OfferController', 'action' => 'show']);
+$router->get('/offres/edit/{id:[0-9]+}', ['controller' => 'OfferController', 'action' => 'edit', 'auth' => true]);
+$router->post('/offres/update', ['controller' => 'OfferController', 'action' => 'update', 'auth' => true]);
 $router->get('/API/GetOffers', ['controller' => 'OfferController', 'action' => 'apiGetOffers']);
+$router->get('/api/delete-offer', ['controller' => 'OfferController', 'action' => 'apiDelete', 'auth' => true]);
 
 // Add this for wishlist toggle functionality
 $router->post('/API/wishlist/toggle/{id:[A-Za-z0-9]+}', ['controller' => 'WishlistController', 'action' => 'toggle', 'auth' => true]);
@@ -170,7 +173,10 @@ $router->get('/API/tutorgetser', ['controller' => 'GestionController', 'action' 
 $router->post('/API/createuser', ['controller' => 'GestionController', 'action' => 'apiCreateUser', 'auth' => true]);
 $router->post('/API/updateuser', ['controller' => 'GestionController', 'action' => 'apiUpdateUser', 'auth' => true]);
 $router->post('/API/deleteuser', ['controller' => 'GestionController', 'action' => 'apiDeleteUser', 'auth' => true]);
-
+// User tags routes
+$router->get('/API/user/tags', ['controller' => 'UserController', 'action' => 'apiGetUserTags', 'auth' => true]);
+$router->post('/API/user/tags/add', ['controller' => 'UserController', 'action' => 'apiAddUserTag', 'auth' => true]);
+$router->post('/API/user/tags/remove', ['controller' => 'UserController', 'action' => 'apiRemoveUserTag', 'auth' => true]);
 
 $router->get('/favicon.ico', ['controller' => 'AssetController', 'action' => 'favicon']);
 

@@ -345,4 +345,113 @@ class TagModel
             throw new ModelException("Failed to fetch user tags: " . $e->getMessage());
         }
     }
+
+    /**
+     * Add a tag to a user
+     * 
+     * @param int $userId User ID
+     * @param int $tagId Tag ID
+     * @return bool Success status
+     * @throws ModelException If adding fails
+     */
+    public function addTagToUser(int $userId, int $tagId): bool
+    {
+        try {
+            $query = "
+                INSERT INTO User_tag (id_user, id_tag)
+                VALUES (:userId, :tagId)
+                ON DUPLICATE KEY UPDATE id_user = :userIdUpdate, id_tag = :tagIdUpdate
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':tagId', $tagId, PDO::PARAM_INT);
+            $stmt->bindValue(':userIdUpdate', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':tagIdUpdate', $tagId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to add tag to user: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove a tag from a user
+     * 
+     * @param int $userId User ID
+     * @param int $tagId Tag ID
+     * @return bool Success status
+     * @throws ModelException If removing fails
+     */
+    public function removeTagFromUser(int $userId, int $tagId): bool
+    {
+        try {
+            $query = "
+                DELETE FROM User_tag 
+                WHERE id_user = :userId AND id_tag = :tagId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':tagId', $tagId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to remove tag from user: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get tags by query (search by tag name)
+     * 
+     * @param string $query Tag name query
+     * @return array List of matching tags
+     * @throws ModelException If fetching fails
+     */
+    public function getTagsByQuery(string $query): array
+    {
+        try {
+            $searchQuery = "
+                SELECT id_tag, tag_name 
+                FROM Tag 
+                WHERE tag_name LIKE :query 
+                ORDER BY tag_name
+            ";
+            
+            $stmt = $this->database->prepare($searchQuery);
+            $stmt->bindValue(':query', '%' . $query . '%', PDO::PARAM_STR);
+            $stmt->execute();
+            
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to fetch tags by query: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove all tags from an offer
+     * 
+     * @param int $offerId Offer ID
+     * @return bool Success status
+     * @throws ModelException If removal fails
+     */
+    public function removeAllTagsFromOffer(int $offerId): bool
+    {
+        try {
+            $query = "
+                DELETE FROM Offer_tag 
+                WHERE id_offer = :offerId
+            ";
+            
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':offerId', $offerId, PDO::PARAM_INT);
+            $stmt->execute();
+            
+            return true;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to remove tags from offer: " . $e->getMessage());
+        }
+    }
 }

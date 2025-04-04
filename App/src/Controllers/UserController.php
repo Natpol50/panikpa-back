@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Core\RequestObject;
 use App\Models\UserModel;
+use App\Models\TagModel;
 use App\Services\FileService;
 use App\Services\CacheService;
 use App\Exceptions\FileSystemException;
@@ -18,6 +19,7 @@ use App\Exceptions\ValidationException;
 class UserController extends BaseController
 {
     private UserModel $userModel;
+    private TagModel $tagModel;
     private FileService $fileService;
     private CacheService $cacheService;
     
@@ -29,6 +31,7 @@ class UserController extends BaseController
         $this->userModel = new UserModel();
         $this->fileService = new FileService();
         $this->cacheService = new CacheService();
+        $this->tagModel = new TagModel();
     }
     
     /**
@@ -428,6 +431,159 @@ class UserController extends BaseController
         } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * API endpoint to get user's tags
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiGetUserTags(RequestObject $request): void
+    {
+        // Set response header to JSON
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Authentication required'
+            ]);
+            return;
+        }
+        
+        try {
+            $tagModel = new TagModel();
+            $tags = $tagModel->getTagsByUserId($request->userId);
+            
+            echo json_encode([
+                'success' => true,
+                'tags' => $tags
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch tags: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * API endpoint to add a tag to the user
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiAddUserTag(RequestObject $request): void
+    {
+        // Set response header to JSON
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Authentication required'
+            ]);
+            return;
+        }
+        
+        // Get tag name from request
+        $data = json_decode(file_get_contents('php://input'), true);
+        $tagName = $data['tagName'] ?? '';
+        
+        if (empty($tagName)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Tag name is required'
+            ]);
+            return;
+        }
+        
+        try {
+            $tagModel = new TagModel();
+            
+            // Get or create the tag
+            $tagId = $tagModel->addTag($tagName);
+            
+            // Add tag to user
+            $success = $tagModel->addTagToUser($request->userId, $tagId);
+            
+            if ($success) {
+                $tag = $tagModel->getTagById($tagId);
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Tag added successfully',
+                    'tag' => $tag
+                ]);
+            } else {
+                throw new \Exception('Failed to add tag to user');
+            }
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to add tag: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * API endpoint to remove a tag from the user
+     * 
+     * @param RequestObject $request Current request information
+     * @return void Outputs JSON response
+     */
+    public function apiRemoveUserTag(RequestObject $request): void
+    {
+        // Set response header to JSON
+        header('Content-Type: application/json');
+        
+        // Check if user is authenticated
+        if (!$request->isAuthenticated()) {
+            http_response_code(401);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Authentication required'
+            ]);
+            return;
+        }
+        
+        // Get tag ID from request
+        $data = json_decode(file_get_contents('php://input'), true);
+        $tagId = $data['tagId'] ?? 0;
+        
+        if ($tagId <= 0) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Valid tag ID is required'
+            ]);
+            return;
+        }
+        
+        try {
+            $tagModel = new TagModel();
+            
+            // Remove tag from user
+            $success = $tagModel->removeTagFromUser($request->userId, $tagId);
+            
+            echo json_encode([
+                'success' => $success,
+                'message' => $success ? 'Tag removed successfully' : 'Tag not found or already removed'
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(500);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to remove tag: ' . $e->getMessage()
+            ]);
         }
     }
 }

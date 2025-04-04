@@ -830,4 +830,30 @@ class UserModel
             throw new ModelException("Unable to retrieve users: " . $e->getMessage());
         }
     }
+
+    /**
+     * Check if a user is affiliated with an enterprise
+     * 
+     * @param int $userId User ID
+     * @param string $enterpriseId Enterprise ID
+     * @return bool True if the user is affiliated with the enterprise, false otherwise
+     * @throws ModelException If the query fails
+     */
+    public function isUserAffiliatedToEnterprise(int $userId, string $enterpriseId): bool
+    {
+        try {
+            $query = "SELECT COUNT(*) AS count 
+                      FROM User 
+                      WHERE id_user = :userId AND id_enterprise = :enterpriseId";
+            $stmt = $this->database->prepare($query);
+            $stmt->bindValue(':userId', $userId, PDO::PARAM_INT);
+            $stmt->bindValue(':enterpriseId', $enterpriseId, PDO::PARAM_STR);
+            $stmt->execute();
+
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return $result && (int)$result['count'] > 0;
+        } catch (PDOException $e) {
+            throw new ModelException("Failed to check user affiliation to enterprise: " . $e->getMessage());
+        }
+    }
 }

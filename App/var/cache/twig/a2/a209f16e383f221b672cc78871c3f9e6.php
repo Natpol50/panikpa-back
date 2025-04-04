@@ -635,19 +635,120 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
             cursor: pointer;
             font-weight: bold;
         }
+        /* Tags management styles */
+        .tags-container {
+            margin-top: 1rem;
+        }
+
+        .tags-input-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tags-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tags-input-wrapper input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            background-color: white;
+            font-size: 1rem;
+        }
+
+        .btn-add-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .tags-autocomplete {
+            position: absolute;
+            width: calc(100% - 120px);
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid var(--real-grey);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .autocomplete-item:hover, .autocomplete-item.selected {
+            background-color: var(--tag-background);
+        }
+
+        .user-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            min-height: 50px;
+        }
+
+        .user-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--tag-background);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            gap: 0.5rem;
+        }
+
+        .user-tag .remove-tag {
+            cursor: pointer;
+            color: var(--real-grey);
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .user-tag .remove-tag:hover {
+            background-color: var(--real-grey);
+            color: white;
+        }
+
+        .loading-tags {
+            color: var(--real-grey);
+            font-style: italic;
+        }
+
+        .empty-tags {
+            color: var(--real-grey);
+            font-style: italic;
+        }
     </style>
 ";
         yield from [];
     }
 
-    // line 572
+    // line 673
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_content(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 573
+        // line 674
         yield "<div class=\"container\">
     <nav class=\"breadcrumb\">
         <span><a href=\"/\">Accueil</a></span>
@@ -659,21 +760,21 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
         <div class=\"profile-sidebar\">
             <div class=\"profile-picture-container\">
                 ";
-        // line 583
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "profilePictureUrl", [], "any", false, false, false, 583)) {
-            // line 584
+        // line 684
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "profilePictureUrl", [], "any", false, false, false, 684)) {
+            // line 685
             yield "                    <img src=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "profilePictureUrl", [], "any", false, false, false, 584), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "profilePictureUrl", [], "any", false, false, false, 685), "html", null, true);
             yield "\" alt=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 584), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 685), "html", null, true);
             yield "\" class=\"profile-picture\" id=\"profileImage\">
                 ";
         } else {
-            // line 586
+            // line 687
             yield "
                 ";
         }
-        // line 588
+        // line 689
         yield "                <div class=\"upload-overlay\" id=\"uploadOverlay\">
                     Changer la photo
                 </div>
@@ -681,38 +782,38 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
             
             <div class=\"profile-info\">
                 <h2>";
-        // line 594
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 594), "html", null, true);
+        // line 695
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 695), "html", null, true);
         yield " ";
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 594), "html", null, true);
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 695), "html", null, true);
         yield "</h2>
                 <p>";
-        // line 595
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 595), "html", null, true);
+        // line 696
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 696), "html", null, true);
         yield "</p>
                 <p>Type de recherche: 
                     ";
-        // line 597
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 597) == "none")) {
-            // line 598
+        // line 698
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 698) == "none")) {
+            // line 699
             yield "                        Non spécifié
                     ";
-        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 599
-($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 599) == "1")) {
-            // line 600
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 700
+($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 700) == "1")) {
+            // line 701
             yield "                        Alternance
                     ";
-        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 601
-($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 601) == "0")) {
-            // line 602
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 702
+($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 702) == "0")) {
+            // line 703
             yield "                        Stage
                     ";
         } else {
-            // line 604
+            // line 705
             yield "                        Non spécifié
                     ";
         }
-        // line 606
+        // line 707
         yield "                </p>
             </div>
             
@@ -741,16 +842,16 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                             <div class=\"form-group\">
                                 <label for=\"firstName\">Prénom</label>
                                 <input type=\"text\" id=\"firstName\" name=\"firstName\" value=\"";
-        // line 633
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", true, true, false, 633)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", false, false, false, 633), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 633))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 633))), "html", null, true);
+        // line 734
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", true, true, false, 734)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "firstName", [], "any", false, false, false, 734), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 734))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userFirstName", [], "any", false, false, false, 734))), "html", null, true);
         yield "\" required>
                             </div>
                             
                             <div class=\"form-group\">
                                 <label for=\"lastName\">Nom</label>
                                 <input type=\"text\" id=\"lastName\" name=\"lastName\" value=\"";
-        // line 638
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", true, true, false, 638)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", false, false, false, 638), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 638))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 638))), "html", null, true);
+        // line 739
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", true, true, false, 739)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "lastName", [], "any", false, false, false, 739), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 739))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userName", [], "any", false, false, false, 739))), "html", null, true);
         yield "\" required>
                             </div>
                         </div>
@@ -758,16 +859,16 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                         <div class=\"form-group\">
                             <label for=\"email\">Email</label>
                             <input type=\"email\" id=\"email\" name=\"email\" value=\"";
-        // line 644
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", true, true, false, 644)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", false, false, false, 644), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 644))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 644))), "html", null, true);
+        // line 745
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", true, true, false, 745)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "email", [], "any", false, false, false, 745), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 745))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userEmail", [], "any", false, false, false, 745))), "html", null, true);
         yield "\" required>
                         </div>
                         
                         <div class=\"form-group\">
                             <label for=\"phone\">Téléphone</label>
                             <input type=\"tel\" id=\"phone\" name=\"phone\" value=\"";
-        // line 649
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", true, true, false, 649)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", false, false, false, 649), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userPhone", [], "any", false, false, false, 649))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userPhone", [], "any", false, false, false, 649))), "html", null, true);
+        // line 750
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(((CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", true, true, false, 750)) ? (Twig\Extension\CoreExtension::default(CoreExtension::getAttribute($this->env, $this->source, ($context["formData"] ?? null), "phone", [], "any", false, false, false, 750), CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userPhone", [], "any", false, false, false, 750))) : (CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userPhone", [], "any", false, false, false, 750))), "html", null, true);
         yield "\" required>
                         </div>
                         
@@ -775,20 +876,20 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                             <label for=\"searchType\">Type de recherche</label>
                             <select id=\"searchType\" name=\"searchType\">
                                 <option value=\"none\" ";
-        // line 655
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 655) == "none")) {
+        // line 756
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 756) == "none")) {
             yield "selected";
         }
         yield ">Non spécifié</option>
                                 <option value=\"0\" ";
-        // line 656
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 656) == "0")) {
+        // line 757
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 757) == "0")) {
             yield "selected";
         }
         yield ">Stage</option>
                                 <option value=\"1\" ";
-        // line 657
-        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 657) == "1")) {
+        // line 758
+        if ((CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userSearchType", [], "any", false, false, false, 758) == "1")) {
             yield "selected";
         }
         yield ">Alternance</option>
@@ -800,6 +901,25 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                         <button type=\"submit\" class=\"btn-save\">Enregistrer les modifications</button>
                     </div>
                 </form>
+
+                <div class=\"form-section\">
+                    <h3>Mes compétences et intérêts</h3>
+                    
+                    <div class=\"tags-container\">
+                        <div class=\"tags-input-container\">
+                            <label for=\"tagInput\">Ajouter une compétence ou un centre d'intérêt</label>
+                            <div class=\"tags-input-wrapper\">
+                                <input type=\"text\" id=\"tagInput\" placeholder=\"Exemple: PHP, JavaScript, UX Design...\">
+                                <button type=\"button\" id=\"addTagBtn\" class=\"btn-add-tag\">Ajouter</button>
+                            </div>
+                            <div id=\"tagsAutocomplete\" class=\"tags-autocomplete\"></div>
+                        </div>
+                        
+                        <div class=\"user-tags-list\" id=\"userTagsList\">
+                            <div class=\"loading-tags\">Chargement des compétences...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Password Tab -->
@@ -847,8 +967,8 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                         </div>
                         
                         <button type=\"button\" id=\"delete-account-btn\" class=\"btn-danger\" data-userid=\"";
-        // line 712
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userId", [], "any", false, false, false, 712), "html", null, true);
+        // line 832
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["user"] ?? null), "userId", [], "any", false, false, false, 832), "html", null, true);
         yield "\">
                             Supprimer mon compte
                         </button>
@@ -908,249 +1028,250 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
         yield from [];
     }
 
-    // line 769
+    // line 889
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 770
+        // line 890
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
     <script src=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js\"></script>
     <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css\">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching functionality
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    // Show corresponding content
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('Tab button clicked');
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
             });
-            
-            // Profile picture upload functionality
-            const uploadOverlay = document.getElementById('uploadOverlay');
-            const uploadModal = document.getElementById('uploadModal');
-            const closeModalButton = document.querySelector('.close-modal');
-            const cancelUploadButton = document.getElementById('cancelUpload');
-            const profilePictureInput = document.getElementById('profilePictureInput');
-            const cropperImage = document.getElementById('cropperImage');
-            const cropButton = document.getElementById('cropImage');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            let cropper;
-            
-            // Open modal when clicking the upload overlay
-            uploadOverlay.addEventListener('click', function() {
-                uploadModal.style.display = 'block';
-            });
-            
-            // Close modal functions
-            function closeModal() {
-                uploadModal.style.display = 'none';
-                
-                // Destroy cropper if it exists
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                }
-                
-                // Reset file input
-                profilePictureInput.value = '';
-                cropperImage.style.display = 'none';
-                cropButton.disabled = true;
+        });
+
+        // Profile picture upload functionality
+        const uploadOverlay = document.getElementById('uploadOverlay');
+        const uploadModal = document.getElementById('uploadModal');
+        const closeModalButton = document.querySelector('.close-modal');
+        const cancelUploadButton = document.getElementById('cancelUpload');
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const cropperImage = document.getElementById('cropperImage');
+        const cropButton = document.getElementById('cropImage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        let cropper;
+
+        // Open modal when clicking the upload overlay
+        uploadOverlay.addEventListener('click', function() {
+            console.log('Upload overlay clicked');
+            uploadModal.style.display = 'block';
+        });
+
+        // Close modal functions
+        function closeModal() {
+            uploadModal.style.display = 'none';
+
+            // Destroy cropper if it exists
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
             }
-            
-            closeModalButton.addEventListener('click', closeModal);
-            cancelUploadButton.addEventListener('click', closeModal);
-            
-            // Close modal when clicking outside content
-            window.addEventListener('click', function(event) {
-                if (event.target === uploadModal) {
-                    closeModal();
-                }
-            });
-            
-            // Handle file selection
-            profilePictureInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
-                    
-                    // Check file type
-                    if (!file.type.match('image.*')) {
-                        alert('Veuillez sélectionner une image');
-                        return;
-                    }
-                    
-                    // Check file size (5MB max)
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('L\\'image est trop volumineuse. Maximum 5 Mo.');
-                        return;
-                    }
-                    
-                    // Create object URL for the file
-                    const URL = window.URL || window.webkitURL;
-                    const imageUrl = URL.createObjectURL(file);
-                    
-                    // Display the image and initialize cropper
-                    cropperImage.src = imageUrl;
-                    cropperImage.style.display = 'block';
-                    cropButton.disabled = false;
-                    
-                    // Destroy previous cropper if it exists
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    // Initialize Cropper.js with a 1:1 aspect ratio
-                    cropper = new Cropper(cropperImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.8,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false
-                    });
-                }
-            });
-            
-            // Handle crop and upload
-            cropButton.addEventListener('click', async function() {
-                if (!cropper) {
+
+            // Reset file input
+            profilePictureInput.value = '';
+            cropperImage.style.display = 'none';
+            cropButton.disabled = true;
+        }
+
+        closeModalButton.addEventListener('click', closeModal);
+        cancelUploadButton.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside content
+        window.addEventListener('click', function(event) {
+            if (event.target === uploadModal) {
+                closeModal();
+            }
+        });
+
+        // Handle file selection
+        profilePictureInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert('Veuillez sélectionner une image');
                     return;
                 }
-                
-                // Show loading overlay
-                loadingOverlay.style.display = 'flex';
-                
-                try {
-                    // Get cropped canvas
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 300,
-                        fillColor: '#fff',
-                        imageSmoothingEnabled: true,
-                        imageSmoothingQuality: 'high'
-                    });
-                    
-                    if (!canvas) {
-                        throw new Error('Failed to crop image');
-                    }
-                    
-                    // Get crop data for server
-                    const cropData = cropper.getData(true); // true = rounded values
-                    
-                    // Convert canvas to blob
-                    const blob = await new Promise(resolve => {
-                        canvas.toBlob(resolve, 'image/png');
-                    });
-                    
-                    if (!blob) {
-                        throw new Error('Failed to convert canvas to blob');
-                    }
-                    
-                    // Create FormData
-                    const formData = new FormData();
-                    formData.append('profilePicture', blob, 'profile.png');
-                    formData.append('cropX', cropData.x);
-                    formData.append('cropY', cropData.y);
-                    formData.append('cropWidth', cropData.width);
-                    formData.append('cropHeight', cropData.height);
-                    
-                    // Send to server
-                    const response = await fetch('/upload-profile-picture', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Update profile picture
-                        const profileImage = document.getElementById('profileImage');
-                        const profilePlaceholder = document.getElementById('profilePlaceholder');
-                        
-                        if (profileImage) {
-                            profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
-                        } else {
-                            // Create new image if placeholder is showing
-                            const newImage = document.createElement('img');
-                            newImage.src = data.url + '?t=' + new Date().getTime();
-                            newImage.alt = 'Profile Picture';
-                            newImage.className = 'profile-picture';
-                            newImage.id = 'profileImage';
-                            
-                            const container = document.querySelector('.profile-picture-container');
-                            container.innerHTML = '';
-                            container.appendChild(newImage);
-                            container.appendChild(uploadOverlay);
-                        }
-                        
-                        // Show success notification
-                        if (typeof addNotification === 'function') {
-                            addNotification(data.message, 'success');
-                        } else {
-                            alert(data.message);
-                        }
-                        
-                        // Close modal
-                        closeModal();
+
+                // Check file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('L\\'image est trop volumineuse. Maximum 5 Mo.');
+                    return;
+                }
+
+                // Create object URL for the file
+                const URL = window.URL || window.webkitURL;
+                const imageUrl = URL.createObjectURL(file);
+
+                // Display the image and initialize cropper
+                cropperImage.src = imageUrl;
+                cropperImage.style.display = 'block';
+                cropButton.disabled = false;
+
+                // Destroy previous cropper if it exists
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                // Initialize Cropper.js with a 1:1 aspect ratio
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.8,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false
+                });
+            }
+        });
+
+        // Handle crop and upload
+        cropButton.addEventListener('click', async function() {
+            if (!cropper) {
+                return;
+            }
+
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+
+            try {
+                // Get cropped canvas
+                const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                if (!canvas) {
+                    throw new Error('Failed to crop image');
+                }
+
+                // Get crop data for server
+                const cropData = cropper.getData(true); // true = rounded values
+
+                // Convert canvas to blob
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+
+                if (!blob) {
+                    throw new Error('Failed to convert canvas to blob');
+                }
+
+                // Create FormData
+                const formData = new FormData();
+                formData.append('profilePicture', blob, 'profile.png');
+                formData.append('cropX', cropData.x);
+                formData.append('cropY', cropData.y);
+                formData.append('cropWidth', cropData.width);
+                formData.append('cropHeight', cropData.height);
+
+                // Send to server
+                const response = await fetch('/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update profile picture
+                    const profileImage = document.getElementById('profileImage');
+                    const profilePlaceholder = document.getElementById('profilePlaceholder');
+
+                    if (profileImage) {
+                        profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
                     } else {
-                        throw new Error(data.message || 'Failed to upload profile picture');
+                        // Create new image if placeholder is showing
+                        const newImage = document.createElement('img');
+                        newImage.src = data.url + '?t=' + new Date().getTime();
+                        newImage.alt = 'Profile Picture';
+                        newImage.className = 'profile-picture';
+                        newImage.id = 'profileImage';
+
+                        const container = document.querySelector('.profile-picture-container');
+                        container.innerHTML = '';
+                        container.appendChild(newImage);
+                        container.appendChild(uploadOverlay);
                     }
-                } catch (error) {
-                    console.error('Error uploading profile picture:', error);
-                    
-                    // Show error notification
+
+                    // Show success notification
                     if (typeof addNotification === 'function') {
-                        addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                        addNotification(data.message, 'success');
                     } else {
-                        alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                        alert(data.message);
                     }
-                } finally {
-                    // Hide loading overlay
-                    loadingOverlay.style.display = 'none';
-                }
-            });
-            
-            // Password validation
-            const newPasswordInput = document.getElementById('newPassword');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            
-            confirmPasswordInput?.addEventListener('input', function() {
-                if (newPasswordInput.value !== this.value) {
-                    this.setCustomValidity('Les mots de passe ne correspondent pas');
+
+                    // Close modal
+                    closeModal();
                 } else {
-                    this.setCustomValidity('');
+                    throw new Error(data.message || 'Failed to upload profile picture');
                 }
-            });
-            
-            newPasswordInput?.addEventListener('input', function() {
-                if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
-                    confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+            } catch (error) {
+                console.error('Error uploading profile picture:', error);
+
+                // Show error notification
+                if (typeof addNotification === 'function') {
+                    addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
                 } else {
-                    confirmPasswordInput.setCustomValidity('');
+                    alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
                 }
-            });
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // Password validation
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        confirmPasswordInput?.addEventListener('input', function() {
+            if (newPasswordInput.value !== this.value) {
+                this.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        newPasswordInput?.addEventListener('input', function() {
+            if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
+                confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                confirmPasswordInput.setCustomValidity('');
+            }
         });
 
         // Delete account functionality
@@ -1161,6 +1282,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
 
         // Open confirmation modal when delete button is clicked
         deleteAccountBtn?.addEventListener('click', function() {
+            console.log('Delete button clicked');
             confirmDeleteModal.style.display = 'block';
         });
 
@@ -1180,10 +1302,10 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
         confirmDeleteBtn?.addEventListener('click', async function() {
             // Show loading overlay
             loadingOverlay.style.display = 'flex';
-            
+
             try {
                 const userId = deleteAccountBtn.getAttribute('data-userid');
-                
+
                 // Send delete request to server
                 const response = await fetch(`/delete-user/\${userId}`, {
                     method: 'POST',
@@ -1192,9 +1314,9 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     // Show success notification
                     if (typeof addNotification === 'function') {
@@ -1202,7 +1324,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                     } else {
                         alert(data.message);
                     }
-                    
+
                     // Redirect if needed
                     if (data.redirect) {
                         setTimeout(() => {
@@ -1214,7 +1336,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                 }
             } catch (error) {
                 console.error('Error deleting account:', error);
-                
+
                 // Show error notification
                 if (typeof addNotification === 'function') {
                     addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
@@ -1224,12 +1346,243 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
             } finally {
                 // Hide loading overlay
                 loadingOverlay.style.display = 'none';
-                
+
                 // Close modal
                 confirmDeleteModal.style.display = 'none';
             }
         });
-    </script>
+
+        // User tags management
+        const tagInput = document.getElementById('tagInput');
+        const addTagBtn = document.getElementById('addTagBtn');
+        const userTagsList = document.getElementById('userTagsList');
+        const tagsAutocomplete = document.getElementById('tagsAutocomplete');
+
+        let tags = [];
+        let autocompleteItems = [];
+        let selectedAutocompleteIndex = -1;
+
+        // Load user tags on page load
+        async function loadUserTags() {
+            try {
+                const response = await fetch('/API/user/tags');
+                const data = await response.json();
+
+                if (data.success) {
+                    tags = data.tags.map(tag => ({
+                        id: tag.id_tag,
+                        name: tag.tag_name
+                    }));
+                    renderUserTags();
+                } else {
+                    throw new Error(data.message || 'Failed to load tags');
+                }
+            } catch (error) {
+                console.error('Error loading user tags:', error);
+                userTagsList.innerHTML = '<div class=\"empty-tags\">Erreur lors du chargement des compétences.</div>';
+            }
+        }
+
+        // Render user tags in the UI
+        function renderUserTags() {
+            if (tags.length === 0) {
+                userTagsList.innerHTML = '<div class=\"empty-tags\">Aucune compétence ajoutée. Commencez à en ajouter !</div>';
+                return;
+            }
+
+            userTagsList.innerHTML = tags.map(tag => `
+                <div class=\"user-tag\" data-id=\"\${tag.id}\">
+                    \${tag.name}
+                    <span class=\"remove-tag\" title=\"Supprimer\" onclick=\"removeTag(\${tag.id})\">×</span>
+                </div>
+            `).join('');
+        }
+
+        // Add a tag to the user
+        async function addTag(tagName) {
+            if (!tagName.trim()) return;
+
+            try {
+                const response = await fetch('/API/user/tags/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tagName: tagName.trim() })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.tag) {
+                    // Add to local tags array
+                    tags.push(data.tag);
+                    renderUserTags();
+
+                    // Clear input
+                    tagInput.value = '';
+
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to add tag');
+                }
+            } catch (error) {
+                console.error('Error adding tag:', error);
+                if (typeof addNotification === 'function') {
+                    addNotification('Erreur lors de l\\'ajout de la compétence: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Remove a tag from the user
+        async function removeTag(tagId) {
+            try {
+                const response = await fetch('/API/user/tags/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tagId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Remove from local tags array
+                    tags = tags.filter(tag => tag.id !== tagId);
+                    renderUserTags();
+
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to remove tag');
+                }
+            } catch (error) {
+                console.error('Error removing tag:', error);
+                if (typeof addNotification === 'function') {
+                    addNotification('Erreur lors de la suppression de la compétence: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Load tag autocomplete options
+        async function loadTagAutocomplete(query) {
+            if (!query.trim() || query.length < 2) {
+                tagsAutocomplete.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/API/tagsList?query=\${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                // Filter out tags that user already has
+                const userTagIds = tags.map(tag => tag.id);
+                autocompleteItems = data.filter(tag => !userTagIds.includes(tag.id));
+
+                if (autocompleteItems.length > 0) {
+                    renderAutocomplete();
+                    tagsAutocomplete.style.display = 'block';
+                } else {
+                    tagsAutocomplete.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading tag autocomplete:', error);
+                tagsAutocomplete.style.display = 'none';
+            }
+        }
+
+        // Render autocomplete suggestions
+        function renderAutocomplete() {
+            tagsAutocomplete.innerHTML = autocompleteItems
+                .map((tag, index) => `
+                    <div class=\"autocomplete-item \${index === selectedAutocompleteIndex ? 'selected' : ''}\"
+                        data-index=\"\${index}\"
+                        onclick=\"selectAutocompleteItem(\${index})\">
+                        \${tag.name}
+                    </div>
+                `)
+                .join('');
+        }
+
+        // Select an autocomplete item
+        function selectAutocompleteItem(index) {
+            if (index >= 0 && index < autocompleteItems.length) {
+                const selectedTag = autocompleteItems[index];
+                tagInput.value = selectedTag.name;
+                tagsAutocomplete.style.display = 'none';
+                addTag(selectedTag.name);
+            }
+        }
+
+        // Initialize tag management
+        if (tagInput && addTagBtn && userTagsList) {
+            // Load tags on page load
+            loadUserTags();
+
+            // Add tag button click handler
+            addTagBtn.addEventListener('click', () => {
+                addTag(tagInput.value);
+            });
+
+            // Input for autocomplete
+            tagInput.addEventListener('input', () => {
+                loadTagAutocomplete(tagInput.value);
+                selectedAutocompleteIndex = -1;
+            });
+
+            // Enter key to add tag
+            tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+
+                    if (selectedAutocompleteIndex >= 0) {
+                        selectAutocompleteItem(selectedAutocompleteIndex);
+                    } else {
+                        addTag(tagInput.value);
+                    }
+                }
+            });
+
+            // Keyboard navigation for autocomplete
+            tagInput.addEventListener('keydown', (e) => {
+                if (!tagsAutocomplete.style.display || tagsAutocomplete.style.display === 'none') {
+                    return;
+                }
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.min(selectedAutocompleteIndex + 1, autocompleteItems.length - 1);
+                    renderAutocomplete();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.max(selectedAutocompleteIndex - 1, -1);
+                    renderAutocomplete();
+                } else if (e.key === 'Escape') {
+                    tagsAutocomplete.style.display = 'none';
+                    selectedAutocompleteIndex = -1;
+                }
+            });
+
+            // Hide autocomplete on click outside
+            document.addEventListener('click', (e) => {
+                if (!tagInput.contains(e.target) && !tagsAutocomplete.contains(e.target)) {
+                    tagsAutocomplete.style.display = 'none';
+                    selectedAutocompleteIndex = -1;
+                }
+            });
+
+            // Expose removeTag function globally for the onclick handlers
+            window.removeTag = removeTag;
+            window.selectAutocompleteItem = selectAutocompleteItem;
+        }
+    });
+</script>
+
 ";
         yield from [];
     }
@@ -1255,7 +1608,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  919 => 770,  912 => 769,  851 => 712,  791 => 657,  785 => 656,  779 => 655,  770 => 649,  762 => 644,  753 => 638,  745 => 633,  716 => 606,  712 => 604,  708 => 602,  706 => 601,  703 => 600,  701 => 599,  698 => 598,  696 => 597,  691 => 595,  685 => 594,  677 => 588,  673 => 586,  665 => 584,  663 => 583,  651 => 573,  644 => 572,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
+        return array (  1039 => 890,  1032 => 889,  971 => 832,  892 => 758,  886 => 757,  880 => 756,  871 => 750,  863 => 745,  854 => 739,  846 => 734,  817 => 707,  813 => 705,  809 => 703,  807 => 702,  804 => 701,  802 => 700,  799 => 699,  797 => 698,  792 => 696,  786 => 695,  778 => 689,  774 => 687,  766 => 685,  764 => 684,  752 => 674,  745 => 673,  73 => 6,  66 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1828,6 +2181,107 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
             cursor: pointer;
             font-weight: bold;
         }
+        /* Tags management styles */
+        .tags-container {
+            margin-top: 1rem;
+        }
+
+        .tags-input-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .tags-input-wrapper {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tags-input-wrapper input {
+            flex: 1;
+            padding: 0.8rem;
+            border: 1px solid var(--real-grey);
+            border-radius: 4px;
+            background-color: white;
+            font-size: 1rem;
+        }
+
+        .btn-add-tag {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .tags-autocomplete {
+            position: absolute;
+            width: calc(100% - 120px);
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid var(--real-grey);
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            display: none;
+        }
+
+        .autocomplete-item {
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .autocomplete-item:hover, .autocomplete-item.selected {
+            background-color: var(--tag-background);
+        }
+
+        .user-tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            min-height: 50px;
+        }
+
+        .user-tag {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--tag-background);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            gap: 0.5rem;
+        }
+
+        .user-tag .remove-tag {
+            cursor: pointer;
+            color: var(--real-grey);
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .user-tag .remove-tag:hover {
+            background-color: var(--real-grey);
+            color: white;
+        }
+
+        .loading-tags {
+            color: var(--real-grey);
+            font-style: italic;
+        }
+
+        .empty-tags {
+            color: var(--real-grey);
+            font-style: italic;
+        }
     </style>
 {% endblock %}
 
@@ -1925,6 +2379,25 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                         <button type=\"submit\" class=\"btn-save\">Enregistrer les modifications</button>
                     </div>
                 </form>
+
+                <div class=\"form-section\">
+                    <h3>Mes compétences et intérêts</h3>
+                    
+                    <div class=\"tags-container\">
+                        <div class=\"tags-input-container\">
+                            <label for=\"tagInput\">Ajouter une compétence ou un centre d'intérêt</label>
+                            <div class=\"tags-input-wrapper\">
+                                <input type=\"text\" id=\"tagInput\" placeholder=\"Exemple: PHP, JavaScript, UX Design...\">
+                                <button type=\"button\" id=\"addTagBtn\" class=\"btn-add-tag\">Ajouter</button>
+                            </div>
+                            <div id=\"tagsAutocomplete\" class=\"tags-autocomplete\"></div>
+                        </div>
+                        
+                        <div class=\"user-tags-list\" id=\"userTagsList\">
+                            <div class=\"loading-tags\">Chargement des compétences...</div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <!-- Password Tab -->
@@ -2032,236 +2505,237 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
     {{ parent() }}
     <script src=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js\"></script>
     <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css\">
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Tab switching functionality
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    
-                    // Add active class to clicked button
-                    this.classList.add('active');
-                    
-                    // Show corresponding content
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.add('active');
-                });
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching functionality
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                console.log('Tab button clicked');
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Show corresponding content
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
             });
-            
-            // Profile picture upload functionality
-            const uploadOverlay = document.getElementById('uploadOverlay');
-            const uploadModal = document.getElementById('uploadModal');
-            const closeModalButton = document.querySelector('.close-modal');
-            const cancelUploadButton = document.getElementById('cancelUpload');
-            const profilePictureInput = document.getElementById('profilePictureInput');
-            const cropperImage = document.getElementById('cropperImage');
-            const cropButton = document.getElementById('cropImage');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            
-            let cropper;
-            
-            // Open modal when clicking the upload overlay
-            uploadOverlay.addEventListener('click', function() {
-                uploadModal.style.display = 'block';
-            });
-            
-            // Close modal functions
-            function closeModal() {
-                uploadModal.style.display = 'none';
-                
-                // Destroy cropper if it exists
-                if (cropper) {
-                    cropper.destroy();
-                    cropper = null;
-                }
-                
-                // Reset file input
-                profilePictureInput.value = '';
-                cropperImage.style.display = 'none';
-                cropButton.disabled = true;
+        });
+
+        // Profile picture upload functionality
+        const uploadOverlay = document.getElementById('uploadOverlay');
+        const uploadModal = document.getElementById('uploadModal');
+        const closeModalButton = document.querySelector('.close-modal');
+        const cancelUploadButton = document.getElementById('cancelUpload');
+        const profilePictureInput = document.getElementById('profilePictureInput');
+        const cropperImage = document.getElementById('cropperImage');
+        const cropButton = document.getElementById('cropImage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        let cropper;
+
+        // Open modal when clicking the upload overlay
+        uploadOverlay.addEventListener('click', function() {
+            console.log('Upload overlay clicked');
+            uploadModal.style.display = 'block';
+        });
+
+        // Close modal functions
+        function closeModal() {
+            uploadModal.style.display = 'none';
+
+            // Destroy cropper if it exists
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
             }
-            
-            closeModalButton.addEventListener('click', closeModal);
-            cancelUploadButton.addEventListener('click', closeModal);
-            
-            // Close modal when clicking outside content
-            window.addEventListener('click', function(event) {
-                if (event.target === uploadModal) {
-                    closeModal();
-                }
-            });
-            
-            // Handle file selection
-            profilePictureInput.addEventListener('change', function() {
-                if (this.files && this.files[0]) {
-                    const file = this.files[0];
-                    
-                    // Check file type
-                    if (!file.type.match('image.*')) {
-                        alert('Veuillez sélectionner une image');
-                        return;
-                    }
-                    
-                    // Check file size (5MB max)
-                    if (file.size > 5 * 1024 * 1024) {
-                        alert('L\\'image est trop volumineuse. Maximum 5 Mo.');
-                        return;
-                    }
-                    
-                    // Create object URL for the file
-                    const URL = window.URL || window.webkitURL;
-                    const imageUrl = URL.createObjectURL(file);
-                    
-                    // Display the image and initialize cropper
-                    cropperImage.src = imageUrl;
-                    cropperImage.style.display = 'block';
-                    cropButton.disabled = false;
-                    
-                    // Destroy previous cropper if it exists
-                    if (cropper) {
-                        cropper.destroy();
-                    }
-                    
-                    // Initialize Cropper.js with a 1:1 aspect ratio
-                    cropper = new Cropper(cropperImage, {
-                        aspectRatio: 1,
-                        viewMode: 1,
-                        dragMode: 'move',
-                        autoCropArea: 0.8,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false
-                    });
-                }
-            });
-            
-            // Handle crop and upload
-            cropButton.addEventListener('click', async function() {
-                if (!cropper) {
+
+            // Reset file input
+            profilePictureInput.value = '';
+            cropperImage.style.display = 'none';
+            cropButton.disabled = true;
+        }
+
+        closeModalButton.addEventListener('click', closeModal);
+        cancelUploadButton.addEventListener('click', closeModal);
+
+        // Close modal when clicking outside content
+        window.addEventListener('click', function(event) {
+            if (event.target === uploadModal) {
+                closeModal();
+            }
+        });
+
+        // Handle file selection
+        profilePictureInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const file = this.files[0];
+
+                // Check file type
+                if (!file.type.match('image.*')) {
+                    alert('Veuillez sélectionner une image');
                     return;
                 }
-                
-                // Show loading overlay
-                loadingOverlay.style.display = 'flex';
-                
-                try {
-                    // Get cropped canvas
-                    const canvas = cropper.getCroppedCanvas({
-                        width: 300,
-                        height: 300,
-                        fillColor: '#fff',
-                        imageSmoothingEnabled: true,
-                        imageSmoothingQuality: 'high'
-                    });
-                    
-                    if (!canvas) {
-                        throw new Error('Failed to crop image');
-                    }
-                    
-                    // Get crop data for server
-                    const cropData = cropper.getData(true); // true = rounded values
-                    
-                    // Convert canvas to blob
-                    const blob = await new Promise(resolve => {
-                        canvas.toBlob(resolve, 'image/png');
-                    });
-                    
-                    if (!blob) {
-                        throw new Error('Failed to convert canvas to blob');
-                    }
-                    
-                    // Create FormData
-                    const formData = new FormData();
-                    formData.append('profilePicture', blob, 'profile.png');
-                    formData.append('cropX', cropData.x);
-                    formData.append('cropY', cropData.y);
-                    formData.append('cropWidth', cropData.width);
-                    formData.append('cropHeight', cropData.height);
-                    
-                    // Send to server
-                    const response = await fetch('/upload-profile-picture', {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Update profile picture
-                        const profileImage = document.getElementById('profileImage');
-                        const profilePlaceholder = document.getElementById('profilePlaceholder');
-                        
-                        if (profileImage) {
-                            profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
-                        } else {
-                            // Create new image if placeholder is showing
-                            const newImage = document.createElement('img');
-                            newImage.src = data.url + '?t=' + new Date().getTime();
-                            newImage.alt = 'Profile Picture';
-                            newImage.className = 'profile-picture';
-                            newImage.id = 'profileImage';
-                            
-                            const container = document.querySelector('.profile-picture-container');
-                            container.innerHTML = '';
-                            container.appendChild(newImage);
-                            container.appendChild(uploadOverlay);
-                        }
-                        
-                        // Show success notification
-                        if (typeof addNotification === 'function') {
-                            addNotification(data.message, 'success');
-                        } else {
-                            alert(data.message);
-                        }
-                        
-                        // Close modal
-                        closeModal();
+
+                // Check file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('L\\'image est trop volumineuse. Maximum 5 Mo.');
+                    return;
+                }
+
+                // Create object URL for the file
+                const URL = window.URL || window.webkitURL;
+                const imageUrl = URL.createObjectURL(file);
+
+                // Display the image and initialize cropper
+                cropperImage.src = imageUrl;
+                cropperImage.style.display = 'block';
+                cropButton.disabled = false;
+
+                // Destroy previous cropper if it exists
+                if (cropper) {
+                    cropper.destroy();
+                }
+
+                // Initialize Cropper.js with a 1:1 aspect ratio
+                cropper = new Cropper(cropperImage, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    dragMode: 'move',
+                    autoCropArea: 0.8,
+                    restore: false,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: true,
+                    cropBoxResizable: true,
+                    toggleDragModeOnDblclick: false
+                });
+            }
+        });
+
+        // Handle crop and upload
+        cropButton.addEventListener('click', async function() {
+            if (!cropper) {
+                return;
+            }
+
+            // Show loading overlay
+            loadingOverlay.style.display = 'flex';
+
+            try {
+                // Get cropped canvas
+                const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300,
+                    fillColor: '#fff',
+                    imageSmoothingEnabled: true,
+                    imageSmoothingQuality: 'high'
+                });
+
+                if (!canvas) {
+                    throw new Error('Failed to crop image');
+                }
+
+                // Get crop data for server
+                const cropData = cropper.getData(true); // true = rounded values
+
+                // Convert canvas to blob
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+
+                if (!blob) {
+                    throw new Error('Failed to convert canvas to blob');
+                }
+
+                // Create FormData
+                const formData = new FormData();
+                formData.append('profilePicture', blob, 'profile.png');
+                formData.append('cropX', cropData.x);
+                formData.append('cropY', cropData.y);
+                formData.append('cropWidth', cropData.width);
+                formData.append('cropHeight', cropData.height);
+
+                // Send to server
+                const response = await fetch('/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update profile picture
+                    const profileImage = document.getElementById('profileImage');
+                    const profilePlaceholder = document.getElementById('profilePlaceholder');
+
+                    if (profileImage) {
+                        profileImage.src = data.url + '?t=' + new Date().getTime(); // Add timestamp to avoid caching
                     } else {
-                        throw new Error(data.message || 'Failed to upload profile picture');
+                        // Create new image if placeholder is showing
+                        const newImage = document.createElement('img');
+                        newImage.src = data.url + '?t=' + new Date().getTime();
+                        newImage.alt = 'Profile Picture';
+                        newImage.className = 'profile-picture';
+                        newImage.id = 'profileImage';
+
+                        const container = document.querySelector('.profile-picture-container');
+                        container.innerHTML = '';
+                        container.appendChild(newImage);
+                        container.appendChild(uploadOverlay);
                     }
-                } catch (error) {
-                    console.error('Error uploading profile picture:', error);
-                    
-                    // Show error notification
+
+                    // Show success notification
                     if (typeof addNotification === 'function') {
-                        addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
+                        addNotification(data.message, 'success');
                     } else {
-                        alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
+                        alert(data.message);
                     }
-                } finally {
-                    // Hide loading overlay
-                    loadingOverlay.style.display = 'none';
-                }
-            });
-            
-            // Password validation
-            const newPasswordInput = document.getElementById('newPassword');
-            const confirmPasswordInput = document.getElementById('confirmPassword');
-            
-            confirmPasswordInput?.addEventListener('input', function() {
-                if (newPasswordInput.value !== this.value) {
-                    this.setCustomValidity('Les mots de passe ne correspondent pas');
+
+                    // Close modal
+                    closeModal();
                 } else {
-                    this.setCustomValidity('');
+                    throw new Error(data.message || 'Failed to upload profile picture');
                 }
-            });
-            
-            newPasswordInput?.addEventListener('input', function() {
-                if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
-                    confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+            } catch (error) {
+                console.error('Error uploading profile picture:', error);
+
+                // Show error notification
+                if (typeof addNotification === 'function') {
+                    addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
                 } else {
-                    confirmPasswordInput.setCustomValidity('');
+                    alert(error.message || 'Une erreur est survenue. Veuillez réessayer.');
                 }
-            });
+            } finally {
+                // Hide loading overlay
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // Password validation
+        const newPasswordInput = document.getElementById('newPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        confirmPasswordInput?.addEventListener('input', function() {
+            if (newPasswordInput.value !== this.value) {
+                this.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        newPasswordInput?.addEventListener('input', function() {
+            if (confirmPasswordInput.value !== '' && confirmPasswordInput.value !== this.value) {
+                confirmPasswordInput.setCustomValidity('Les mots de passe ne correspondent pas');
+            } else {
+                confirmPasswordInput.setCustomValidity('');
+            }
         });
 
         // Delete account functionality
@@ -2272,6 +2746,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
 
         // Open confirmation modal when delete button is clicked
         deleteAccountBtn?.addEventListener('click', function() {
+            console.log('Delete button clicked');
             confirmDeleteModal.style.display = 'block';
         });
 
@@ -2291,10 +2766,10 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
         confirmDeleteBtn?.addEventListener('click', async function() {
             // Show loading overlay
             loadingOverlay.style.display = 'flex';
-            
+
             try {
                 const userId = deleteAccountBtn.getAttribute('data-userid');
-                
+
                 // Send delete request to server
                 const response = await fetch(`/delete-user/\${userId}`, {
                     method: 'POST',
@@ -2303,9 +2778,9 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
                     // Show success notification
                     if (typeof addNotification === 'function') {
@@ -2313,7 +2788,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                     } else {
                         alert(data.message);
                     }
-                    
+
                     // Redirect if needed
                     if (data.redirect) {
                         setTimeout(() => {
@@ -2325,7 +2800,7 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
                 }
             } catch (error) {
                 console.error('Error deleting account:', error);
-                
+
                 // Show error notification
                 if (typeof addNotification === 'function') {
                     addNotification(error.message || 'Une erreur est survenue. Veuillez réessayer.', 'error');
@@ -2335,12 +2810,243 @@ class __TwigTemplate_67bdb4132f1a79a1e2111d5a2b22d59b extends Template
             } finally {
                 // Hide loading overlay
                 loadingOverlay.style.display = 'none';
-                
+
                 // Close modal
                 confirmDeleteModal.style.display = 'none';
             }
         });
-    </script>
+
+        // User tags management
+        const tagInput = document.getElementById('tagInput');
+        const addTagBtn = document.getElementById('addTagBtn');
+        const userTagsList = document.getElementById('userTagsList');
+        const tagsAutocomplete = document.getElementById('tagsAutocomplete');
+
+        let tags = [];
+        let autocompleteItems = [];
+        let selectedAutocompleteIndex = -1;
+
+        // Load user tags on page load
+        async function loadUserTags() {
+            try {
+                const response = await fetch('/API/user/tags');
+                const data = await response.json();
+
+                if (data.success) {
+                    tags = data.tags.map(tag => ({
+                        id: tag.id_tag,
+                        name: tag.tag_name
+                    }));
+                    renderUserTags();
+                } else {
+                    throw new Error(data.message || 'Failed to load tags');
+                }
+            } catch (error) {
+                console.error('Error loading user tags:', error);
+                userTagsList.innerHTML = '<div class=\"empty-tags\">Erreur lors du chargement des compétences.</div>';
+            }
+        }
+
+        // Render user tags in the UI
+        function renderUserTags() {
+            if (tags.length === 0) {
+                userTagsList.innerHTML = '<div class=\"empty-tags\">Aucune compétence ajoutée. Commencez à en ajouter !</div>';
+                return;
+            }
+
+            userTagsList.innerHTML = tags.map(tag => `
+                <div class=\"user-tag\" data-id=\"\${tag.id}\">
+                    \${tag.name}
+                    <span class=\"remove-tag\" title=\"Supprimer\" onclick=\"removeTag(\${tag.id})\">×</span>
+                </div>
+            `).join('');
+        }
+
+        // Add a tag to the user
+        async function addTag(tagName) {
+            if (!tagName.trim()) return;
+
+            try {
+                const response = await fetch('/API/user/tags/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tagName: tagName.trim() })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.tag) {
+                    // Add to local tags array
+                    tags.push(data.tag);
+                    renderUserTags();
+
+                    // Clear input
+                    tagInput.value = '';
+
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to add tag');
+                }
+            } catch (error) {
+                console.error('Error adding tag:', error);
+                if (typeof addNotification === 'function') {
+                    addNotification('Erreur lors de l\\'ajout de la compétence: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Remove a tag from the user
+        async function removeTag(tagId) {
+            try {
+                const response = await fetch('/API/user/tags/remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ tagId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Remove from local tags array
+                    tags = tags.filter(tag => tag.id !== tagId);
+                    renderUserTags();
+
+                    // Show success notification
+                    if (typeof addNotification === 'function') {
+                        addNotification(data.message, 'success');
+                    }
+                } else {
+                    throw new Error(data.message || 'Failed to remove tag');
+                }
+            } catch (error) {
+                console.error('Error removing tag:', error);
+                if (typeof addNotification === 'function') {
+                    addNotification('Erreur lors de la suppression de la compétence: ' + error.message, 'error');
+                }
+            }
+        }
+
+        // Load tag autocomplete options
+        async function loadTagAutocomplete(query) {
+            if (!query.trim() || query.length < 2) {
+                tagsAutocomplete.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/API/tagsList?query=\${encodeURIComponent(query)}`);
+                const data = await response.json();
+
+                // Filter out tags that user already has
+                const userTagIds = tags.map(tag => tag.id);
+                autocompleteItems = data.filter(tag => !userTagIds.includes(tag.id));
+
+                if (autocompleteItems.length > 0) {
+                    renderAutocomplete();
+                    tagsAutocomplete.style.display = 'block';
+                } else {
+                    tagsAutocomplete.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading tag autocomplete:', error);
+                tagsAutocomplete.style.display = 'none';
+            }
+        }
+
+        // Render autocomplete suggestions
+        function renderAutocomplete() {
+            tagsAutocomplete.innerHTML = autocompleteItems
+                .map((tag, index) => `
+                    <div class=\"autocomplete-item \${index === selectedAutocompleteIndex ? 'selected' : ''}\"
+                        data-index=\"\${index}\"
+                        onclick=\"selectAutocompleteItem(\${index})\">
+                        \${tag.name}
+                    </div>
+                `)
+                .join('');
+        }
+
+        // Select an autocomplete item
+        function selectAutocompleteItem(index) {
+            if (index >= 0 && index < autocompleteItems.length) {
+                const selectedTag = autocompleteItems[index];
+                tagInput.value = selectedTag.name;
+                tagsAutocomplete.style.display = 'none';
+                addTag(selectedTag.name);
+            }
+        }
+
+        // Initialize tag management
+        if (tagInput && addTagBtn && userTagsList) {
+            // Load tags on page load
+            loadUserTags();
+
+            // Add tag button click handler
+            addTagBtn.addEventListener('click', () => {
+                addTag(tagInput.value);
+            });
+
+            // Input for autocomplete
+            tagInput.addEventListener('input', () => {
+                loadTagAutocomplete(tagInput.value);
+                selectedAutocompleteIndex = -1;
+            });
+
+            // Enter key to add tag
+            tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+
+                    if (selectedAutocompleteIndex >= 0) {
+                        selectAutocompleteItem(selectedAutocompleteIndex);
+                    } else {
+                        addTag(tagInput.value);
+                    }
+                }
+            });
+
+            // Keyboard navigation for autocomplete
+            tagInput.addEventListener('keydown', (e) => {
+                if (!tagsAutocomplete.style.display || tagsAutocomplete.style.display === 'none') {
+                    return;
+                }
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.min(selectedAutocompleteIndex + 1, autocompleteItems.length - 1);
+                    renderAutocomplete();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    selectedAutocompleteIndex = Math.max(selectedAutocompleteIndex - 1, -1);
+                    renderAutocomplete();
+                } else if (e.key === 'Escape') {
+                    tagsAutocomplete.style.display = 'none';
+                    selectedAutocompleteIndex = -1;
+                }
+            });
+
+            // Hide autocomplete on click outside
+            document.addEventListener('click', (e) => {
+                if (!tagInput.contains(e.target) && !tagsAutocomplete.contains(e.target)) {
+                    tagsAutocomplete.style.display = 'none';
+                    selectedAutocompleteIndex = -1;
+                }
+            });
+
+            // Expose removeTag function globally for the onclick handlers
+            window.removeTag = removeTag;
+            window.selectAutocompleteItem = selectAutocompleteItem;
+        }
+    });
+</script>
+
 {% endblock %}", "user/profile.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\user\\profile.html.twig");
     }
 }

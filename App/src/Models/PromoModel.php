@@ -116,7 +116,6 @@ class PromoModel
 
             if ($stmtCheck->fetch()) {
                 throw new ModelException("The Promo code is already used");
-                return false; // Promo déjà existante
             }
 
             // Insérer la promo
@@ -150,7 +149,6 @@ class PromoModel
 
             if ($stmtCheck->fetch()) {
                 throw new ModelException("The user is already linked");
-                return false; // user already linked, nothing to do
             }
 
             // Ajouter l'utilisateur à la promo

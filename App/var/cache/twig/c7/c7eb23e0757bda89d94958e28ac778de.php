@@ -604,27 +604,41 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
             border-radius: 4px;
             cursor: pointer;
         }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
     </style>
 ";
         yield from [];
     }
 
-    // line 541
+    // line 555
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_content(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 542
+        // line 556
         yield "<div class=\"container\">
     <nav class=\"breadcrumb\">
         <span><a href=\"/\">Accueil</a></span>
         <span><a href=\"/entreprises\">Entreprises</a></span>
         <span>";
-        // line 546
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 546), "html", null, true);
+        // line 560
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 560), "html", null, true);
         yield "</span>
     </nav>
 
@@ -632,29 +646,29 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
         <div class=\"enterprise-info\">
             <div class=\"enterprise-logo\">
                 ";
-        // line 552
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_photo_url", [], "any", false, false, false, 552)) {
-            // line 553
+        // line 566
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_photo_url", [], "any", false, false, false, 566)) {
+            // line 567
             yield "                    <img src=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_photo_url", [], "any", false, false, false, 553), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_photo_url", [], "any", false, false, false, 567), "html", null, true);
             yield "\" alt=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 553), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 567), "html", null, true);
             yield "\">
                 ";
         } else {
-            // line 555
+            // line 569
             yield "                    <div class=\"placeholder-logo\">";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::upper($this->env->getCharset(), Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 555))), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::upper($this->env->getCharset(), Twig\Extension\CoreExtension::first($this->env->getCharset(), CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 569))), "html", null, true);
             yield "</div>
                 ";
         }
-        // line 557
+        // line 571
         yield "            </div>
             
             <div class=\"enterprise-details\">
                 <h1>";
-        // line 560
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 560), "html", null, true);
+        // line 574
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 574), "html", null, true);
         yield "</h1>
                 
                 <div class=\"contact-info\">
@@ -663,8 +677,8 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
                             <path d=\"M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" />
                         </svg>
                         ";
-        // line 567
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_phone", [], "any", false, false, false, 567), "html", null, true);
+        // line 581
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_phone", [], "any", false, false, false, 581), "html", null, true);
         yield "
                     </div>
                     
@@ -674,17 +688,17 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
                             <path d=\"M12 22l10-10M2 12l10 10M10 2l4 4-4 4\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>
                         </svg>
                         ";
-        // line 575
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_email", [], "any", false, false, false, 575), "html", null, true);
+        // line 589
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_email", [], "any", false, false, false, 589), "html", null, true);
         yield "
                     </div>
                     
                     ";
-        // line 578
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 578)) {
-            // line 579
+        // line 592
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 592)) {
+            // line 593
             yield "                        <a href=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 579), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 593), "html", null, true);
             yield "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"website-link\">
                             <svg viewBox=\"0 0 24 24\" width=\"16\" height=\"16\">
                                 <path d=\"M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"/>
@@ -695,13 +709,13 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
                         </a>
                     ";
         }
-        // line 588
+        // line 602
         yield "                </div>
                 
                 <div class=\"enterprise-stats\">
                     <div class=\"stat-item\">
                         <span class=\"stat-value\">";
-        // line 592
+        // line 606
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["applicationCount"] ?? null), "html", null, true);
         yield "</span>
                         <span class=\"stat-label\">Candidatures</span>
@@ -709,7 +723,7 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
                     
                     <div class=\"stat-item\">
                         <span class=\"stat-value\">";
-        // line 597
+        // line 611
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(Twig\Extension\CoreExtension::length($this->env->getCharset(), ($context["offers"] ?? null)), "html", null, true);
         yield "</span>
                         <span class=\"stat-label\">Offres actives</span>
@@ -718,33 +732,33 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
                     <div class=\"stat-item\">
                         <span class=\"stat-value\">
                             ";
-        // line 603
-        if ( !(null === CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 603))) {
-            // line 604
+        // line 617
+        if ( !(null === CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 617))) {
+            // line 618
             yield "                                ";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 604), 1), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape($this->extensions['Twig\Extension\CoreExtension']->formatNumber(CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 618), 1), "html", null, true);
             yield "
                             ";
         } else {
-            // line 606
+            // line 620
             yield "                                -
                             ";
         }
-        // line 608
+        // line 622
         yield "                        </span>
                         <span class=\"stat-label\">Note moyenne</span>
                         <div class=\"rating-stars\">
                             ";
-        // line 611
-        if ( !(null === CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 611))) {
-            // line 612
+        // line 625
+        if ( !(null === CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 625))) {
+            // line 626
             yield "                                ";
             $context['_parent'] = $context;
             $context['_seq'] = CoreExtension::ensureTraversable(range(1, 5));
             foreach ($context['_seq'] as $context["_key"] => $context["i"]) {
-                // line 613
+                // line 627
                 yield "                                    <span class=\"star ";
-                if (($context["i"] <= Twig\Extension\CoreExtension::round(CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 613), 0, "floor"))) {
+                if (($context["i"] <= Twig\Extension\CoreExtension::round(CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "average_rating", [], "any", false, false, false, 627), 0, "floor"))) {
                     yield "filled";
                 }
                 yield "\">
@@ -757,17 +771,17 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
             $_parent = $context['_parent'];
             unset($context['_seq'], $context['_key'], $context['i'], $context['_parent']);
             $context = array_intersect_key($context, $_parent) + $_parent;
-            // line 619
+            // line 633
             yield "                                <span class=\"stat-label\">(";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "comment_count", [], "any", false, false, false, 619), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["ratings"] ?? null), "comment_count", [], "any", false, false, false, 633), "html", null, true);
             yield ")</span>
                             ";
         } else {
-            // line 621
+            // line 635
             yield "                                <span class=\"stat-label\">Aucune évaluation</span>
                             ";
         }
-        // line 623
+        // line 637
         yield "                        </div>
                     </div>
                 </div>
@@ -776,82 +790,82 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
         
         <div class=\"enterprise-actions\">
             ";
-        // line 630
+        // line 644
         if (($context["canEdit"] ?? null)) {
-            // line 631
+            // line 645
             yield "                <a href=\"/entreprises/";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "id_enterprise", [], "any", false, false, false, 631), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "id_enterprise", [], "any", false, false, false, 645), "html", null, true);
             yield "/edit\" class=\"btn-edit\">Modifier</a>
             ";
         }
-        // line 633
+        // line 647
         yield "            
         </div>
     </section>
     
     ";
-        // line 637
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 637)) {
-            // line 638
+        // line 651
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 651)) {
+            // line 652
             yield "        <section class=\"enterprise-description\">
             <h2>À propos de l'entreprise</h2>
             <div class=\"description-content\">
                 ";
-            // line 641
-            yield CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 641);
+            // line 655
+            yield Twig\Extension\CoreExtension::nl2br($this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 655), "html", null, true));
             yield "
             </div>
         </section>
     ";
         }
-        // line 645
+        // line 659
         yield "    
     <section class=\"enterprise-offers\">
         <h2>Offres de stage</h2>
         
         ";
-        // line 649
+        // line 663
         if ((Twig\Extension\CoreExtension::length($this->env->getCharset(), ($context["offers"] ?? null)) > 0)) {
-            // line 650
+            // line 664
             yield "            <div class=\"offers-grid\">
                 ";
-            // line 651
+            // line 665
             $context['_parent'] = $context;
             $context['_seq'] = CoreExtension::ensureTraversable(($context["offers"] ?? null));
             foreach ($context['_seq'] as $context["_key"] => $context["offer"]) {
-                // line 652
+                // line 666
                 yield "                    <div class=\"offre-card ";
-                if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "highlighted", [], "any", false, false, false, 652)) {
+                if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "highlighted", [], "any", false, false, false, 666)) {
                     yield "highlighted";
                 }
                 yield "\" data-id=\"";
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "id", [], "any", false, false, false, 652), "html", null, true);
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "id", [], "any", false, false, false, 666), "html", null, true);
                 yield "\">
                         <div class=\"card-header\">
                             <h3>";
-                // line 654
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "title", [], "any", false, false, false, 654), "html", null, true);
+                // line 668
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "title", [], "any", false, false, false, 668), "html", null, true);
                 yield "</h3>
                             ";
-                // line 655
-                if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_wishlist"], "method", false, false, false, 655)) {
-                    // line 656
+                // line 669
+                if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_wishlist"], "method", false, false, false, 669)) {
+                    // line 670
                     yield "                                <button class=\"wishlist-star ";
-                    if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 656)) {
+                    if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 670)) {
                         yield "active";
                     }
                     yield "\" 
                                         data-id=\"";
-                    // line 657
-                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "id", [], "any", false, false, false, 657), "html", null, true);
+                    // line 671
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "id", [], "any", false, false, false, 671), "html", null, true);
                     yield "\" 
                                         aria-label=\"";
-                    // line 658
-                    yield ((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 658)) ? ("Retirer de la wishlist") : ("Ajouter à la wishlist"));
+                    // line 672
+                    yield ((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 672)) ? ("Retirer de la wishlist") : ("Ajouter à la wishlist"));
                     yield "\"
                                         title=\"";
-                    // line 659
-                    yield ((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 659)) ? ("Retirer de la wishlist") : ("Ajouter à la wishlist"));
+                    // line 673
+                    yield ((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 673)) ? ("Retirer de la wishlist") : ("Ajouter à la wishlist"));
                     yield "\">
                                     <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\">
                                         <path d=\"M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z\" />
@@ -859,92 +873,92 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
                                 </button>
                             ";
                 }
-                // line 665
+                // line 679
                 yield "                        </div>
                         
                         <p class=\"reference\">";
-                // line 667
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "location", [], "any", false, false, false, 667), "html", null, true);
+                // line 681
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "location", [], "any", false, false, false, 681), "html", null, true);
                 yield " | Réf. ";
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "reference", [], "any", false, false, false, 667), "html", null, true);
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "reference", [], "any", false, false, false, 681), "html", null, true);
                 yield "</p>
                         
                         <div class=\"tags\">
                             <span class=\"tag\">";
-                // line 670
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "duration", [], "any", false, false, false, 670), "html", null, true);
+                // line 684
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "duration", [], "any", false, false, false, 684), "html", null, true);
                 yield "</span>
                             <span class=\"tag\">";
-                // line 671
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "level", [], "any", false, false, false, 671), "html", null, true);
+                // line 685
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "level", [], "any", false, false, false, 685), "html", null, true);
                 yield "</span>
                             ";
-                // line 672
+                // line 686
                 $context['_parent'] = $context;
-                $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "tags", [], "any", false, false, false, 672));
+                $context['_seq'] = CoreExtension::ensureTraversable(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "tags", [], "any", false, false, false, 686));
                 foreach ($context['_seq'] as $context["_key"] => $context["tag"]) {
-                    // line 673
+                    // line 687
                     yield "                                <span class=\"";
-                    yield ((CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "optional", [], "any", false, false, false, 673)) ? ("tag_optional") : ("tag"));
+                    yield ((CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "optional", [], "any", false, false, false, 687)) ? ("tag_optional") : ("tag"));
                     yield "\">";
-                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "name", [], "any", false, false, false, 673), "html", null, true);
+                    yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["tag"], "name", [], "any", false, false, false, 687), "html", null, true);
                     yield "</span>
                             ";
                 }
                 $_parent = $context['_parent'];
                 unset($context['_seq'], $context['_key'], $context['tag'], $context['_parent']);
                 $context = array_intersect_key($context, $_parent) + $_parent;
-                // line 675
+                // line 689
                 yield "                        </div>
                         
                         <p>Commence le : ";
-                // line 677
-                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "startDate", [], "any", false, false, false, 677), "html", null, true);
+                // line 691
+                yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "startDate", [], "any", false, false, false, 691), "html", null, true);
                 yield "</p>
                         <p class=\"";
-                // line 678
-                yield (((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "remuneration", [], "any", false, false, false, 678) == 0)) ? ("remuneration_negative") : ("remuneration"));
+                // line 692
+                yield (((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "remuneration", [], "any", false, false, false, 692) == 0)) ? ("remuneration_negative") : ("remuneration"));
                 yield "\">
                             ";
-                // line 679
-                yield (((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "remuneration", [], "any", false, false, false, 679) == 0)) ? ("Non Rémunéré") : ("Rémunéré"));
+                // line 693
+                yield (((CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "remuneration", [], "any", false, false, false, 693) == 0)) ? ("Non Rémunéré") : ("Rémunéré"));
                 yield "
                         </p>
                         
                         ";
-                // line 682
-                if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "highlighted", [], "any", false, false, false, 682)) {
-                    // line 683
+                // line 696
+                if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "highlighted", [], "any", false, false, false, 696)) {
+                    // line 697
                     yield "                            <p class=\"tag_star\">Candidat star !</p>
                         ";
                 }
-                // line 685
+                // line 699
                 yield "                        
                         ";
-                // line 686
-                if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 686)) {
-                    // line 687
+                // line 700
+                if (CoreExtension::getAttribute($this->env, $this->source, $context["offer"], "wishlisted", [], "any", false, false, false, 700)) {
+                    // line 701
                     yield "                            <p class=\"wishlist-badge\">Dans votre wishlist</p>
                         ";
                 }
-                // line 689
+                // line 703
                 yield "                    </div>
                 ";
             }
             $_parent = $context['_parent'];
             unset($context['_seq'], $context['_key'], $context['offer'], $context['_parent']);
             $context = array_intersect_key($context, $_parent) + $_parent;
-            // line 691
+            // line 705
             yield "            </div>
         ";
         } else {
-            // line 693
+            // line 707
             yield "            <div class=\"empty-offers\">
                 <p>Cette entreprise n'a pas d'offres de stage actives actuellement.</p>
             </div>
         ";
         }
-        // line 697
+        // line 711
         yield "    </section>
 </div>
 
@@ -954,9 +968,9 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
     </div>
 
     ";
-        // line 705
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_grade_company"], "method", false, false, false, 705)) {
-            // line 706
+        // line 719
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_grade_company"], "method", false, false, false, 719)) {
+            // line 720
             yield "    <div class=\"comment-form\">
         <div class=\"rating-input\">
             <label>Note : </label>
@@ -969,20 +983,20 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
             </div>
         </div>
         ";
-            // line 717
+            // line 731
             if ((array_key_exists("usercomment", $context) &&  !Twig\Extension\CoreExtension::testEmpty(($context["usercomment"] ?? null)))) {
-                // line 718
+                // line 732
                 yield "            <textarea
             id=\"commentTextarea\"
             placeholder=\"Partagez votre expérience avec cette entreprise...\"
             maxlength=\"500\"
             >";
-                // line 722
+                // line 736
                 yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(($context["usercomment"] ?? null), "html", null, true);
                 yield "</textarea>
         ";
             } else {
-                // line 724
+                // line 738
                 yield "            <textarea
             id=\"commentTextarea\"
             placeholder=\"Partagez votre expérience avec cette entreprise...\"
@@ -990,12 +1004,12 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
             ></textarea>
         ";
             }
-            // line 730
+            // line 744
             yield "        <button id=\"submitCommentBtn\">Publier</button>
     </div>
     ";
         }
-        // line 733
+        // line 747
         yield "
     <div id=\"commentsList\" class=\"comments-list\">
         <!-- Commentaires seront chargés dynamiquement -->
@@ -1012,354 +1026,357 @@ class __TwigTemplate_dc2d8f253308f587fa361c2d39aabb25 extends Template
         yield from [];
     }
 
-    // line 747
+    // line 761
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 748
+        // line 762
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Wishlist functionality
-    const wishlistButtons = document.querySelectorAll('.wishlist-star');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wishlist functionality
+            const wishlistButtons = document.querySelectorAll('.wishlist-star');
 
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+            wishlistButtons.forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-            const offerId = button.dataset.id;
+                    const offerId = button.dataset.id;
 
-            try {
-                const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
+                    try {
+                        const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
 
-                const data = await response.json();
+                        const data = await response.json();
 
-                if (data.success) {
-                    button.classList.toggle('active', data.wishlisted);
-                    button.setAttribute('aria-label', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
-                    button.setAttribute('title', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
+                        if (data.success) {
+                            button.classList.toggle('active', data.wishlisted);
+                            button.setAttribute('aria-label', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
+                            button.setAttribute('title', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
 
-                    const offerCard = button.closest('.offre-card');
-                    let wishlistBadge = offerCard.querySelector('.wishlist-badge');
+                            const offerCard = button.closest('.offre-card');
+                            let wishlistBadge = offerCard.querySelector('.wishlist-badge');
 
-                    if (data.wishlisted) {
-                        if (!wishlistBadge) {
-                            wishlistBadge = document.createElement('p');
-                            wishlistBadge.className = 'wishlist-badge';
-                            wishlistBadge.textContent = 'Dans votre wishlist';
-                            offerCard.appendChild(wishlistBadge);
+                            if (data.wishlisted) {
+                                if (!wishlistBadge) {
+                                    wishlistBadge = document.createElement('p');
+                                    wishlistBadge.className = 'wishlist-badge';
+                                    wishlistBadge.textContent = 'Dans votre wishlist';
+                                    offerCard.appendChild(wishlistBadge);
+                                }
+                            } else {
+                                if (wishlistBadge) {
+                                    wishlistBadge.remove();
+                                }
+                            }
+
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                        } else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
                         }
-                    } else {
-                        if (wishlistBadge) {
-                            wishlistBadge.remove();
+                    } catch (error) {
+                        console.error('Error toggling wishlist:', error);
+
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de la mise à jour de votre wishlist.', 'error');
                         }
                     }
-
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'success');
-                    }
-                } else {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    }
-
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('Error toggling wishlist:', error);
-
-                if (typeof addNotification === 'function') {
-                    addNotification('Une erreur est survenue lors de la mise à jour de votre wishlist.', 'error');
-                }
-            }
-        });
-    });
-
-    // Click handler for offer cards
-    const offerCards = document.querySelectorAll('.offre-card');
-
-    offerCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.closest('.wishlist-star')) {
-                window.location.href = `/offres/\${card.dataset.id}`;
-            }
-        });
-    });
-
-    // Evaluation modal functionality
-    const evaluateBtn = document.getElementById('evaluateBtn');
-    const evaluationModal = document.getElementById('evaluationModal');
-    const cancelEvaluationBtn = document.getElementById('cancelEvaluation');
-    const starRating = document.getElementById('starRating');
-    const ratingStars = document.querySelectorAll('.rating-star');
-    const ratingValueInput = document.getElementById('ratingValue');
-    const submitRatingBtn = document.getElementById('submitRating');
-    const ratingForm = document.getElementById('ratingForm');
-
-    if (evaluateBtn) {
-        evaluateBtn.addEventListener('click', () => {
-            evaluationModal.style.display = 'block';
-        });
-    }
-
-    if (cancelEvaluationBtn) {
-        cancelEvaluationBtn.addEventListener('click', () => {
-            evaluationModal.style.display = 'none';
-            ratingStars.forEach(star => star.classList.remove('selected'));
-            ratingValueInput.value = '0';
-            submitRatingBtn.disabled = true;
-        });
-    }
-
-    if (evaluationModal) {
-        evaluationModal.addEventListener('click', (e) => {
-            if (e.target === evaluationModal) {
-                evaluationModal.style.display = 'none';
-                ratingStars.forEach(star => star.classList.remove('selected'));
-                ratingValueInput.value = '0';
-                submitRatingBtn.disabled = true;
-            }
-        });
-    }
-
-    if (starRating) {
-        ratingStars.forEach(star => {
-            star.addEventListener('mouseover', () => {
-                const value = parseInt(star.dataset.value);
-                ratingStars.forEach(s => {
-                    const starValue = parseInt(s.dataset.value);
-                    s.style.color = starValue <= value ? 'var(--primary-color)' : 'var(--real-grey)';
                 });
             });
 
-            star.addEventListener('mouseout', () => {
-                ratingStars.forEach(s => {
-                    s.style.color = s.classList.contains('selected') ? 'var(--primary-color)' : 'var(--real-grey)';
-                });
-            });
+            // Click handler for offer cards
+            const offerCards = document.querySelectorAll('.offre-card');
 
-            star.addEventListener('click', () => {
-                const value = parseInt(star.dataset.value);
-                ratingStars.forEach(s => {
-                    const starValue = parseInt(s.dataset.value);
-                    s.classList.toggle('selected', starValue <= value);
-                });
-                ratingValueInput.value = value;
-                submitRatingBtn.disabled = false;
-            });
-        });
-    }
-
-    if (ratingForm) {
-        ratingForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(ratingForm);
-
-            try {
-                const response = await fetch('/api/evaluate-enterprise', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'success');
+            offerCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.wishlist-star')) {
+                        window.location.href = `/offres/\${card.dataset.id}`;
                     }
+                });
+            });
+
+            // Evaluation modal functionality
+            const evaluateBtn = document.getElementById('evaluateBtn');
+            const evaluationModal = document.getElementById('evaluationModal');
+            const cancelEvaluationBtn = document.getElementById('cancelEvaluation');
+            const starRating = document.getElementById('starRating');
+            const ratingStars = document.querySelectorAll('.rating-star');
+            const ratingValueInput = document.getElementById('ratingValue');
+            const submitRatingBtn = document.getElementById('submitRating');
+            const ratingForm = document.getElementById('ratingForm');
+
+            if (evaluateBtn) {
+                evaluateBtn.addEventListener('click', () => {
+                    evaluationModal.style.display = 'block';
+                });
+            }
+
+            if (cancelEvaluationBtn) {
+                cancelEvaluationBtn.addEventListener('click', () => {
                     evaluationModal.style.display = 'none';
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'error');
+                    ratingStars.forEach(star => star.classList.remove('selected'));
+                    ratingValueInput.value = '0';
+                    submitRatingBtn.disabled = true;
+                });
+            }
+
+            if (evaluationModal) {
+                evaluationModal.addEventListener('click', (e) => {
+                    if (e.target === evaluationModal) {
+                        evaluationModal.style.display = 'none';
+                        ratingStars.forEach(star => star.classList.remove('selected'));
+                        ratingValueInput.value = '0';
+                        submitRatingBtn.disabled = true;
+                    }
+                });
+            }
+
+            if (starRating) {
+                ratingStars.forEach(star => {
+                    star.addEventListener('mouseover', () => {
+                        const value = parseInt(star.dataset.value);
+                        ratingStars.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.style.color = starValue <= value ? 'var(--primary-color)' : 'var(--real-grey)';
+                        });
+                    });
+
+                    star.addEventListener('mouseout', () => {
+                        ratingStars.forEach(s => {
+                            s.style.color = s.classList.contains('selected') ? 'var(--primary-color)' : 'var(--real-grey)';
+                        });
+                    });
+
+                    star.addEventListener('click', () => {
+                        const value = parseInt(star.dataset.value);
+                        ratingStars.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.classList.toggle('selected', starValue <= value);
+                        });
+                        ratingValueInput.value = value;
+                        submitRatingBtn.disabled = false;
+                    });
+                });
+            }
+
+            if (ratingForm) {
+                ratingForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(ratingForm);
+
+                    try {
+                        const response = await fetch('/api/evaluate-enterprise', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            evaluationModal.style.display = 'none';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error submitting rating:', error);
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de l\\'évaluation de l\\'entreprise.', 'error');
+                        }
+                    }
+                });
+            }
+
+            // Comments functionality
+            const commentsList = document.getElementById('commentsList');
+            const prevCommentsBtn = document.getElementById('prevCommentsBtn');
+            const nextCommentsBtn = document.getElementById('nextCommentsBtn');
+            const commentPageInfo = document.getElementById('commentPageInfo');
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            commentsList.appendChild(spinner);
+
+            let currentPage = 1;
+            const commentsPerPage = 5;
+
+            async function loadComments(page = 1) {
+                spinner.style.display = 'block'; // Show spinner
+                try {
+                    const enterpriseId = \"";
+        // line 954
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "id_enterprise", [], "any", false, false, false, 954), "html", null, true);
+        yield "\";
+                    const response = await fetch(`/API/entreprises/\${enterpriseId}/comments?page=\${page}&limit=\${commentsPerPage}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        commentsList.innerHTML = data.comments.map(comment => `
+                            <div class=\"comment-card\">
+                                <img
+                                    src=\"\${comment.authorPhoto}\"
+                                    alt=\"\${comment.author}\"
+                                    class=\"comment-author-avatar\"
+                                >
+                                <div class=\"comment-body\">
+                                    <div class=\"comment-author\">\${comment.author}</div>
+                                    <div class=\"star-rating\">
+                                        \${'★'.repeat(comment.grade).split('').map(() => `<span class=\"star filled\">★</span>`).join('')}
+                                        \${'★'.repeat(5 - comment.grade).split('').map(() => `<span class=\"star\">★</span>`).join('')}
+                                    </div>
+                                    <div class=\"comment-text\">\${comment.text}</div>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        commentsList.appendChild(spinner); // Re-add spinner to the DOM
+                        currentPage = page;
+                        commentPageInfo.textContent = `Page \${page} of \${data.totalPages}`;
+                        prevCommentsBtn.disabled = page <= 1;
+                        nextCommentsBtn.disabled = page >= data.totalPages;
+                    } else {
+                        console.error('Failed to load comments:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading comments:', error);
+                } finally {
+                    spinner.style.display = 'none'; // Hide spinner
+                }
+            }
+
+            ";
+        // line 992
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_grade_company"], "method", false, false, false, 992)) {
+            // line 993
+            yield "                console.log('User has permission to evaluate and comment.');
+                const submitCommentBtn = document.getElementById('submitCommentBtn');
+                const commentTextarea = document.getElementById('commentTextarea');
+                const ratingStarsComment = document.querySelectorAll('#starRating .rating-star');
+
+                let selectedRating = 0;
+
+                ratingStarsComment.forEach(star => {
+                    star.addEventListener('click', () => {
+                        const value = parseInt(star.dataset.value);
+                        selectedRating = value;
+                        ratingStarsComment.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.classList.toggle('selected', starValue <= value);
+                        });
+                    });
+                });
+
+                async function submitComment() {
+                    const commentText = commentTextarea.value.trim();
+
+                    if (!commentText) {
+                        if (typeof addNotification === 'function') {
+                            addNotification('Le commentaire ne peut pas être vide', 'error');
+                        } else {
+                            alert('Le commentaire ne peut pas être vide');
+                        }
+                        return;
+                    }
+
+                    if (selectedRating === 0) {
+                        if (typeof addNotification === 'function') {
+                            addNotification('Veuillez sélectionner une note', 'error');
+                        } else {
+                            alert('Veuillez sélectionner une note');
+                        }
+                        return;
+                    }
+
+                    try {
+                        const enterpriseId = \"";
+            // line 1033
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "id_enterprise", [], "any", false, false, false, 1033), "html", null, true);
+            yield "\";
+                        const response = await fetch('/API/entreprises/comments', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                enterpriseId: enterpriseId,
+                                commentText: commentText,
+                                rating: selectedRating
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            commentTextarea.value = '';
+                            selectedRating = 0;
+                            ratingStarsComment.forEach(star => star.classList.remove('selected'));
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            loadComments(1);
+                        } else {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error submitting comment:', error);
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de l\\'envoi du commentaire', 'error');
+                        }
                     }
                 }
-            } catch (error) {
-                console.error('Error submitting rating:', error);
-                if (typeof addNotification === 'function') {
-                    addNotification('Une erreur est survenue lors de l\\'évaluation de l\\'entreprise.', 'error');
-                }
-            }
+
+                submitCommentBtn.addEventListener('click', submitComment);
+                commentTextarea.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        submitComment();
+                    }
+                });
+
+                prevCommentsBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        loadComments(currentPage - 1);
+                    }
+                });
+
+                nextCommentsBtn.addEventListener('click', () => {
+                    if (currentPage < data.totalPages) {
+                        loadComments(currentPage + 1);
+                    }
+                });
+            ";
+        }
+        // line 1089
+        yield "
+            loadComments(); // Always load comments
         });
-    }
-
-    ";
-        // line 925
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "hasPermission", ["perm_grade_company"], "method", false, false, false, 925)) {
-            // line 926
-            yield "    console.log('User has permission to evaluate and comment.');
-    const submitCommentBtn = document.getElementById('submitCommentBtn');
-    const commentTextarea = document.getElementById('commentTextarea');
-    const ratingStarsComment = document.querySelectorAll('#starRating .rating-star');
-    const commentsList = document.getElementById('commentsList');
-    const prevCommentsBtn = document.getElementById('prevCommentsBtn');
-    const nextCommentsBtn = document.getElementById('nextCommentsBtn');
-    const commentPageInfo = document.getElementById('commentPageInfo');
-
-    let currentPage = 1;
-    const commentsPerPage = 5;
-    let selectedRating = 0;
-
-    ratingStarsComment.forEach(star => {
-        star.addEventListener('click', () => {
-            const value = parseInt(star.dataset.value);
-            selectedRating = value;
-            ratingStarsComment.forEach(s => {
-                const starValue = parseInt(s.dataset.value);
-                s.classList.toggle('selected', starValue <= value);
-            });
-        });
-    });
-
-    async function loadComments(page = 1) {
-        console.log('Loading comments for page:', page);
-        try {
-            const enterpriseId = \"";
-            // line 953
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "id_enterprise", [], "any", false, false, false, 953), "html", null, true);
-            yield "\";
-            console.log('Enterprise ID:', enterpriseId);
-            const response = await fetch(`/API/entreprises/\${enterpriseId}/comments?page=\${page}&limit=\${commentsPerPage}`);
-            const data = await response.json();
-
-            if (data.success) {
-                commentsList.innerHTML = data.comments.map(comment => `
-                    <div class=\"comment-card\">
-                        <img
-                            src=\"\${comment.authorPhoto}\"
-                            alt=\"\${comment.author}\"
-                            class=\"comment-author-avatar\"
-                        >
-                        <div class=\"comment-body\">
-                            <div class=\"comment-author\">\${comment.author}</div>
-                            <div class=\"star-rating\">
-                                \${'★'.repeat(comment.grade).split('').map(() => `<span class=\"star filled\">★</span>`).join('')}
-                                \${'★'.repeat(5 - comment.grade).split('').map(() => `<span class=\"star\">★</span>`).join('')}
-                            </div>
-                            <div class=\"comment-text\">\${comment.text}</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                currentPage = page;
-                commentPageInfo.textContent = `Page \${page} of \${data.totalPages}`;
-                prevCommentsBtn.disabled = page <= 1;
-                nextCommentsBtn.disabled = page >= data.totalPages;
-            } else {
-                console.error('Failed to load comments:', data.message);
-            }
-        } catch (error) {
-            console.error('Error loading comments:', error);
-        }
-    }
-
-    async function submitComment() {
-        const commentText = commentTextarea.value.trim();
-
-        if (!commentText) {
-            if (typeof addNotification === 'function') {
-                addNotification('Le commentaire ne peut pas être vide', 'error');
-            } else {
-                alert('Le commentaire ne peut pas être vide');
-            }
-            return;
-        }
-
-        if (selectedRating === 0) {
-            if (typeof addNotification === 'function') {
-                addNotification('Veuillez sélectionner une note', 'error');
-            } else {
-                alert('Veuillez sélectionner une note');
-            }
-            return;
-        }
-
-        try {
-            const enterpriseId = \"";
-            // line 1011
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "id_enterprise", [], "any", false, false, false, 1011), "html", null, true);
-            yield "\";
-            const response = await fetch('/API/entreprises/comments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    enterpriseId: enterpriseId,
-                    commentText: commentText,
-                    rating: selectedRating
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                commentTextarea.value = '';
-                selectedRating = 0;
-                ratingStarsComment.forEach(star => star.classList.remove('selected'));
-                if (typeof addNotification === 'function') {
-                    addNotification(data.message, 'success');
-                }
-                loadComments(1);
-            } else {
-                if (typeof addNotification === 'function') {
-                    addNotification(data.message, 'error');
-                }
-            }
-        } catch (error) {
-            console.error('Error submitting comment:', error);
-            if (typeof addNotification === 'function') {
-                addNotification('Une erreur est survenue lors de l\\'envoi du commentaire', 'error');
-            }
-        }
-    }
-
-    submitCommentBtn.addEventListener('click', submitComment);
-    commentTextarea.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitComment();
-        }
-    });
-
-    prevCommentsBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-            loadComments(currentPage - 1);
-        }
-    });
-
-    nextCommentsBtn.addEventListener('click', () => {
-        if (currentPage < data.totalPages) {
-            loadComments(currentPage + 1);
-        }
-    });
-
-    loadComments();
-    ";
-        } else {
-            // line 1069
-            yield "    console.log('User does not have permission to evaluate or comment.');
-    ";
-        }
-        // line 1071
-        yield "});
-
 
    </script>
 ";
@@ -1387,7 +1404,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     public function getDebugInfo(): array
     {
-        return array (  1361 => 1071,  1357 => 1069,  1296 => 1011,  1235 => 953,  1206 => 926,  1204 => 925,  1023 => 748,  1016 => 747,  999 => 733,  994 => 730,  986 => 724,  981 => 722,  975 => 718,  973 => 717,  960 => 706,  958 => 705,  948 => 697,  942 => 693,  938 => 691,  931 => 689,  927 => 687,  925 => 686,  922 => 685,  918 => 683,  916 => 682,  910 => 679,  906 => 678,  902 => 677,  898 => 675,  887 => 673,  883 => 672,  879 => 671,  875 => 670,  867 => 667,  863 => 665,  854 => 659,  850 => 658,  846 => 657,  839 => 656,  837 => 655,  833 => 654,  823 => 652,  819 => 651,  816 => 650,  814 => 649,  808 => 645,  801 => 641,  796 => 638,  794 => 637,  788 => 633,  782 => 631,  780 => 630,  771 => 623,  767 => 621,  761 => 619,  746 => 613,  741 => 612,  739 => 611,  734 => 608,  730 => 606,  724 => 604,  722 => 603,  713 => 597,  705 => 592,  699 => 588,  686 => 579,  684 => 578,  678 => 575,  667 => 567,  657 => 560,  652 => 557,  646 => 555,  638 => 553,  636 => 552,  627 => 546,  621 => 542,  614 => 541,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
+        return array (  1377 => 1089,  1318 => 1033,  1276 => 993,  1274 => 992,  1233 => 954,  1037 => 762,  1030 => 761,  1013 => 747,  1008 => 744,  1000 => 738,  995 => 736,  989 => 732,  987 => 731,  974 => 720,  972 => 719,  962 => 711,  956 => 707,  952 => 705,  945 => 703,  941 => 701,  939 => 700,  936 => 699,  932 => 697,  930 => 696,  924 => 693,  920 => 692,  916 => 691,  912 => 689,  901 => 687,  897 => 686,  893 => 685,  889 => 684,  881 => 681,  877 => 679,  868 => 673,  864 => 672,  860 => 671,  853 => 670,  851 => 669,  847 => 668,  837 => 666,  833 => 665,  830 => 664,  828 => 663,  822 => 659,  815 => 655,  810 => 652,  808 => 651,  802 => 647,  796 => 645,  794 => 644,  785 => 637,  781 => 635,  775 => 633,  760 => 627,  755 => 626,  753 => 625,  748 => 622,  744 => 620,  738 => 618,  736 => 617,  727 => 611,  719 => 606,  713 => 602,  700 => 593,  698 => 592,  692 => 589,  681 => 581,  671 => 574,  666 => 571,  660 => 569,  652 => 567,  650 => 566,  641 => 560,  635 => 556,  628 => 555,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1928,6 +1945,20 @@ document.addEventListener('DOMContentLoaded', () => {
             border-radius: 4px;
             cursor: pointer;
         }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
     </style>
 {% endblock %}
@@ -2032,7 +2063,7 @@ document.addEventListener('DOMContentLoaded', () => {
         <section class=\"enterprise-description\">
             <h2>À propos de l'entreprise</h2>
             <div class=\"description-content\">
-                {{ enterprise.enterprise_description_url|raw }}
+                {{ enterprise.enterprise_description_url|nl2br }}
             </div>
         </section>
     {% endif %}
@@ -2141,329 +2172,334 @@ document.addEventListener('DOMContentLoaded', () => {
 {% block javascripts %}
     {{ parent() }}
     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Wishlist functionality
-    const wishlistButtons = document.querySelectorAll('.wishlist-star');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wishlist functionality
+            const wishlistButtons = document.querySelectorAll('.wishlist-star');
 
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+            wishlistButtons.forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-            const offerId = button.dataset.id;
+                    const offerId = button.dataset.id;
 
-            try {
-                const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
+                    try {
+                        const response = await fetch(`/API/wishlist/toggle/\${offerId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
 
-                const data = await response.json();
+                        const data = await response.json();
 
-                if (data.success) {
-                    button.classList.toggle('active', data.wishlisted);
-                    button.setAttribute('aria-label', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
-                    button.setAttribute('title', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
+                        if (data.success) {
+                            button.classList.toggle('active', data.wishlisted);
+                            button.setAttribute('aria-label', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
+                            button.setAttribute('title', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
 
-                    const offerCard = button.closest('.offre-card');
-                    let wishlistBadge = offerCard.querySelector('.wishlist-badge');
+                            const offerCard = button.closest('.offre-card');
+                            let wishlistBadge = offerCard.querySelector('.wishlist-badge');
 
-                    if (data.wishlisted) {
-                        if (!wishlistBadge) {
-                            wishlistBadge = document.createElement('p');
-                            wishlistBadge.className = 'wishlist-badge';
-                            wishlistBadge.textContent = 'Dans votre wishlist';
-                            offerCard.appendChild(wishlistBadge);
+                            if (data.wishlisted) {
+                                if (!wishlistBadge) {
+                                    wishlistBadge = document.createElement('p');
+                                    wishlistBadge.className = 'wishlist-badge';
+                                    wishlistBadge.textContent = 'Dans votre wishlist';
+                                    offerCard.appendChild(wishlistBadge);
+                                }
+                            } else {
+                                if (wishlistBadge) {
+                                    wishlistBadge.remove();
+                                }
+                            }
+
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                        } else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
                         }
-                    } else {
-                        if (wishlistBadge) {
-                            wishlistBadge.remove();
+                    } catch (error) {
+                        console.error('Error toggling wishlist:', error);
+
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de la mise à jour de votre wishlist.', 'error');
                         }
                     }
-
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'success');
-                    }
-                } else {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    }
-
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('Error toggling wishlist:', error);
-
-                if (typeof addNotification === 'function') {
-                    addNotification('Une erreur est survenue lors de la mise à jour de votre wishlist.', 'error');
-                }
-            }
-        });
-    });
-
-    // Click handler for offer cards
-    const offerCards = document.querySelectorAll('.offre-card');
-
-    offerCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.closest('.wishlist-star')) {
-                window.location.href = `/offres/\${card.dataset.id}`;
-            }
-        });
-    });
-
-    // Evaluation modal functionality
-    const evaluateBtn = document.getElementById('evaluateBtn');
-    const evaluationModal = document.getElementById('evaluationModal');
-    const cancelEvaluationBtn = document.getElementById('cancelEvaluation');
-    const starRating = document.getElementById('starRating');
-    const ratingStars = document.querySelectorAll('.rating-star');
-    const ratingValueInput = document.getElementById('ratingValue');
-    const submitRatingBtn = document.getElementById('submitRating');
-    const ratingForm = document.getElementById('ratingForm');
-
-    if (evaluateBtn) {
-        evaluateBtn.addEventListener('click', () => {
-            evaluationModal.style.display = 'block';
-        });
-    }
-
-    if (cancelEvaluationBtn) {
-        cancelEvaluationBtn.addEventListener('click', () => {
-            evaluationModal.style.display = 'none';
-            ratingStars.forEach(star => star.classList.remove('selected'));
-            ratingValueInput.value = '0';
-            submitRatingBtn.disabled = true;
-        });
-    }
-
-    if (evaluationModal) {
-        evaluationModal.addEventListener('click', (e) => {
-            if (e.target === evaluationModal) {
-                evaluationModal.style.display = 'none';
-                ratingStars.forEach(star => star.classList.remove('selected'));
-                ratingValueInput.value = '0';
-                submitRatingBtn.disabled = true;
-            }
-        });
-    }
-
-    if (starRating) {
-        ratingStars.forEach(star => {
-            star.addEventListener('mouseover', () => {
-                const value = parseInt(star.dataset.value);
-                ratingStars.forEach(s => {
-                    const starValue = parseInt(s.dataset.value);
-                    s.style.color = starValue <= value ? 'var(--primary-color)' : 'var(--real-grey)';
                 });
             });
 
-            star.addEventListener('mouseout', () => {
-                ratingStars.forEach(s => {
-                    s.style.color = s.classList.contains('selected') ? 'var(--primary-color)' : 'var(--real-grey)';
-                });
-            });
+            // Click handler for offer cards
+            const offerCards = document.querySelectorAll('.offre-card');
 
-            star.addEventListener('click', () => {
-                const value = parseInt(star.dataset.value);
-                ratingStars.forEach(s => {
-                    const starValue = parseInt(s.dataset.value);
-                    s.classList.toggle('selected', starValue <= value);
-                });
-                ratingValueInput.value = value;
-                submitRatingBtn.disabled = false;
-            });
-        });
-    }
-
-    if (ratingForm) {
-        ratingForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(ratingForm);
-
-            try {
-                const response = await fetch('/api/evaluate-enterprise', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'success');
+            offerCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.wishlist-star')) {
+                        window.location.href = `/offres/\${card.dataset.id}`;
                     }
+                });
+            });
+
+            // Evaluation modal functionality
+            const evaluateBtn = document.getElementById('evaluateBtn');
+            const evaluationModal = document.getElementById('evaluationModal');
+            const cancelEvaluationBtn = document.getElementById('cancelEvaluation');
+            const starRating = document.getElementById('starRating');
+            const ratingStars = document.querySelectorAll('.rating-star');
+            const ratingValueInput = document.getElementById('ratingValue');
+            const submitRatingBtn = document.getElementById('submitRating');
+            const ratingForm = document.getElementById('ratingForm');
+
+            if (evaluateBtn) {
+                evaluateBtn.addEventListener('click', () => {
+                    evaluationModal.style.display = 'block';
+                });
+            }
+
+            if (cancelEvaluationBtn) {
+                cancelEvaluationBtn.addEventListener('click', () => {
                     evaluationModal.style.display = 'none';
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'error');
+                    ratingStars.forEach(star => star.classList.remove('selected'));
+                    ratingValueInput.value = '0';
+                    submitRatingBtn.disabled = true;
+                });
+            }
+
+            if (evaluationModal) {
+                evaluationModal.addEventListener('click', (e) => {
+                    if (e.target === evaluationModal) {
+                        evaluationModal.style.display = 'none';
+                        ratingStars.forEach(star => star.classList.remove('selected'));
+                        ratingValueInput.value = '0';
+                        submitRatingBtn.disabled = true;
+                    }
+                });
+            }
+
+            if (starRating) {
+                ratingStars.forEach(star => {
+                    star.addEventListener('mouseover', () => {
+                        const value = parseInt(star.dataset.value);
+                        ratingStars.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.style.color = starValue <= value ? 'var(--primary-color)' : 'var(--real-grey)';
+                        });
+                    });
+
+                    star.addEventListener('mouseout', () => {
+                        ratingStars.forEach(s => {
+                            s.style.color = s.classList.contains('selected') ? 'var(--primary-color)' : 'var(--real-grey)';
+                        });
+                    });
+
+                    star.addEventListener('click', () => {
+                        const value = parseInt(star.dataset.value);
+                        ratingStars.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.classList.toggle('selected', starValue <= value);
+                        });
+                        ratingValueInput.value = value;
+                        submitRatingBtn.disabled = false;
+                    });
+                });
+            }
+
+            if (ratingForm) {
+                ratingForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(ratingForm);
+
+                    try {
+                        const response = await fetch('/api/evaluate-enterprise', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            evaluationModal.style.display = 'none';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error submitting rating:', error);
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de l\\'évaluation de l\\'entreprise.', 'error');
+                        }
+                    }
+                });
+            }
+
+            // Comments functionality
+            const commentsList = document.getElementById('commentsList');
+            const prevCommentsBtn = document.getElementById('prevCommentsBtn');
+            const nextCommentsBtn = document.getElementById('nextCommentsBtn');
+            const commentPageInfo = document.getElementById('commentPageInfo');
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            commentsList.appendChild(spinner);
+
+            let currentPage = 1;
+            const commentsPerPage = 5;
+
+            async function loadComments(page = 1) {
+                spinner.style.display = 'block'; // Show spinner
+                try {
+                    const enterpriseId = \"{{ enterprise.id_enterprise }}\";
+                    const response = await fetch(`/API/entreprises/\${enterpriseId}/comments?page=\${page}&limit=\${commentsPerPage}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        commentsList.innerHTML = data.comments.map(comment => `
+                            <div class=\"comment-card\">
+                                <img
+                                    src=\"\${comment.authorPhoto}\"
+                                    alt=\"\${comment.author}\"
+                                    class=\"comment-author-avatar\"
+                                >
+                                <div class=\"comment-body\">
+                                    <div class=\"comment-author\">\${comment.author}</div>
+                                    <div class=\"star-rating\">
+                                        \${'★'.repeat(comment.grade).split('').map(() => `<span class=\"star filled\">★</span>`).join('')}
+                                        \${'★'.repeat(5 - comment.grade).split('').map(() => `<span class=\"star\">★</span>`).join('')}
+                                    </div>
+                                    <div class=\"comment-text\">\${comment.text}</div>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        commentsList.appendChild(spinner); // Re-add spinner to the DOM
+                        currentPage = page;
+                        commentPageInfo.textContent = `Page \${page} of \${data.totalPages}`;
+                        prevCommentsBtn.disabled = page <= 1;
+                        nextCommentsBtn.disabled = page >= data.totalPages;
+                    } else {
+                        console.error('Failed to load comments:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading comments:', error);
+                } finally {
+                    spinner.style.display = 'none'; // Hide spinner
+                }
+            }
+
+            {% if request.hasPermission('perm_grade_company') %}
+                console.log('User has permission to evaluate and comment.');
+                const submitCommentBtn = document.getElementById('submitCommentBtn');
+                const commentTextarea = document.getElementById('commentTextarea');
+                const ratingStarsComment = document.querySelectorAll('#starRating .rating-star');
+
+                let selectedRating = 0;
+
+                ratingStarsComment.forEach(star => {
+                    star.addEventListener('click', () => {
+                        const value = parseInt(star.dataset.value);
+                        selectedRating = value;
+                        ratingStarsComment.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.classList.toggle('selected', starValue <= value);
+                        });
+                    });
+                });
+
+                async function submitComment() {
+                    const commentText = commentTextarea.value.trim();
+
+                    if (!commentText) {
+                        if (typeof addNotification === 'function') {
+                            addNotification('Le commentaire ne peut pas être vide', 'error');
+                        } else {
+                            alert('Le commentaire ne peut pas être vide');
+                        }
+                        return;
+                    }
+
+                    if (selectedRating === 0) {
+                        if (typeof addNotification === 'function') {
+                            addNotification('Veuillez sélectionner une note', 'error');
+                        } else {
+                            alert('Veuillez sélectionner une note');
+                        }
+                        return;
+                    }
+
+                    try {
+                        const enterpriseId = \"{{ enterprise.id_enterprise }}\";
+                        const response = await fetch('/API/entreprises/comments', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                enterpriseId: enterpriseId,
+                                commentText: commentText,
+                                rating: selectedRating
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            commentTextarea.value = '';
+                            selectedRating = 0;
+                            ratingStarsComment.forEach(star => star.classList.remove('selected'));
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            loadComments(1);
+                        } else {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error submitting comment:', error);
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de l\\'envoi du commentaire', 'error');
+                        }
                     }
                 }
-            } catch (error) {
-                console.error('Error submitting rating:', error);
-                if (typeof addNotification === 'function') {
-                    addNotification('Une erreur est survenue lors de l\\'évaluation de l\\'entreprise.', 'error');
-                }
-            }
+
+                submitCommentBtn.addEventListener('click', submitComment);
+                commentTextarea.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        submitComment();
+                    }
+                });
+
+                prevCommentsBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        loadComments(currentPage - 1);
+                    }
+                });
+
+                nextCommentsBtn.addEventListener('click', () => {
+                    if (currentPage < data.totalPages) {
+                        loadComments(currentPage + 1);
+                    }
+                });
+            {% endif %}
+
+            loadComments(); // Always load comments
         });
-    }
-
-    {% if request.hasPermission('perm_grade_company') %}
-    console.log('User has permission to evaluate and comment.');
-    const submitCommentBtn = document.getElementById('submitCommentBtn');
-    const commentTextarea = document.getElementById('commentTextarea');
-    const ratingStarsComment = document.querySelectorAll('#starRating .rating-star');
-    const commentsList = document.getElementById('commentsList');
-    const prevCommentsBtn = document.getElementById('prevCommentsBtn');
-    const nextCommentsBtn = document.getElementById('nextCommentsBtn');
-    const commentPageInfo = document.getElementById('commentPageInfo');
-
-    let currentPage = 1;
-    const commentsPerPage = 5;
-    let selectedRating = 0;
-
-    ratingStarsComment.forEach(star => {
-        star.addEventListener('click', () => {
-            const value = parseInt(star.dataset.value);
-            selectedRating = value;
-            ratingStarsComment.forEach(s => {
-                const starValue = parseInt(s.dataset.value);
-                s.classList.toggle('selected', starValue <= value);
-            });
-        });
-    });
-
-    async function loadComments(page = 1) {
-        console.log('Loading comments for page:', page);
-        try {
-            const enterpriseId = \"{{ enterprise.id_enterprise }}\";
-            console.log('Enterprise ID:', enterpriseId);
-            const response = await fetch(`/API/entreprises/\${enterpriseId}/comments?page=\${page}&limit=\${commentsPerPage}`);
-            const data = await response.json();
-
-            if (data.success) {
-                commentsList.innerHTML = data.comments.map(comment => `
-                    <div class=\"comment-card\">
-                        <img
-                            src=\"\${comment.authorPhoto}\"
-                            alt=\"\${comment.author}\"
-                            class=\"comment-author-avatar\"
-                        >
-                        <div class=\"comment-body\">
-                            <div class=\"comment-author\">\${comment.author}</div>
-                            <div class=\"star-rating\">
-                                \${'★'.repeat(comment.grade).split('').map(() => `<span class=\"star filled\">★</span>`).join('')}
-                                \${'★'.repeat(5 - comment.grade).split('').map(() => `<span class=\"star\">★</span>`).join('')}
-                            </div>
-                            <div class=\"comment-text\">\${comment.text}</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                currentPage = page;
-                commentPageInfo.textContent = `Page \${page} of \${data.totalPages}`;
-                prevCommentsBtn.disabled = page <= 1;
-                nextCommentsBtn.disabled = page >= data.totalPages;
-            } else {
-                console.error('Failed to load comments:', data.message);
-            }
-        } catch (error) {
-            console.error('Error loading comments:', error);
-        }
-    }
-
-    async function submitComment() {
-        const commentText = commentTextarea.value.trim();
-
-        if (!commentText) {
-            if (typeof addNotification === 'function') {
-                addNotification('Le commentaire ne peut pas être vide', 'error');
-            } else {
-                alert('Le commentaire ne peut pas être vide');
-            }
-            return;
-        }
-
-        if (selectedRating === 0) {
-            if (typeof addNotification === 'function') {
-                addNotification('Veuillez sélectionner une note', 'error');
-            } else {
-                alert('Veuillez sélectionner une note');
-            }
-            return;
-        }
-
-        try {
-            const enterpriseId = \"{{ enterprise.id_enterprise }}\";
-            const response = await fetch('/API/entreprises/comments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    enterpriseId: enterpriseId,
-                    commentText: commentText,
-                    rating: selectedRating
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                commentTextarea.value = '';
-                selectedRating = 0;
-                ratingStarsComment.forEach(star => star.classList.remove('selected'));
-                if (typeof addNotification === 'function') {
-                    addNotification(data.message, 'success');
-                }
-                loadComments(1);
-            } else {
-                if (typeof addNotification === 'function') {
-                    addNotification(data.message, 'error');
-                }
-            }
-        } catch (error) {
-            console.error('Error submitting comment:', error);
-            if (typeof addNotification === 'function') {
-                addNotification('Une erreur est survenue lors de l\\'envoi du commentaire', 'error');
-            }
-        }
-    }
-
-    submitCommentBtn.addEventListener('click', submitComment);
-    commentTextarea.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitComment();
-        }
-    });
-
-    prevCommentsBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-            loadComments(currentPage - 1);
-        }
-    });
-
-    nextCommentsBtn.addEventListener('click', () => {
-        if (currentPage < data.totalPages) {
-            loadComments(currentPage + 1);
-        }
-    });
-
-    loadComments();
-    {% else %}
-    console.log('User does not have permission to evaluate or comment.');
-    {% endif %}
-});
-
 
    </script>
 {% endblock %}", "enterprises/show.html.twig", "C:\\Users\\Asha\\Documents\\GitHub\\Panikpa\\App\\templates\\enterprises\\show.html.twig");

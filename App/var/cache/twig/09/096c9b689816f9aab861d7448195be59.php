@@ -214,35 +214,26 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         // line 70
         yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_name", [], "any", false, false, false, 70), "html", null, true);
         yield "</h4>
-                        ";
+                        <p><strong>Contact:</strong> ";
         // line 71
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 71)) {
-            // line 72
-            yield "                            <p>";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_description_url", [], "any", false, false, false, 72), "html", null, true);
-            yield "</p>
-                        ";
-        }
-        // line 74
-        yield "                        <p><strong>Contact:</strong> ";
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_email", [], "any", false, false, false, 74), "html", null, true);
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_email", [], "any", false, false, false, 71), "html", null, true);
         yield "</p>
                         <p><strong>Téléphone:</strong> ";
-        // line 75
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_phone", [], "any", false, false, false, 75), "html", null, true);
+        // line 72
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_phone", [], "any", false, false, false, 72), "html", null, true);
         yield "</p>
                         ";
-        // line 76
-        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 76)) {
-            // line 77
+        // line 73
+        if (CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 73)) {
+            // line 74
             yield "                            <p><strong>Site web:</strong> <a href=\"";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 77), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 74), "html", null, true);
             yield "\" target=\"_blank\" rel=\"noopener\">";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 77), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["enterprise"] ?? null), "enterprise_site", [], "any", false, false, false, 74), "html", null, true);
             yield "</a></p>
                         ";
         }
-        // line 79
+        // line 76
         yield "                    </div>
                 </section>
                 
@@ -250,20 +241,20 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                     <h3>Informations pratiques</h3>
                     <div class=\"practical-info\">
                         <p><strong>Date de début:</strong> ";
-        // line 85
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "startDate", [], "any", false, false, false, 85), "html", null, true);
+        // line 82
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "startDate", [], "any", false, false, false, 82), "html", null, true);
         yield "</p>
                         <p><strong>Durée:</strong> ";
-        // line 86
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "duration", [], "any", false, false, false, 86), "html", null, true);
+        // line 83
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "duration", [], "any", false, false, false, 83), "html", null, true);
         yield "</p>
                         <p><strong>Lieu:</strong> ";
-        // line 87
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "location", [], "any", false, false, false, 87), "html", null, true);
+        // line 84
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "location", [], "any", false, false, false, 84), "html", null, true);
         yield "</p>
                         <p><strong>Niveau requis:</strong> ";
-        // line 88
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "level", [], "any", false, false, false, 88), "html", null, true);
+        // line 85
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "level", [], "any", false, false, false, 85), "html", null, true);
         yield "</p>
                     </div>
                 </section>
@@ -271,19 +262,19 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             
             <div class=\"offer-actions\">
                 ";
-        // line 94
-        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "isAuthenticated", [], "method", false, false, false, 94)) {
-            // line 95
+        // line 91
+        if ( !CoreExtension::getAttribute($this->env, $this->source, ($context["request"] ?? null), "isAuthenticated", [], "method", false, false, false, 91)) {
+            // line 92
             yield "                    <a href=\"/login\" class=\"btn-primary login-to-apply\">Se connecter pour postuler</a>
                 ";
-        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 96
-($context["request"] ?? null), "hasPermission", ["perm_offer_apply"], "method", false, false, false, 96) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 96))) {
-            // line 97
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 93
+($context["request"] ?? null), "hasPermission", ["perm_offer_apply"], "method", false, false, false, 93) &&  !CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 93))) {
+            // line 94
             yield "                    <button id=\"apply-button\" class=\"btn-primary login-to-apply\">Postuler à cette offre</button>
                 ";
-        } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 98
-($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 98)) {
-            // line 99
+        } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 95
+($context["offer"] ?? null), "hasApplied", [], "any", false, false, false, 95)) {
+            // line 96
             yield "                    <div class=\"already-applied\">
                         <svg viewBox=\"0 0 24 24\" width=\"24\" height=\"24\">
                             <path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z\" fill=\"currentColor\"/>
@@ -291,21 +282,21 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                         <span>Vous avez déjà postulé à cette offre</span>
                     </div>
                 ";
-        } elseif (CoreExtension::getAttribute($this->env, $this->source,         // line 105
-($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 105)) {
-            // line 106
+        } elseif ((CoreExtension::getAttribute($this->env, $this->source,         // line 102
+($context["request"] ?? null), "hasPermission", ["perm_admin"], "method", false, false, false, 102) || ($context["canEdit"] ?? null))) {
+            // line 103
             yield "                    <a href=\"/offres/edit/";
-            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 106), "html", null, true);
+            yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 103), "html", null, true);
             yield "\" id=\"modify-button\" class=\"btn-secondary modify-offer\">Modifier cette offre</a>
                 ";
         } else {
-            // line 108
+            // line 105
             yield "                    <div class=\"cannot-apply\">
                         <p>Vous n'avez pas les permissions nécessaires pour postuler à cette offre.</p>
                     </div>
                 ";
         }
-        // line 112
+        // line 109
         yield "            </div>
         </div>
     </div>
@@ -315,16 +306,16 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         <div class=\"modal-content\">
             <div class=\"modal-header\">
                 <h2>Postuler à l'offre: ";
-        // line 120
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "title", [], "any", false, false, false, 120), "html", null, true);
+        // line 117
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "title", [], "any", false, false, false, 117), "html", null, true);
         yield "</h2>
                 <button class=\"close-modal\">&times;</button>
             </div>
             <div class=\"modal-body\">
                 <form id=\"application-form\" enctype=\"multipart/form-data\">
                     <input type=\"hidden\" name=\"offerId\" value=\"";
-        // line 125
-        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 125), "html", null, true);
+        // line 122
+        yield $this->env->getRuntime('Twig\Runtime\EscaperRuntime')->escape(CoreExtension::getAttribute($this->env, $this->source, ($context["offer"] ?? null), "id", [], "any", false, false, false, 122), "html", null, true);
         yield "\">
                     
                     <div class=\"form-group\">
@@ -360,14 +351,14 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
         yield from [];
     }
 
-    // line 158
+    // line 155
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_stylesheets(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 159
+        // line 156
         yield "    ";
         yield from $this->yieldParentBlock("stylesheets", $context, $blocks);
         yield "
@@ -728,20 +719,21 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             background-color: var(--secondary-color);
             color: var(--secondary-text);
             width: 100%;
+            align: center;
         }
 </style>
 ";
         yield from [];
     }
 
-    // line 521
+    // line 519
     /**
      * @return iterable<null|scalar|\Stringable>
      */
     public function block_javascripts(array $context, array $blocks = []): iterable
     {
         $macros = $this->macros;
-        // line 522
+        // line 520
         yield "    ";
         yield from $this->yieldParentBlock("javascripts", $context, $blocks);
         yield "
@@ -1060,7 +1052,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
      */
     public function getDebugInfo(): array
     {
-        return array (  745 => 522,  738 => 521,  371 => 159,  364 => 158,  327 => 125,  319 => 120,  309 => 112,  303 => 108,  297 => 106,  295 => 105,  287 => 99,  285 => 98,  282 => 97,  280 => 96,  277 => 95,  275 => 94,  266 => 88,  262 => 87,  258 => 86,  254 => 85,  246 => 79,  238 => 77,  236 => 76,  232 => 75,  227 => 74,  221 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
+        return array (  737 => 520,  730 => 519,  362 => 156,  355 => 155,  318 => 122,  310 => 117,  300 => 109,  294 => 105,  288 => 103,  286 => 102,  278 => 96,  276 => 95,  273 => 94,  271 => 93,  268 => 92,  266 => 91,  257 => 85,  253 => 84,  249 => 83,  245 => 82,  237 => 76,  229 => 74,  227 => 73,  223 => 72,  219 => 71,  215 => 70,  205 => 63,  195 => 55,  191 => 53,  189 => 52,  184 => 50,  179 => 49,  168 => 47,  164 => 46,  160 => 45,  156 => 44,  148 => 39,  144 => 38,  140 => 37,  134 => 34,  130 => 33,  124 => 29,  118 => 26,  111 => 22,  107 => 21,  102 => 20,  100 => 19,  95 => 17,  86 => 11,  80 => 10,  74 => 6,  67 => 5,  54 => 3,  43 => 1,);
     }
 
     public function getSourceContext(): Source
@@ -1135,9 +1127,6 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                     <h3>Entreprise</h3>
                     <div class=\"company-details\">
                         <h4>{{ enterprise.enterprise_name }}</h4>
-                        {% if enterprise.enterprise_description_url %}
-                            <p>{{ enterprise.enterprise_description_url }}</p>
-                        {% endif %}
                         <p><strong>Contact:</strong> {{ enterprise.enterprise_email }}</p>
                         <p><strong>Téléphone:</strong> {{ enterprise.enterprise_phone }}</p>
                         {% if enterprise.enterprise_site %}
@@ -1169,7 +1158,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
                         </svg>
                         <span>Vous avez déjà postulé à cette offre</span>
                     </div>
-                {% elseif request.hasPermission('perm_admin') %}
+                {% elseif request.hasPermission('perm_admin') or canEdit %}
                     <a href=\"/offres/edit/{{ offer.id }}\" id=\"modify-button\" class=\"btn-secondary modify-offer\">Modifier cette offre</a>
                 {% else %}
                     <div class=\"cannot-apply\">
@@ -1581,6 +1570,7 @@ class __TwigTemplate_dc7fa17e6c11f4aaf14e45485b743b34 extends Template
             background-color: var(--secondary-color);
             color: var(--secondary-text);
             width: 100%;
+            align: center;
         }
 </style>
 {% endblock %}

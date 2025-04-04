@@ -534,6 +534,20 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
     </style>
 {% endblock %}
@@ -638,7 +652,7 @@
         <section class="enterprise-description">
             <h2>À propos de l'entreprise</h2>
             <div class="description-content">
-                {{ enterprise.enterprise_description_url|raw }}
+                {{ enterprise.enterprise_description_url|nl2br }}
             </div>
         </section>
     {% endif %}
@@ -747,329 +761,334 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-document.addEventListener('DOMContentLoaded', () => {
-    // Wishlist functionality
-    const wishlistButtons = document.querySelectorAll('.wishlist-star');
+        document.addEventListener('DOMContentLoaded', () => {
+            // Wishlist functionality
+            const wishlistButtons = document.querySelectorAll('.wishlist-star');
 
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', async (e) => {
-            e.preventDefault();
-            e.stopPropagation();
+            wishlistButtons.forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-            const offerId = button.dataset.id;
+                    const offerId = button.dataset.id;
 
-            try {
-                const response = await fetch(`/API/wishlist/toggle/${offerId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                });
+                    try {
+                        const response = await fetch(`/API/wishlist/toggle/${offerId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
 
-                const data = await response.json();
+                        const data = await response.json();
 
-                if (data.success) {
-                    button.classList.toggle('active', data.wishlisted);
-                    button.setAttribute('aria-label', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
-                    button.setAttribute('title', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
+                        if (data.success) {
+                            button.classList.toggle('active', data.wishlisted);
+                            button.setAttribute('aria-label', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
+                            button.setAttribute('title', data.wishlisted ? 'Retirer de la wishlist' : 'Ajouter à la wishlist');
 
-                    const offerCard = button.closest('.offre-card');
-                    let wishlistBadge = offerCard.querySelector('.wishlist-badge');
+                            const offerCard = button.closest('.offre-card');
+                            let wishlistBadge = offerCard.querySelector('.wishlist-badge');
 
-                    if (data.wishlisted) {
-                        if (!wishlistBadge) {
-                            wishlistBadge = document.createElement('p');
-                            wishlistBadge.className = 'wishlist-badge';
-                            wishlistBadge.textContent = 'Dans votre wishlist';
-                            offerCard.appendChild(wishlistBadge);
+                            if (data.wishlisted) {
+                                if (!wishlistBadge) {
+                                    wishlistBadge = document.createElement('p');
+                                    wishlistBadge.className = 'wishlist-badge';
+                                    wishlistBadge.textContent = 'Dans votre wishlist';
+                                    offerCard.appendChild(wishlistBadge);
+                                }
+                            } else {
+                                if (wishlistBadge) {
+                                    wishlistBadge.remove();
+                                }
+                            }
+
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                        } else {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
                         }
-                    } else {
-                        if (wishlistBadge) {
-                            wishlistBadge.remove();
+                    } catch (error) {
+                        console.error('Error toggling wishlist:', error);
+
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de la mise à jour de votre wishlist.', 'error');
                         }
                     }
-
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'success');
-                    }
-                } else {
-                    if (data.redirect) {
-                        window.location.href = data.redirect;
-                    }
-
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'error');
-                    }
-                }
-            } catch (error) {
-                console.error('Error toggling wishlist:', error);
-
-                if (typeof addNotification === 'function') {
-                    addNotification('Une erreur est survenue lors de la mise à jour de votre wishlist.', 'error');
-                }
-            }
-        });
-    });
-
-    // Click handler for offer cards
-    const offerCards = document.querySelectorAll('.offre-card');
-
-    offerCards.forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (!e.target.closest('.wishlist-star')) {
-                window.location.href = `/offres/${card.dataset.id}`;
-            }
-        });
-    });
-
-    // Evaluation modal functionality
-    const evaluateBtn = document.getElementById('evaluateBtn');
-    const evaluationModal = document.getElementById('evaluationModal');
-    const cancelEvaluationBtn = document.getElementById('cancelEvaluation');
-    const starRating = document.getElementById('starRating');
-    const ratingStars = document.querySelectorAll('.rating-star');
-    const ratingValueInput = document.getElementById('ratingValue');
-    const submitRatingBtn = document.getElementById('submitRating');
-    const ratingForm = document.getElementById('ratingForm');
-
-    if (evaluateBtn) {
-        evaluateBtn.addEventListener('click', () => {
-            evaluationModal.style.display = 'block';
-        });
-    }
-
-    if (cancelEvaluationBtn) {
-        cancelEvaluationBtn.addEventListener('click', () => {
-            evaluationModal.style.display = 'none';
-            ratingStars.forEach(star => star.classList.remove('selected'));
-            ratingValueInput.value = '0';
-            submitRatingBtn.disabled = true;
-        });
-    }
-
-    if (evaluationModal) {
-        evaluationModal.addEventListener('click', (e) => {
-            if (e.target === evaluationModal) {
-                evaluationModal.style.display = 'none';
-                ratingStars.forEach(star => star.classList.remove('selected'));
-                ratingValueInput.value = '0';
-                submitRatingBtn.disabled = true;
-            }
-        });
-    }
-
-    if (starRating) {
-        ratingStars.forEach(star => {
-            star.addEventListener('mouseover', () => {
-                const value = parseInt(star.dataset.value);
-                ratingStars.forEach(s => {
-                    const starValue = parseInt(s.dataset.value);
-                    s.style.color = starValue <= value ? 'var(--primary-color)' : 'var(--real-grey)';
                 });
             });
 
-            star.addEventListener('mouseout', () => {
-                ratingStars.forEach(s => {
-                    s.style.color = s.classList.contains('selected') ? 'var(--primary-color)' : 'var(--real-grey)';
-                });
-            });
+            // Click handler for offer cards
+            const offerCards = document.querySelectorAll('.offre-card');
 
-            star.addEventListener('click', () => {
-                const value = parseInt(star.dataset.value);
-                ratingStars.forEach(s => {
-                    const starValue = parseInt(s.dataset.value);
-                    s.classList.toggle('selected', starValue <= value);
-                });
-                ratingValueInput.value = value;
-                submitRatingBtn.disabled = false;
-            });
-        });
-    }
-
-    if (ratingForm) {
-        ratingForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const formData = new FormData(ratingForm);
-
-            try {
-                const response = await fetch('/api/evaluate-enterprise', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'success');
+            offerCards.forEach(card => {
+                card.addEventListener('click', (e) => {
+                    if (!e.target.closest('.wishlist-star')) {
+                        window.location.href = `/offres/${card.dataset.id}`;
                     }
+                });
+            });
+
+            // Evaluation modal functionality
+            const evaluateBtn = document.getElementById('evaluateBtn');
+            const evaluationModal = document.getElementById('evaluationModal');
+            const cancelEvaluationBtn = document.getElementById('cancelEvaluation');
+            const starRating = document.getElementById('starRating');
+            const ratingStars = document.querySelectorAll('.rating-star');
+            const ratingValueInput = document.getElementById('ratingValue');
+            const submitRatingBtn = document.getElementById('submitRating');
+            const ratingForm = document.getElementById('ratingForm');
+
+            if (evaluateBtn) {
+                evaluateBtn.addEventListener('click', () => {
+                    evaluationModal.style.display = 'block';
+                });
+            }
+
+            if (cancelEvaluationBtn) {
+                cancelEvaluationBtn.addEventListener('click', () => {
                     evaluationModal.style.display = 'none';
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                } else {
-                    if (typeof addNotification === 'function') {
-                        addNotification(data.message, 'error');
+                    ratingStars.forEach(star => star.classList.remove('selected'));
+                    ratingValueInput.value = '0';
+                    submitRatingBtn.disabled = true;
+                });
+            }
+
+            if (evaluationModal) {
+                evaluationModal.addEventListener('click', (e) => {
+                    if (e.target === evaluationModal) {
+                        evaluationModal.style.display = 'none';
+                        ratingStars.forEach(star => star.classList.remove('selected'));
+                        ratingValueInput.value = '0';
+                        submitRatingBtn.disabled = true;
+                    }
+                });
+            }
+
+            if (starRating) {
+                ratingStars.forEach(star => {
+                    star.addEventListener('mouseover', () => {
+                        const value = parseInt(star.dataset.value);
+                        ratingStars.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.style.color = starValue <= value ? 'var(--primary-color)' : 'var(--real-grey)';
+                        });
+                    });
+
+                    star.addEventListener('mouseout', () => {
+                        ratingStars.forEach(s => {
+                            s.style.color = s.classList.contains('selected') ? 'var(--primary-color)' : 'var(--real-grey)';
+                        });
+                    });
+
+                    star.addEventListener('click', () => {
+                        const value = parseInt(star.dataset.value);
+                        ratingStars.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.classList.toggle('selected', starValue <= value);
+                        });
+                        ratingValueInput.value = value;
+                        submitRatingBtn.disabled = false;
+                    });
+                });
+            }
+
+            if (ratingForm) {
+                ratingForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(ratingForm);
+
+                    try {
+                        const response = await fetch('/api/evaluate-enterprise', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            evaluationModal.style.display = 'none';
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error submitting rating:', error);
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de l\'évaluation de l\'entreprise.', 'error');
+                        }
+                    }
+                });
+            }
+
+            // Comments functionality
+            const commentsList = document.getElementById('commentsList');
+            const prevCommentsBtn = document.getElementById('prevCommentsBtn');
+            const nextCommentsBtn = document.getElementById('nextCommentsBtn');
+            const commentPageInfo = document.getElementById('commentPageInfo');
+            const spinner = document.createElement('div');
+            spinner.className = 'spinner';
+            commentsList.appendChild(spinner);
+
+            let currentPage = 1;
+            const commentsPerPage = 5;
+
+            async function loadComments(page = 1) {
+                spinner.style.display = 'block'; // Show spinner
+                try {
+                    const enterpriseId = "{{ enterprise.id_enterprise }}";
+                    const response = await fetch(`/API/entreprises/${enterpriseId}/comments?page=${page}&limit=${commentsPerPage}`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        commentsList.innerHTML = data.comments.map(comment => `
+                            <div class="comment-card">
+                                <img
+                                    src="${comment.authorPhoto}"
+                                    alt="${comment.author}"
+                                    class="comment-author-avatar"
+                                >
+                                <div class="comment-body">
+                                    <div class="comment-author">${comment.author}</div>
+                                    <div class="star-rating">
+                                        ${'★'.repeat(comment.grade).split('').map(() => `<span class="star filled">★</span>`).join('')}
+                                        ${'★'.repeat(5 - comment.grade).split('').map(() => `<span class="star">★</span>`).join('')}
+                                    </div>
+                                    <div class="comment-text">${comment.text}</div>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        commentsList.appendChild(spinner); // Re-add spinner to the DOM
+                        currentPage = page;
+                        commentPageInfo.textContent = `Page ${page} of ${data.totalPages}`;
+                        prevCommentsBtn.disabled = page <= 1;
+                        nextCommentsBtn.disabled = page >= data.totalPages;
+                    } else {
+                        console.error('Failed to load comments:', data.message);
+                    }
+                } catch (error) {
+                    console.error('Error loading comments:', error);
+                } finally {
+                    spinner.style.display = 'none'; // Hide spinner
+                }
+            }
+
+            {% if request.hasPermission('perm_grade_company') %}
+                console.log('User has permission to evaluate and comment.');
+                const submitCommentBtn = document.getElementById('submitCommentBtn');
+                const commentTextarea = document.getElementById('commentTextarea');
+                const ratingStarsComment = document.querySelectorAll('#starRating .rating-star');
+
+                let selectedRating = 0;
+
+                ratingStarsComment.forEach(star => {
+                    star.addEventListener('click', () => {
+                        const value = parseInt(star.dataset.value);
+                        selectedRating = value;
+                        ratingStarsComment.forEach(s => {
+                            const starValue = parseInt(s.dataset.value);
+                            s.classList.toggle('selected', starValue <= value);
+                        });
+                    });
+                });
+
+                async function submitComment() {
+                    const commentText = commentTextarea.value.trim();
+
+                    if (!commentText) {
+                        if (typeof addNotification === 'function') {
+                            addNotification('Le commentaire ne peut pas être vide', 'error');
+                        } else {
+                            alert('Le commentaire ne peut pas être vide');
+                        }
+                        return;
+                    }
+
+                    if (selectedRating === 0) {
+                        if (typeof addNotification === 'function') {
+                            addNotification('Veuillez sélectionner une note', 'error');
+                        } else {
+                            alert('Veuillez sélectionner une note');
+                        }
+                        return;
+                    }
+
+                    try {
+                        const enterpriseId = "{{ enterprise.id_enterprise }}";
+                        const response = await fetch('/API/entreprises/comments', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({
+                                enterpriseId: enterpriseId,
+                                commentText: commentText,
+                                rating: selectedRating
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            commentTextarea.value = '';
+                            selectedRating = 0;
+                            ratingStarsComment.forEach(star => star.classList.remove('selected'));
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'success');
+                            }
+                            loadComments(1);
+                        } else {
+                            if (typeof addNotification === 'function') {
+                                addNotification(data.message, 'error');
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error submitting comment:', error);
+                        if (typeof addNotification === 'function') {
+                            addNotification('Une erreur est survenue lors de l\'envoi du commentaire', 'error');
+                        }
                     }
                 }
-            } catch (error) {
-                console.error('Error submitting rating:', error);
-                if (typeof addNotification === 'function') {
-                    addNotification('Une erreur est survenue lors de l\'évaluation de l\'entreprise.', 'error');
-                }
-            }
+
+                submitCommentBtn.addEventListener('click', submitComment);
+                commentTextarea.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        submitComment();
+                    }
+                });
+
+                prevCommentsBtn.addEventListener('click', () => {
+                    if (currentPage > 1) {
+                        loadComments(currentPage - 1);
+                    }
+                });
+
+                nextCommentsBtn.addEventListener('click', () => {
+                    if (currentPage < data.totalPages) {
+                        loadComments(currentPage + 1);
+                    }
+                });
+            {% endif %}
+
+            loadComments(); // Always load comments
         });
-    }
-
-    {% if request.hasPermission('perm_grade_company') %}
-    console.log('User has permission to evaluate and comment.');
-    const submitCommentBtn = document.getElementById('submitCommentBtn');
-    const commentTextarea = document.getElementById('commentTextarea');
-    const ratingStarsComment = document.querySelectorAll('#starRating .rating-star');
-    const commentsList = document.getElementById('commentsList');
-    const prevCommentsBtn = document.getElementById('prevCommentsBtn');
-    const nextCommentsBtn = document.getElementById('nextCommentsBtn');
-    const commentPageInfo = document.getElementById('commentPageInfo');
-
-    let currentPage = 1;
-    const commentsPerPage = 5;
-    let selectedRating = 0;
-
-    ratingStarsComment.forEach(star => {
-        star.addEventListener('click', () => {
-            const value = parseInt(star.dataset.value);
-            selectedRating = value;
-            ratingStarsComment.forEach(s => {
-                const starValue = parseInt(s.dataset.value);
-                s.classList.toggle('selected', starValue <= value);
-            });
-        });
-    });
-
-    async function loadComments(page = 1) {
-        console.log('Loading comments for page:', page);
-        try {
-            const enterpriseId = "{{ enterprise.id_enterprise }}";
-            console.log('Enterprise ID:', enterpriseId);
-            const response = await fetch(`/API/entreprises/${enterpriseId}/comments?page=${page}&limit=${commentsPerPage}`);
-            const data = await response.json();
-
-            if (data.success) {
-                commentsList.innerHTML = data.comments.map(comment => `
-                    <div class="comment-card">
-                        <img
-                            src="${comment.authorPhoto}"
-                            alt="${comment.author}"
-                            class="comment-author-avatar"
-                        >
-                        <div class="comment-body">
-                            <div class="comment-author">${comment.author}</div>
-                            <div class="star-rating">
-                                ${'★'.repeat(comment.grade).split('').map(() => `<span class="star filled">★</span>`).join('')}
-                                ${'★'.repeat(5 - comment.grade).split('').map(() => `<span class="star">★</span>`).join('')}
-                            </div>
-                            <div class="comment-text">${comment.text}</div>
-                        </div>
-                    </div>
-                `).join('');
-
-                currentPage = page;
-                commentPageInfo.textContent = `Page ${page} of ${data.totalPages}`;
-                prevCommentsBtn.disabled = page <= 1;
-                nextCommentsBtn.disabled = page >= data.totalPages;
-            } else {
-                console.error('Failed to load comments:', data.message);
-            }
-        } catch (error) {
-            console.error('Error loading comments:', error);
-        }
-    }
-
-    async function submitComment() {
-        const commentText = commentTextarea.value.trim();
-
-        if (!commentText) {
-            if (typeof addNotification === 'function') {
-                addNotification('Le commentaire ne peut pas être vide', 'error');
-            } else {
-                alert('Le commentaire ne peut pas être vide');
-            }
-            return;
-        }
-
-        if (selectedRating === 0) {
-            if (typeof addNotification === 'function') {
-                addNotification('Veuillez sélectionner une note', 'error');
-            } else {
-                alert('Veuillez sélectionner une note');
-            }
-            return;
-        }
-
-        try {
-            const enterpriseId = "{{ enterprise.id_enterprise }}";
-            const response = await fetch('/API/entreprises/comments', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                body: JSON.stringify({
-                    enterpriseId: enterpriseId,
-                    commentText: commentText,
-                    rating: selectedRating
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                commentTextarea.value = '';
-                selectedRating = 0;
-                ratingStarsComment.forEach(star => star.classList.remove('selected'));
-                if (typeof addNotification === 'function') {
-                    addNotification(data.message, 'success');
-                }
-                loadComments(1);
-            } else {
-                if (typeof addNotification === 'function') {
-                    addNotification(data.message, 'error');
-                }
-            }
-        } catch (error) {
-            console.error('Error submitting comment:', error);
-            if (typeof addNotification === 'function') {
-                addNotification('Une erreur est survenue lors de l\'envoi du commentaire', 'error');
-            }
-        }
-    }
-
-    submitCommentBtn.addEventListener('click', submitComment);
-    commentTextarea.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitComment();
-        }
-    });
-
-    prevCommentsBtn.addEventListener('click', () => {
-        if (currentPage > 1) {
-            loadComments(currentPage - 1);
-        }
-    });
-
-    nextCommentsBtn.addEventListener('click', () => {
-        if (currentPage < data.totalPages) {
-            loadComments(currentPage + 1);
-        }
-    });
-
-    loadComments();
-    {% else %}
-    console.log('User does not have permission to evaluate or comment.');
-    {% endif %}
-});
-
 
    </script>
 {% endblock %}
